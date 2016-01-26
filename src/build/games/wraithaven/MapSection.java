@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 public class MapSection {
 
-    private final ArrayList<MapLayer> layers = new ArrayList<MapLayer>();
+    private final ArrayList<MapLayer> layers = new ArrayList(2);
     private final BufferedImage image;
     private final int mapX;
     private final int mapY;

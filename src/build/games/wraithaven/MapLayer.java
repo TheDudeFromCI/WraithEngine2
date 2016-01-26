@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,6 @@
  */
 package build.games.wraithaven;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -24,14 +23,13 @@ public class MapLayer {
 
     public static final int MAP_TILES_WIDTH = 20;
     public static final int MAP_TILES_HEIGHT = 15;
-    private final BufferedImage image;
     private final Tile[] tiles;
     private final int layer;
     private int tileCount;
+    private BufferedImage image;
 
     public MapLayer(int layer) {
         this.layer = layer;
-        image = new BufferedImage(Chipset.BIT_SIZE * MAP_TILES_WIDTH, Chipset.BIT_SIZE * MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         tiles = new Tile[MAP_TILES_WIDTH * MAP_TILES_HEIGHT];
     }
 
@@ -71,9 +69,8 @@ public class MapLayer {
     }
 
     private void redraw() {
+        image = new BufferedImage(Chipset.BIT_SIZE * MAP_TILES_WIDTH, Chipset.BIT_SIZE * MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
-        g.setColor(new Color(0, 0, 0, 0));
-        g.clearRect(0, 0, image.getWidth(), image.getHeight());
         int x, y;
         int index;
         for (x = 0; x < MAP_TILES_WIDTH; x++) {
@@ -108,7 +105,7 @@ public class MapLayer {
 
     public void setTile(int x, int y, Tile tile) {
         int index = y * MAP_TILES_WIDTH + x;
-        if (tiles[index] != tile && (tiles[index] == null || tile == null)) {
+        if (tiles[index] == null ^ tile == null) {
             if (tile == null) {
                 tileCount--;
             } else {

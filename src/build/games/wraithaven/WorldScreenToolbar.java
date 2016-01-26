@@ -118,6 +118,14 @@ public class WorldScreenToolbar extends JPanel {
             });
             editingLayer.setToolTipText("Change what layer you are currently editing.");
             editingLayer.setPreferredSize(new Dimension(96, 32));
+            editingLayer.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    if (hideLayers) {
+                        worldBuilder.getWorldScreen().redrawAllMapSections();
+                    }
+                }
+            });
             add(editingLayer);
         }
         {

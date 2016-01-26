@@ -18,18 +18,21 @@ import javax.swing.SwingWorker;
 @SuppressWarnings("serial")
 public class WorldScreen extends JPanel {
 
-    private final ArrayList<MapSection> mapSections = new ArrayList<MapSection>();
+    private final ArrayList<MapSection> mapSections = new ArrayList<>(8);
     private final SelectionCursor cursor = new SelectionCursor();
     private final ChipsetTileSelection selectedTile;
     private final BufferedImage selectionImage;
     private final BufferedImage newMapImage;
+    private final WorldBuilder worldBuilder;
     private int scrollX;
     private int scrollY;
     private int pixelSize = 32;
     private int mapSectionWidth = pixelSize * MapLayer.Map_Tiles_Width;
     private int mapSectionHeight = pixelSize * MapLayer.Map_Tiles_Height;
+    private boolean needsSaving;
 
     public WorldScreen(WorldBuilder worldBuilder) {
+        this.worldBuilder = worldBuilder;
         try {
             selectionImage = ImageIO.read(Algorithms.getAsset("Selection Box.png"));
             newMapImage = ImageIO.read(Algorithms.getAsset("New Map Box.png"));
@@ -82,6 +85,7 @@ public class WorldScreen extends JPanel {
                         }
                     }
                     mapSections.add(new MapSection(worldBuilder.getChipsetList(), mapX, mapY));
+                    updateNeedsSaving();
                     mouseMoved(x, y);
                     repaint();
                 } else {
@@ -128,6 +132,8 @@ public class WorldScreen extends JPanel {
                                         try {
                                             if (get()) {
                                                 mapSections.remove(m);
+                                                needsSaving = true;
+                                                updateNeedsSaving();
                                                 repaint();
                                             }
                                         } catch (Exception exception) {
@@ -138,6 +144,7 @@ public class WorldScreen extends JPanel {
                             } else if (selectedTile.isActive()) {
                                 map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, 0,
                                         new Tile(selectedTile.getChipset(), selectedTile.getIndex()));
+                                updateNeedsSaving();
                                 repaint();
                             }
                             return;
@@ -240,6 +247,11 @@ public class WorldScreen extends JPanel {
         addKeyListener(inputAdapter);
         setFocusable(true);
         load(worldBuilder.getChipsetList());
+        updateNeedsSaving();
+    }
+
+    public void updateNeedsSaving() {
+        worldBuilder.setTitle("WraithEngine " + (needsSaving() ? '*' : "") + WorldBuilder.outputFolder);
     }
 
     private void load(ChipsetList chipsetList) {
@@ -256,6 +268,9 @@ public class WorldScreen extends JPanel {
     }
 
     public boolean needsSaving() {
+        if (needsSaving) {
+            return true;
+        }
         for (MapSection map : mapSections) {
             if (map.needsSaving()) {
                 return true;
@@ -295,6 +310,7 @@ public class WorldScreen extends JPanel {
     }
 
     public void save() {
+        needsSaving = false;
         BinaryFile bin = new BinaryFile(4 + mapSections.size() * 8);
         bin.addInt(mapSections.size());
         for (MapSection map : mapSections) {
@@ -304,5 +320,6 @@ public class WorldScreen extends JPanel {
         }
         bin.compress(false);
         bin.compile(Algorithms.getFile("Worlds", "Sections.dat"));
+        updateNeedsSaving();
     }
 }

@@ -12,12 +12,13 @@ public class MapSection {
     private final BufferedImage image;
     private final int mapX;
     private final int mapY;
-    private boolean needsSaving = true;
+    private boolean needsSaving;
 
     public MapSection(ChipsetList chipsetList, int mapX, int mapY) {
         this.mapX = mapX;
         this.mapY = mapY;
         image = new BufferedImage(Chipset.Bit_Size * MapLayer.Map_Tiles_Width, Chipset.Bit_Size * MapLayer.Map_Tiles_Height, BufferedImage.TYPE_INT_ARGB);
+        needsSaving = true;
         load(chipsetList);
         redraw();
     }
@@ -50,12 +51,13 @@ public class MapSection {
         }
         BinaryFile bin = new BinaryFile(file);
         bin.decompress(false);
-        int layers = bin.getInt();
-        for (int i = 0; i < layers; i++) {
+        int layerCount = bin.getInt();
+        for (int i = 0; i < layerCount; i++) {
             MapLayer l = new MapLayer(bin.getInt());
             l.load(bin, chipsetList);
-            this.layers.add(l);
+            layers.add(l);
         }
+        needsSaving = false;
     }
 
     public boolean needsSaving() {

@@ -58,7 +58,9 @@ public class WorldScreen extends JPanel {
                         shift = true;
                         break;
                     case KeyEvent.VK_S:
-                        save();
+                        if (event.isControlDown()) {
+                            save();
+                        }
                         break;
                 }
             }

@@ -66,32 +66,31 @@ public class ChipsetImporter {
             BufferedImage image = ImageIO.read(file);
             int width = image.getWidth();
             int height = image.getHeight();
-            if (width % Chipset.Bit_Size != 0 || height % Chipset.Bit_Size != 0) {
+            if (width % Chipset.BIT_SIZE != 0 || height % Chipset.BIT_SIZE != 0) {
                 JOptionPane.showMessageDialog(null, "This image is in an unknown size, and could not be parsed.", "Warning",
                         JOptionPane.WARNING_MESSAGE);
                 throw new RuntimeException();
             }
-            width /= Chipset.Bit_Size;
-            height /= Chipset.Bit_Size;
+            width /= Chipset.BIT_SIZE;
+            height /= Chipset.BIT_SIZE;
             tiles = new Tile[width * height];
             tileImages = new BufferedImage[tiles.length];
             int x, y, index;
-            previewImage = new BufferedImage(Chipset.Preview_Tiles_Width * Chipset.Tile_Out_Size,
-                    (int) Math.ceil(tiles.length / (float) Chipset.Preview_Tiles_Width) * Chipset.Tile_Out_Size, BufferedImage.TYPE_INT_ARGB);
+            previewImage = new BufferedImage(Chipset.PREVIEW_TILES_WIDTH * Chipset.TILE_OUT_SIZE,
+                    (int) Math.ceil(tiles.length / (float) Chipset.PREVIEW_TILES_WIDTH) * Chipset.TILE_OUT_SIZE, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = previewImage.createGraphics();
             g.setColor(Color.black);
             g.fillRect(0, 0, previewImage.getWidth(), previewImage.getHeight());
             for (x = 0; x < width; x++) {
                 for (y = 0; y < height; y++) {
-                    index
-                            = y * Chipset.Preview_Tiles_Width + x % Chipset.Preview_Tiles_Width + x / Chipset.Preview_Tiles_Width * Chipset.Preview_Tiles_Width * height;
+                    index = y * Chipset.PREVIEW_TILES_WIDTH + x % Chipset.PREVIEW_TILES_WIDTH + x / Chipset.PREVIEW_TILES_WIDTH * Chipset.PREVIEW_TILES_WIDTH * height;
                     if (index >= tiles.length) {
                         continue;
                     }
                     tiles[index] = new Tile(null, index);
-                    tileImages[index] = image.getSubimage(x * Chipset.Bit_Size, y * Chipset.Bit_Size, Chipset.Bit_Size, Chipset.Bit_Size);
-                    g.drawImage(tileImages[index], index % Chipset.Preview_Tiles_Width * Chipset.Tile_Out_Size,
-                            index / Chipset.Preview_Tiles_Width * Chipset.Tile_Out_Size, Chipset.Tile_Out_Size, Chipset.Tile_Out_Size, null);
+                    tileImages[index] = image.getSubimage(x * Chipset.BIT_SIZE, y * Chipset.BIT_SIZE, Chipset.BIT_SIZE, Chipset.BIT_SIZE);
+                    g.drawImage(tileImages[index], index % Chipset.PREVIEW_TILES_WIDTH * Chipset.TILE_OUT_SIZE,
+                            index / Chipset.PREVIEW_TILES_WIDTH * Chipset.TILE_OUT_SIZE, Chipset.TILE_OUT_SIZE, Chipset.TILE_OUT_SIZE, null);
                     g.setColor(Color.white);
                 }
             }

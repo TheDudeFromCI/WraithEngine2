@@ -2,9 +2,9 @@ package build.games.wraithaven;
 
 public class Chipset {
 
-    public static final int Bit_Size = 16;
-    public static final int Preview_Tiles_Width = 8;
-    public static final int Tile_Out_Size = 32;
+    public static final int BIT_SIZE = 16;
+    public static final int PREVIEW_TILES_WIDTH = 8;
+    public static final int TILE_OUT_SIZE = 32;
     private final Tile[] tiles;
     private final String uuid;
     private String name;
@@ -13,12 +13,23 @@ public class Chipset {
         uuid = bin.getString();
         name = bin.getString();
         tiles = new Tile[bin.getInt()];
+        for (int i = 0; i < tiles.length; i++) {
+            if (bin.getBoolean()) {
+                tiles[i] = new Tile(this, i);
+                tiles[i].load(bin);
+            }
+        }
     }
 
     public Chipset(String uuid, Tile[] tiles, String name) {
         this.uuid = uuid;
-        this.tiles = tiles;
         this.name = name;
+        this.tiles = new Tile[tiles.length];
+        for (int i = 0; i < tiles.length; i++) {
+            if (tiles[i] != null) {
+                this.tiles[i] = new Tile(this, i);
+            }
+        }
     }
 
     public String getName() {
@@ -42,7 +53,15 @@ public class Chipset {
         bin.addInt(nameBytes.length);
         bin.addBytes(nameBytes, 0, nameBytes.length);
         bin.addInt(tiles.length);
-        // TODO Save tiles.
+        for (Tile tile : tiles) {
+            bin.allocateBytes(1);
+            if (tile == null) {
+                bin.addBoolean(false);
+            } else {
+                bin.addBoolean(true);
+                tile.save(bin);
+            }
+        }
     }
 
     public void setName(String name) {

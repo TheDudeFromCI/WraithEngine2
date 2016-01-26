@@ -12,7 +12,7 @@ public class TileList extends JPanel {
 
     public TileList(BufferedImage buf) {
         if (buf == null) {
-            setPreferredSize(new Dimension(Chipset.Tile_Out_Size * Chipset.Preview_Tiles_Width, 10));
+            setPreferredSize(new Dimension(Chipset.TILE_OUT_SIZE * Chipset.PREVIEW_TILES_WIDTH, 10));
             return;
         }
         this.buf = buf;

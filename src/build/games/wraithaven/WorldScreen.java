@@ -27,8 +27,8 @@ public class WorldScreen extends JPanel {
     private int scrollX;
     private int scrollY;
     private int pixelSize = 32;
-    private int mapSectionWidth = pixelSize * MapLayer.Map_Tiles_Width;
-    private int mapSectionHeight = pixelSize * MapLayer.Map_Tiles_Height;
+    private int mapSectionWidth = pixelSize * MapLayer.MAP_TILES_WIDTH;
+    private int mapSectionHeight = pixelSize * MapLayer.MAP_TILES_HEIGHT;
     private boolean needsSaving;
 
     public WorldScreen(WorldBuilder worldBuilder) {
@@ -76,8 +76,8 @@ public class WorldScreen extends JPanel {
                 }
                 if (cursor.isOverVoid()) {
                     // New map
-                    int mapX = (int) Math.floor(cursor.getX() / (float) MapLayer.Map_Tiles_Width);
-                    int mapY = (int) Math.floor(cursor.getY() / (float) MapLayer.Map_Tiles_Height);
+                    int mapX = (int) Math.floor(cursor.getX() / (float) MapLayer.MAP_TILES_WIDTH);
+                    int mapY = (int) Math.floor(cursor.getY() / (float) MapLayer.MAP_TILES_HEIGHT);
                     // Check to make sure the map doesn't already exist, just in case.
                     for (MapSection map : mapSections) {
                         if (map.getMapX() == mapX && map.getMapY() == mapY) {
@@ -106,8 +106,8 @@ public class WorldScreen extends JPanel {
                                 if (tile == null) {
                                     return;
                                 }
-                                selectedTile.select(tile.getChipset(), tile.getId(), tile.getId() % Chipset.Preview_Tiles_Width,
-                                        tile.getId() / Chipset.Preview_Tiles_Width);
+                                selectedTile.select(tile.getChipset(), tile.getId(), tile.getId() % Chipset.PREVIEW_TILES_WIDTH,
+                                        tile.getId() / Chipset.PREVIEW_TILES_WIDTH);
                                 for (ChipsetListComponent list : worldBuilder.getChipsetList().getChipsets()) {
                                     if (list.getChipset() == selectedTile.getChipset()) {
                                         // This is just to ensure that the desired chipset is actually selected.
@@ -142,8 +142,7 @@ public class WorldScreen extends JPanel {
                                     }
                                 }.execute();
                             } else if (selectedTile.isActive()) {
-                                map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, 0,
-                                        new Tile(selectedTile.getChipset(), selectedTile.getIndex()));
+                                map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, 0, selectedTile.getChipset().getTile(selectedTile.getIndex()));
                                 updateNeedsSaving();
                                 repaint();
                             }
@@ -232,8 +231,8 @@ public class WorldScreen extends JPanel {
                 int change = -event.getWheelRotation();
                 int pixelSizeBefore = pixelSize;
                 pixelSize = Math.max(Math.min(pixelSize + change, 64), 8);
-                mapSectionWidth = pixelSize * MapLayer.Map_Tiles_Width;
-                mapSectionHeight = pixelSize * MapLayer.Map_Tiles_Height;
+                mapSectionWidth = pixelSize * MapLayer.MAP_TILES_WIDTH;
+                mapSectionHeight = pixelSize * MapLayer.MAP_TILES_HEIGHT;
                 float per = pixelSize / (float) pixelSizeBefore;
                 scrollX = -Math.round(event.getX() * (per - 1f) + per * -scrollX);
                 scrollY = -Math.round(event.getY() * (per - 1f) + per * -scrollY);
@@ -300,8 +299,8 @@ public class WorldScreen extends JPanel {
         }
         if (cursor.isSeen()) {
             if (cursor.isOverVoid()) {
-                g.drawImage(newMapImage, (int) Math.floor(cursor.getX() / (float) MapLayer.Map_Tiles_Width) * mapSectionWidth + scrollX,
-                        (int) Math.floor(cursor.getY() / (float) MapLayer.Map_Tiles_Height) * mapSectionHeight + scrollY, mapSectionWidth, mapSectionHeight, null);
+                g.drawImage(newMapImage, (int) Math.floor(cursor.getX() / (float) MapLayer.MAP_TILES_WIDTH) * mapSectionWidth + scrollX,
+                        (int) Math.floor(cursor.getY() / (float) MapLayer.MAP_TILES_HEIGHT) * mapSectionHeight + scrollY, mapSectionWidth, mapSectionHeight, null);
             } else {
                 g.drawImage(selectionImage, cursor.getX() * pixelSize + scrollX, cursor.getY() * pixelSize + scrollY, pixelSize, pixelSize, null);
             }

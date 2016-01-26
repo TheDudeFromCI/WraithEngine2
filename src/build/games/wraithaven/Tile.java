@@ -41,6 +41,15 @@ public class Tile {
         return image;
     }
 
+    public void save(BinaryFile bin) {
+        bin.allocateBytes(1);
+        bin.addBoolean(passable);
+    }
+
+    public void load(BinaryFile bin) {
+        passable = bin.getBoolean();
+    }
+
     public boolean isPassable() {
         return passable;
     }

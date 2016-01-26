@@ -6,8 +6,8 @@ import java.awt.image.BufferedImage;
 
 public class MapLayer {
 
-    public static final int Map_Tiles_Width = 20;
-    public static final int Map_Tiles_Height = 15;
+    public static final int MAP_TILES_WIDTH = 20;
+    public static final int MAP_TILES_HEIGHT = 15;
     private final BufferedImage image;
     private final Tile[] tiles;
     private final int layer;
@@ -15,8 +15,8 @@ public class MapLayer {
 
     public MapLayer(int layer) {
         this.layer = layer;
-        image = new BufferedImage(Chipset.Bit_Size * Map_Tiles_Width, Chipset.Bit_Size * Map_Tiles_Height, BufferedImage.TYPE_INT_ARGB);
-        tiles = new Tile[Map_Tiles_Width * Map_Tiles_Height];
+        image = new BufferedImage(Chipset.BIT_SIZE * MAP_TILES_WIDTH, Chipset.BIT_SIZE * MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        tiles = new Tile[MAP_TILES_WIDTH * MAP_TILES_HEIGHT];
     }
 
     public BufferedImage getImage() {
@@ -28,7 +28,7 @@ public class MapLayer {
     }
 
     public Tile getTile(int x, int y) {
-        return tiles[y * Map_Tiles_Width + x];
+        return tiles[y * MAP_TILES_WIDTH + x];
     }
 
     public boolean isEmpty() {
@@ -50,7 +50,6 @@ public class MapLayer {
             } else {
                 tiles[i] = null;
             }
-            System.out.println(tiles[i]);
         }
         redraw();
     }
@@ -61,13 +60,13 @@ public class MapLayer {
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
         int x, y;
         int index;
-        for (x = 0; x < Map_Tiles_Width; x++) {
-            for (y = 0; y < Map_Tiles_Height; y++) {
-                index = y * Map_Tiles_Width + x;
+        for (x = 0; x < MAP_TILES_WIDTH; x++) {
+            for (y = 0; y < MAP_TILES_HEIGHT; y++) {
+                index = y * MAP_TILES_WIDTH + x;
                 if (tiles[index] == null) {
                     continue;
                 }
-                g.drawImage(tiles[index].getImage(), x * Chipset.Bit_Size, y * Chipset.Bit_Size, null);
+                g.drawImage(tiles[index].getImage(), x * Chipset.BIT_SIZE, y * Chipset.BIT_SIZE, null);
             }
         }
         g.dispose();
@@ -76,23 +75,23 @@ public class MapLayer {
     public void save(BinaryFile bin) {
         bin.allocateBytes(4);
         bin.addInt(tileCount);
-        for (int i = 0; i < tiles.length; i++) {
+        for (Tile tile : tiles) {
             bin.allocateBytes(1);
-            if (tiles[i] == null) {
+            if (tile == null) {
                 bin.addBoolean(false);
             } else {
                 bin.addBoolean(true);
-                byte[] bytes = tiles[i].getChipset().getUUID().getBytes();
+                byte[] bytes = tile.getChipset().getUUID().getBytes();
                 bin.allocateBytes(bytes.length + 8);
                 bin.addInt(bytes.length);
                 bin.addBytes(bytes, 0, bytes.length);
-                bin.addInt(tiles[i].getId());
+                bin.addInt(tile.getId());
             }
         }
     }
 
     public void setTile(int x, int y, Tile tile) {
-        int index = y * Map_Tiles_Width + x;
+        int index = y * MAP_TILES_WIDTH + x;
         if (tiles[index] != tile && (tiles[index] == null || tile == null)) {
             if (tile == null) {
                 tileCount--;

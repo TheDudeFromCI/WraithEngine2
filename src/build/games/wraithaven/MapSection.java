@@ -17,7 +17,7 @@ public class MapSection {
     public MapSection(ChipsetList chipsetList, int mapX, int mapY) {
         this.mapX = mapX;
         this.mapY = mapY;
-        image = new BufferedImage(Chipset.Bit_Size * MapLayer.Map_Tiles_Width, Chipset.Bit_Size * MapLayer.Map_Tiles_Height, BufferedImage.TYPE_INT_ARGB);
+        image = new BufferedImage(Chipset.BIT_SIZE * MapLayer.MAP_TILES_WIDTH, Chipset.BIT_SIZE * MapLayer.MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         needsSaving = true;
         load(chipsetList);
         redraw();

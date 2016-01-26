@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
@@ -38,6 +41,7 @@ public class WorldBuilder extends JFrame {
         new ProjectList();
     }
     private ChipsetList chipsetList;
+    private WorldScreen worldScreen;
 
     public WorldBuilder() {
         init();
@@ -52,7 +56,7 @@ public class WorldBuilder extends JFrame {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         getContentPane().add(scrollPane, BorderLayout.WEST);
-        WorldScreen worldScreen = new WorldScreen(this);
+        worldScreen = new WorldScreen(this);
         getContentPane().add(worldScreen, BorderLayout.CENTER);
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -70,6 +74,7 @@ public class WorldBuilder extends JFrame {
         mnFile.add(switchProject);
         JMenuItem mntmImportNewChipset = new JMenuItem("Import New Chipset");
         mntmImportNewChipset.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setFileFilter(new FileFilter() {
@@ -105,10 +110,20 @@ public class WorldBuilder extends JFrame {
         mntmExit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                if (confirmExit()) {
+                    System.exit(0);
+                }
             }
         });
         mnFile.add(mntmExit);
+    }
+
+    private boolean confirmExit() {
+        if (!worldScreen.needsSaving()) {
+            return true;
+        }
+        int response = JOptionPane.showConfirmDialog(null, "You have unsaved progress! Are you sure you want to exit? All unsaved progress will be lost.", "Confirm Exit", JOptionPane.YES_NO_CANCEL_OPTION);
+        return response == JOptionPane.YES_OPTION;
     }
 
     public ChipsetList getChipsetList() {
@@ -121,6 +136,15 @@ public class WorldBuilder extends JFrame {
         setSize(800, 600);
         setMinimumSize(new Dimension(640, 480));
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (confirmExit()) {
+                    System.exit(0);
+                }
+            }
+
+        });
     }
 }

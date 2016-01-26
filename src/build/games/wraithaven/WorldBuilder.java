@@ -145,8 +145,12 @@ public class WorldBuilder extends JFrame {
         if (!worldScreen.needsSaving()) {
             return true;
         }
-        int response = JOptionPane.showConfirmDialog(null, "You have unsaved progress! Are you sure you want to exit? All unsaved progress will be lost.", "Confirm Exit", JOptionPane.YES_NO_CANCEL_OPTION);
-        return response == JOptionPane.YES_OPTION;
+        int response = JOptionPane.showConfirmDialog(null, "You have unsaved progress! Do you wish to save before exiting? All unsaved progress will be lost.", "Confirm Exit", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (response == JOptionPane.YES_OPTION) {
+            worldScreen.save();
+            return true;
+        }
+        return response == JOptionPane.NO_OPTION;
     }
 
     public ChipsetList getChipsetList() {

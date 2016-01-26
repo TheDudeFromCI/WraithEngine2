@@ -26,13 +26,15 @@ public class MapSection {
 
     private final ArrayList<MapLayer> layers = new ArrayList(2);
     private final BufferedImage image;
+    private final WorldScreenToolbar worldScreenToolbar;
     private final int mapX;
     private final int mapY;
     private boolean needsSaving;
 
-    public MapSection(ChipsetList chipsetList, int mapX, int mapY) {
+    public MapSection(ChipsetList chipsetList, WorldScreenToolbar worldScreenToolbar, int mapX, int mapY) {
         this.mapX = mapX;
         this.mapY = mapY;
+        this.worldScreenToolbar = worldScreenToolbar;
         image = new BufferedImage(Chipset.BIT_SIZE * MapLayer.MAP_TILES_WIDTH, Chipset.BIT_SIZE * MapLayer.MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         needsSaving = true;
         load(chipsetList);
@@ -84,8 +86,17 @@ public class MapSection {
         Graphics2D g = image.createGraphics();
         g.setColor(Color.black);
         g.fillRect(0, 0, image.getWidth(), image.getHeight());
-        for (MapLayer layer : layers) {
-            g.drawImage(layer.getImage(), 0, 0, null);
+        if (worldScreenToolbar.hideOtherLayers()) {
+            int currentLayer = worldScreenToolbar.getEditingLayer();
+            for (MapLayer layer : layers) {
+                if (layer.getLayer() == currentLayer) {
+                    g.drawImage(layer.getImage(), 0, 0, null);
+                }
+            }
+        } else {
+            for (MapLayer layer : layers) {
+                g.drawImage(layer.getImage(), 0, 0, null);
+            }
         }
         g.dispose();
     }

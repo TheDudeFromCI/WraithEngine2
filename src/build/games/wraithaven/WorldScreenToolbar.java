@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
@@ -57,13 +58,16 @@ public class WorldScreenToolbar extends JPanel {
 
     private final JButton saveButton;
     private final JSpinner editingLayer;
+    private final JCheckBox hideOtherLayers;
+    private int currentLayer;
+    private boolean hideLayers;
 
     public WorldScreenToolbar(WorldBuilder worldBuilder) {
         setPreferredSize(new Dimension(32, 32));
         setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         {
             saveButton = createIcon("Save Icon.png", "Save Icon Down.png", "Save Icon Disabled.png");
-            saveButton.setEnabled(worldBuilder.getWorldScreen().needsSaving());
+            saveButton.setEnabled(false);
             saveButton.setToolTipText("Click to save.");
             saveButton.addActionListener(new ActionListener() {
                 @Override
@@ -86,6 +90,7 @@ public class WorldScreenToolbar extends JPanel {
                 @Override
                 public void setValue(Object value) {
                     this.value = Integer.valueOf(((String) value).substring(6));
+                    currentLayer = this.value;
                     for (ChangeListener listener : changeListeners) {
                         listener.stateChanged(new ChangeEvent(this));
                     }
@@ -115,6 +120,18 @@ public class WorldScreenToolbar extends JPanel {
             editingLayer.setPreferredSize(new Dimension(96, 32));
             add(editingLayer);
         }
+        {
+            hideOtherLayers = new JCheckBox("Hide Other Layers");
+            hideOtherLayers.setToolTipText("If checked, only the current layer will be shown.");
+            hideOtherLayers.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    hideLayers = hideOtherLayers.isSelected();
+                    worldBuilder.getWorldScreen().redrawAllMapSections();
+                }
+            });
+            add(hideOtherLayers);
+        }
     }
 
     public void setNeedsSaving(boolean needsSaving) {
@@ -122,6 +139,11 @@ public class WorldScreenToolbar extends JPanel {
     }
 
     public int getEditingLayer() {
-        return Integer.valueOf(((String) editingLayer.getValue()).substring(6));
+        return currentLayer;
     }
+
+    public boolean hideOtherLayers() {
+        return hideLayers;
+    }
+
 };

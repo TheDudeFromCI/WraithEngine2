@@ -91,7 +91,7 @@ public class WorldScreen extends JPanel {
                             return; // Does exist, this is probably a repeated event or something.
                         }
                     }
-                    mapSections.add(new MapSection(worldBuilder.getChipsetList(), mapX, mapY));
+                    mapSections.add(new MapSection(worldBuilder.getChipsetList(), worldBuilder.getWorldScreenToolbar(), mapX, mapY));
                     updateNeedsSaving();
                     mouseMoved(x, y);
                     repaint();
@@ -251,7 +251,7 @@ public class WorldScreen extends JPanel {
         addMouseWheelListener(inputAdapter);
         addKeyListener(inputAdapter);
         setFocusable(true);
-        load(worldBuilder.getChipsetList());
+        load(worldBuilder.getChipsetList(), worldBuilder.getWorldScreenToolbar());
         updateNeedsSaving();
     }
 
@@ -263,7 +263,7 @@ public class WorldScreen extends JPanel {
         }
     }
 
-    private void load(ChipsetList chipsetList) {
+    private void load(ChipsetList chipsetList, WorldScreenToolbar worldScreenToolbar) {
         File file = Algorithms.getFile("Worlds", "Sections.dat");
         if (!file.exists()) {
             return;
@@ -272,7 +272,7 @@ public class WorldScreen extends JPanel {
         bin.decompress(false);
         int size = bin.getInt();
         for (int i = 0; i < size; i++) {
-            mapSections.add(new MapSection(chipsetList, bin.getInt(), bin.getInt()));
+            mapSections.add(new MapSection(chipsetList, worldScreenToolbar, bin.getInt(), bin.getInt()));
         }
     }
 
@@ -331,4 +331,12 @@ public class WorldScreen extends JPanel {
         bin.compile(Algorithms.getFile("Worlds", "Sections.dat"));
         updateNeedsSaving();
     }
+
+    public void redrawAllMapSections() {
+        for (MapSection map : mapSections) {
+            map.redraw();
+        }
+        repaint();
+    }
+
 }

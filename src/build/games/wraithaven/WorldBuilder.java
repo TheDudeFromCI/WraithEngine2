@@ -76,8 +76,8 @@ public class WorldBuilder extends JFrame {
         getContentPane().add(scrollPane, BorderLayout.WEST);
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        worldScreen = new WorldScreen(this);
         worldScreenToolbar = new WorldScreenToolbar(this);
+        worldScreen = new WorldScreen(this);
         panel.add(worldScreenToolbar, BorderLayout.NORTH);
         panel.add(worldScreen, BorderLayout.CENTER);
         getContentPane().add(panel, BorderLayout.CENTER);

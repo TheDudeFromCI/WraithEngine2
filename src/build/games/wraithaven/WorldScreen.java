@@ -64,15 +64,11 @@ public class WorldScreen extends JPanel {
             private int scrollYStart;
             private int mouseXStart;
             private int mouseYStart;
-            private boolean shift;
 
             @Override
             public void keyPressed(KeyEvent event) {
                 int code = event.getKeyCode();
                 switch (code) {
-                    case KeyEvent.VK_SHIFT:
-                        shift = true;
-                        break;
                     case KeyEvent.VK_S:
                         if (event.isControlDown()) {
                             save();
@@ -81,14 +77,7 @@ public class WorldScreen extends JPanel {
                 }
             }
 
-            @Override
-            public void keyReleased(KeyEvent event) {
-                if (event.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    shift = false;
-                }
-            }
-
-            public void mouseClicked(int x, int y, int button) {
+            public void mouseClicked(int x, int y, int button, boolean shift) {
                 if (!cursor.isSeen()) {
                     return; // If the cursor isn't seen, it's probably off screen or something, and couldn't set tiles anyway.
                 }
@@ -135,7 +124,6 @@ public class WorldScreen extends JPanel {
                                 }
                                 worldBuilder.getChipsetList().repaint();
                             } else if (shift) {
-                                shift = false;
                                 final MapSection m = map;
                                 new SwingWorker<Boolean, Boolean>() {
                                     @Override
@@ -160,7 +148,7 @@ public class WorldScreen extends JPanel {
                                     }
                                 }.execute();
                             } else if (selectedTile.isActive()) {
-                                map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, 0, selectedTile.getChipset().getTile(selectedTile.getIndex()));
+                                map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, worldBuilder.getWorldScreenToolbar().getEditingLayer(), selectedTile.getChipset().getTile(selectedTile.getIndex()));
                                 updateNeedsSaving();
                                 repaint();
                             }
@@ -172,7 +160,7 @@ public class WorldScreen extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent event) {
-                mouseClicked(event.getX(), event.getY(), event.getButton());
+                mouseClicked(event.getX(), event.getY(), event.getButton(), event.isShiftDown());
             }
 
             @Override
@@ -182,7 +170,7 @@ public class WorldScreen extends JPanel {
                     scrollY = event.getY() - mouseYStart + scrollYStart;
                     repaint();
                 } else if (drawing) {
-                    mouseClicked(event.getX(), event.getY(), 1);
+                    mouseClicked(event.getX(), event.getY(), 1, event.isShiftDown());
                 }
                 mouseMoved(event); // To update the cursor.
             }

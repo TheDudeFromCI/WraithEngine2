@@ -20,10 +20,15 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -51,6 +56,7 @@ public class WorldScreenToolbar extends JPanel {
     }
 
     private final JButton saveButton;
+    private final JSpinner editingLayer;
 
     public WorldScreenToolbar(WorldBuilder worldBuilder) {
         setPreferredSize(new Dimension(32, 32));
@@ -67,9 +73,55 @@ public class WorldScreenToolbar extends JPanel {
             });
             add(saveButton);
         }
+        {
+            editingLayer = new JSpinner(new SpinnerModel() {
+                private final ArrayList<ChangeListener> changeListeners = new ArrayList(1);
+                private int value;
+
+                @Override
+                public Object getValue() {
+                    return "Layer " + value;
+                }
+
+                @Override
+                public void setValue(Object value) {
+                    this.value = Integer.valueOf(((String) value).substring(6));
+                    for (ChangeListener listener : changeListeners) {
+                        listener.stateChanged(new ChangeEvent(this));
+                    }
+                }
+
+                @Override
+                public Object getNextValue() {
+                    return "Layer " + (value + 1);
+                }
+
+                @Override
+                public Object getPreviousValue() {
+                    return "Layer " + (value - 1);
+                }
+
+                @Override
+                public void addChangeListener(ChangeListener l) {
+                    changeListeners.add(l);
+                }
+
+                @Override
+                public void removeChangeListener(ChangeListener l) {
+                    changeListeners.remove(l);
+                }
+            });
+            editingLayer.setToolTipText("Change what layer you are currently editing.");
+            editingLayer.setPreferredSize(new Dimension(96, 32));
+            add(editingLayer);
+        }
     }
 
     public void setNeedsSaving(boolean needsSaving) {
         saveButton.setEnabled(needsSaving);
+    }
+
+    public int getEditingLayer() {
+        return (int) editingLayer.getValue();
     }
 };

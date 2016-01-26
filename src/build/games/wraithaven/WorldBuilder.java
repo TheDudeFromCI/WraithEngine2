@@ -27,7 +27,7 @@ public class WorldBuilder extends JFrame {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        final String workspaceName = "Spellgate Data";
+        final String workspaceName = "WraithEngine";
         if (args.length > 0) {
             workspaceFolder = args[0] + File.separatorChar + workspaceName;
         } else {

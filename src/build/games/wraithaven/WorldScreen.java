@@ -109,8 +109,10 @@ public class WorldScreen extends JPanel {
                             if (button == MouseEvent.BUTTON2) { // Middle Click
                                 int mx = (x - mapX) / pixelSize;
                                 int my = (y - mapY) / pixelSize;
-                                Tile tile = map.getTile(mx, my, 0);
+                                Tile tile = map.getTile(mx, my, worldBuilder.getWorldScreenToolbar().getEditingLayer());
                                 if (tile == null) {
+                                    selectedTile.reset();
+                                    worldBuilder.getChipsetList().repaint();
                                     return;
                                 }
                                 selectedTile.select(tile.getChipset(), tile.getId(), tile.getId() % Chipset.PREVIEW_TILES_WIDTH,
@@ -147,8 +149,12 @@ public class WorldScreen extends JPanel {
                                         }
                                     }
                                 }.execute();
-                            } else if (selectedTile.isActive()) {
-                                map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, worldBuilder.getWorldScreenToolbar().getEditingLayer(), selectedTile.getChipset().getTile(selectedTile.getIndex()));
+                            } else {
+                                if (selectedTile.isActive()) {
+                                    map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, worldBuilder.getWorldScreenToolbar().getEditingLayer(), selectedTile.getChipset().getTile(selectedTile.getIndex()));
+                                } else {
+                                    map.setTile((x - mapX) / pixelSize, (y - mapY) / pixelSize, worldBuilder.getWorldScreenToolbar().getEditingLayer(), null);
+                                }
                                 updateNeedsSaving();
                                 repaint();
                             }

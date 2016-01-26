@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -268,7 +268,11 @@ public class WorldScreen extends JPanel {
     }
 
     public void updateNeedsSaving() {
-        worldBuilder.setTitle("WraithEngine " + (needsSaving() ? '*' : "") + WorldBuilder.outputFolder);
+        boolean toSave = needsSaving();
+        worldBuilder.setTitle("WraithEngine " + (toSave ? '*' : "") + WorldBuilder.outputFolder);
+        if (worldBuilder.getWorldScreenToolbar() != null) {
+            worldBuilder.getWorldScreenToolbar().setNeedsSaving(toSave);
+        }
     }
 
     private void load(ChipsetList chipsetList) {

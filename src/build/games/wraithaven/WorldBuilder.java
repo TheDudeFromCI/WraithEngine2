@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -59,6 +59,7 @@ public class WorldBuilder extends JFrame {
     }
     private ChipsetList chipsetList;
     private WorldScreen worldScreen;
+    private WorldScreenToolbar worldScreenToolbar;
 
     public WorldBuilder() {
         init();
@@ -76,7 +77,7 @@ public class WorldBuilder extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         worldScreen = new WorldScreen(this);
-        WorldScreenToolbar worldScreenToolbar = new WorldScreenToolbar();
+        worldScreenToolbar = new WorldScreenToolbar(this);
         panel.add(worldScreenToolbar, BorderLayout.NORTH);
         panel.add(worldScreen, BorderLayout.CENTER);
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -150,6 +151,14 @@ public class WorldBuilder extends JFrame {
 
     public ChipsetList getChipsetList() {
         return chipsetList;
+    }
+
+    public WorldScreen getWorldScreen() {
+        return worldScreen;
+    }
+
+    public WorldScreenToolbar getWorldScreenToolbar() {
+        return worldScreenToolbar;
     }
 
     private void init() {

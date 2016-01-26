@@ -58,6 +58,7 @@ public class WorldScreenToolbar extends JPanel {
         {
             saveButton = createIcon("Save Icon.png", "Save Icon Down.png", "Save Icon Disabled.png");
             saveButton.setEnabled(worldBuilder.getWorldScreen().needsSaving());
+            saveButton.setToolTipText("Click to save.");
             saveButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

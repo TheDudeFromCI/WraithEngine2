@@ -122,6 +122,6 @@ public class WorldScreenToolbar extends JPanel {
     }
 
     public int getEditingLayer() {
-        return (int) editingLayer.getValue();
+        return Integer.valueOf(((String) editingLayer.getValue()).substring(6));
     }
 };

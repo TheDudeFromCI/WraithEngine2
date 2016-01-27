@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,6 @@ public class ChipsetPreview extends JFrame {
     public ChipsetPreview(WorldBuilder worldBuilder, ChipsetImporter chipset) {
         this.worldBuilder = worldBuilder;
         this.chipset = chipset;
-        chipset.unwrap();
         init();
         addComponents();
         setVisible(true);

@@ -122,8 +122,11 @@ public class WorldBuilder extends JFrame {
                 }
                 try {
                     new ChipsetPreview(WorldBuilder.this, new ChipsetImporter(file));
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (WrongImageSizeException exception) {
+                    // Nothing to worry about.
+                    // At this point, the window hasn't even attempted to build, so no resources wasted.
+                } catch (Exception exception) {
+                    exception.printStackTrace();
                 }
             }
         });

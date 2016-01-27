@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,6 +37,7 @@ public class ChipsetImporter {
         this.file = file;
         uuid = UUID.randomUUID().toString();
         name = file.getName().substring(0, file.getName().length() - 4);
+        unwrap();
     }
 
     public Chipset asChipset() {
@@ -77,7 +78,7 @@ public class ChipsetImporter {
         }
     }
 
-    public void unwrap() {
+    private void unwrap() {
         try {
             BufferedImage image = ImageIO.read(file);
             int width = image.getWidth();
@@ -85,7 +86,7 @@ public class ChipsetImporter {
             if (width % Chipset.BIT_SIZE != 0 || height % Chipset.BIT_SIZE != 0) {
                 JOptionPane.showMessageDialog(null, "This image is in an unknown size, and could not be parsed.", "Warning",
                         JOptionPane.WARNING_MESSAGE);
-                throw new RuntimeException();
+                throw new WrongImageSizeException();
             }
             width /= Chipset.BIT_SIZE;
             height /= Chipset.BIT_SIZE;
@@ -111,6 +112,8 @@ public class ChipsetImporter {
                 }
             }
             g.dispose();
+        } catch (WrongImageSizeException exception) {
+            throw exception;
         } catch (Exception exception) {
             exception.printStackTrace();
             JOptionPane.showMessageDialog(null, "There has been an error loading this image.", "Warning", JOptionPane.WARNING_MESSAGE);

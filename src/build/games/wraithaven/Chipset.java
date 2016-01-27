@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ package build.games.wraithaven;
 
 public class Chipset {
 
-    public static final int BIT_SIZE = 16;
+    public static final int BIT_SIZE = 48;
     public static final int PREVIEW_TILES_WIDTH = 8;
     public static final int TILE_OUT_SIZE = 32;
     private final Tile[] tiles;

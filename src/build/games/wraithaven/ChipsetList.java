@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -50,6 +50,7 @@ public class ChipsetList extends JPanel {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+        setMinimumSize(new Dimension(Chipset.TILE_OUT_SIZE * Chipset.PREVIEW_TILES_WIDTH, 300));
         updateSize();
         load();
         addMouseListener(new MouseAdapter() {
@@ -197,7 +198,7 @@ public class ChipsetList extends JPanel {
                 height += c.getImage().getHeight();
             }
         }
-        setPreferredSize(new Dimension(Chipset.TILE_OUT_SIZE * Chipset.PREVIEW_TILES_WIDTH, Math.max(height, 10)));
+        setPreferredSize(new Dimension(Chipset.TILE_OUT_SIZE * Chipset.PREVIEW_TILES_WIDTH, Math.max(height, 300)));
         revalidate();
         repaint();
     }

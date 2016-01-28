@@ -31,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
@@ -60,6 +61,7 @@ public class WorldBuilder extends JFrame {
     private ChipsetList chipsetList;
     private WorldScreen worldScreen;
     private WorldScreenToolbar worldScreenToolbar;
+    private WorldList worldList;
 
     public WorldBuilder() {
         init();
@@ -70,10 +72,14 @@ public class WorldBuilder extends JFrame {
     public void addComponents() {
         chipsetList = new ChipsetList();
         JScrollPane scrollPane = new JScrollPane(chipsetList);
+        worldList = new WorldList();
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        getContentPane().add(scrollPane, BorderLayout.WEST);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, worldList);
+        getContentPane().add(splitPane, BorderLayout.WEST);
+        splitPane.setDividerLocation(0.5);
+        splitPane.setDividerSize(2);
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         worldScreenToolbar = new WorldScreenToolbar(this);
@@ -142,6 +148,10 @@ public class WorldBuilder extends JFrame {
             }
         });
         mnFile.add(mntmExit);
+    }
+
+    public WorldList getWorldList() {
+        return worldList;
     }
 
     private boolean confirmExit() {

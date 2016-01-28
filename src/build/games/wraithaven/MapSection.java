@@ -82,6 +82,13 @@ public class MapSection {
         return needsSaving;
     }
 
+    public void delete() {
+        File file = Algorithms.getFile("Worlds", mapX + "," + mapY + ".dat");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
     public void redraw() {
         Graphics2D g = image.createGraphics();
         g.setColor(Color.black);

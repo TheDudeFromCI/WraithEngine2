@@ -130,7 +130,7 @@ public class WorldScreen extends JPanel {
                                 new SwingWorker<Boolean, Boolean>() {
                                     @Override
                                     protected Boolean doInBackground() throws Exception {
-                                        int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this map section?",
+                                        int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this map section? This cannot be undone!",
                                                 "Confirm Delete", JOptionPane.YES_NO_OPTION);
                                         return response == JOptionPane.YES_OPTION;
                                     }
@@ -139,6 +139,7 @@ public class WorldScreen extends JPanel {
                                     protected void done() {
                                         try {
                                             if (get()) {
+                                                m.delete();
                                                 mapSections.remove(m);
                                                 needsSaving = true;
                                                 updateNeedsSaving();

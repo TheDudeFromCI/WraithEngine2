@@ -64,6 +64,7 @@ public class WorldScreen extends JPanel {
             private int scrollYStart;
             private int mouseXStart;
             private int mouseYStart;
+            private int clickCount;
 
             @Override
             public void keyPressed(KeyEvent event) {
@@ -78,10 +79,14 @@ public class WorldScreen extends JPanel {
             }
 
             public void mouseClicked(int x, int y, int button, boolean shift) {
+                clickCount++;
                 if (!cursor.isSeen()) {
                     return; // If the cursor isn't seen, it's probably off screen or something, and couldn't set tiles anyway.
                 }
                 if (cursor.isOverVoid()) {
+                    if (clickCount > 1) {
+                        return;
+                    }
                     // New map
                     int mapX = (int) Math.floor(cursor.getX() / (float) MapLayer.MAP_TILES_WIDTH);
                     int mapY = (int) Math.floor(cursor.getY() / (float) MapLayer.MAP_TILES_HEIGHT);
@@ -218,7 +223,8 @@ public class WorldScreen extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent event) {
-                if (event.getButton() == MouseEvent.BUTTON3) {
+                int button = event.getButton();
+                if (button == MouseEvent.BUTTON3) {
                     dragging = true;
                     scrollXStart = scrollX;
                     scrollYStart = scrollY;
@@ -227,7 +233,12 @@ public class WorldScreen extends JPanel {
                 } else {
                     dragging = false;
                 }
-                drawing = event.getButton() == MouseEvent.BUTTON1;
+                if (button == MouseEvent.BUTTON1) {
+                    clickCount = 0;
+                    drawing = true;
+                } else {
+                    drawing = false;
+                }
             }
 
             @Override

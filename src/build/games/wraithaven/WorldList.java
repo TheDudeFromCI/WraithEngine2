@@ -8,6 +8,8 @@
 package build.games.wraithaven;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -98,8 +100,11 @@ public class WorldList extends JPanel{
 					}else if(button==MouseEvent.BUTTON3){
 						// If right click.
 						Object selected = selPath.getLastPathComponent();
+						tree.setSelectionPath(selPath);
 						if(selected instanceof Map){
 							showContextMenu((Map)selected, e.getX(), e.getY());
+						}else{
+							showContextMenu(null, e.getX(), e.getY());
 						}
 					}
 				}
@@ -110,19 +115,28 @@ public class WorldList extends JPanel{
 		add(scrollPane);
 	}
 	private void showContextMenu(Map selectedMap, int x, int y){
+		// Show map properties.
+		// If selectedMap is null, then global properties.
 		JPopupMenu menu = new JPopupMenu();
-		JMenuItem item1 = new JMenuItem("Item");
-		menu.add(item1);
+		{
+			// New child map.
+			JMenuItem newMap = new JMenuItem(selectedMap==null?"New Map":"New Child Map");
+			newMap.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					new NewMapDialog(selectedMap);
+				}
+			});
+			menu.add(newMap);
+		}
+		if(selectedMap==null){
+			// TODO
+		}else{
+			// TODO
+		}
 		menu.show(tree, x, y);
 	}
 	private void load(WorldBuilder worldBuilder){
-		// Debug
-		mainMaps.add(new Map(worldBuilder, "lauy5viuewyraoihsyr", "Map 1"));
-		mainMaps.add(new Map(worldBuilder, "3w453w45wy7745", "Map 2"));
-		mainMaps.add(new Map(worldBuilder, "es46q35gq3vv5y6gu", "Map 3"));
-		mainMaps.add(new Map(worldBuilder, "we56nw546bw45rye", "Map 4"));
-		mainMaps.add(new Map(worldBuilder, "aw45a6w45u7er6jnsre", "Map 5"));
-		mainMaps.add(new Map(worldBuilder, "aw35eq467r68nme7errr5as", "Map 6"));
 		File file = Algorithms.getFile("Worlds", "List.dat");
 		if(!file.exists()){
 			return;

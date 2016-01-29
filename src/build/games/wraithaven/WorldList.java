@@ -1,36 +1,157 @@
 /*
- * Copyright (C) 2016 TheDudeFromCI
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Copyright (C) 2016 TheDudeFromCI This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 package build.games.wraithaven;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.ArrayList;
+import javax.swing.DropMode;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
- *
  * @author TheDudeFromCI
  */
-public class WorldList extends JPanel {
-
-    private final JTree tree;
-
-    public WorldList() {
-        setLayout(new BorderLayout());
-        tree = new JTree();
-        add(tree);
-    }
+public class WorldList extends JPanel{
+	private class MapStructure implements TreeModel{
+		private final String root = "Map List";
+		@Override
+		public Object getRoot(){
+			return root;
+		}
+		@Override
+		public Object getChild(Object parent, int index){
+			if(parent==root){
+				return mainMaps.get(index);
+			}else{
+				return ((Map)parent).getChild(index);
+			}
+		}
+		@Override
+		public int getChildCount(Object parent){
+			if(parent==root){
+				return mainMaps.size();
+			}else{
+				return ((Map)parent).getChildCount();
+			}
+		}
+		@Override
+		public boolean isLeaf(Object node){
+			if(node==root){
+				return false;
+			}else{
+				return ((Map)node).getChildCount()==0;
+			}
+		}
+		@Override
+		public void valueForPathChanged(TreePath path, Object newValue){}
+		@Override
+		public int getIndexOfChild(Object parent, Object child){
+			if(parent==root){
+				return mainMaps.indexOf(child);
+			}else{
+				return ((Map)parent).getIndexOf((Map)child);
+			}
+		}
+		@Override
+		public void addTreeModelListener(TreeModelListener l){}
+		@Override
+		public void removeTreeModelListener(TreeModelListener l){}
+	}
+	private final JTree tree;
+	private final ArrayList<Map> mainMaps = new ArrayList(64);
+	public WorldList(WorldBuilder worldBuilder){
+		setLayout(new BorderLayout());
+		load(worldBuilder);
+		tree = new JTree();
+		tree.setModel(new MapStructure());
+		tree.setRootVisible(true);
+		tree.setDragEnabled(true);
+		tree.setDropMode(DropMode.ON_OR_INSERT);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+		MouseAdapter ml = new MouseAdapter(){
+			@Override
+			public void mousePressed(MouseEvent e){
+				int selRow = tree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+				if(selRow!=-1){
+					int button = e.getButton();
+					if(button==MouseEvent.BUTTON1){
+						// If left click.
+						if(e.getClickCount()==2){
+							// And a double click, load map.
+						}
+					}else if(button==MouseEvent.BUTTON3){
+						// If right click.
+						Object selected = selPath.getLastPathComponent();
+						if(selected instanceof Map){
+							showContextMenu((Map)selected, e.getX(), e.getY());
+						}
+					}
+				}
+			}
+		};
+		tree.addMouseListener(ml);
+		JScrollPane scrollPane = new JScrollPane(tree);
+		add(scrollPane);
+	}
+	private void showContextMenu(Map selectedMap, int x, int y){
+		JPopupMenu menu = new JPopupMenu();
+		JMenuItem item1 = new JMenuItem("Item");
+		menu.add(item1);
+		menu.show(tree, x, y);
+	}
+	private void load(WorldBuilder worldBuilder){
+		// Debug
+		mainMaps.add(new Map(worldBuilder, "lauy5viuewyraoihsyr", "Map 1"));
+		mainMaps.add(new Map(worldBuilder, "3w453w45wy7745", "Map 2"));
+		mainMaps.add(new Map(worldBuilder, "es46q35gq3vv5y6gu", "Map 3"));
+		mainMaps.add(new Map(worldBuilder, "we56nw546bw45rye", "Map 4"));
+		mainMaps.add(new Map(worldBuilder, "aw45a6w45u7er6jnsre", "Map 5"));
+		mainMaps.add(new Map(worldBuilder, "aw35eq467r68nme7errr5as", "Map 6"));
+		File file = Algorithms.getFile("Worlds", "List.dat");
+		if(!file.exists()){
+			return;
+		}
+		BinaryFile bin = new BinaryFile(file);
+		bin.decompress(false);
+		int count = bin.getInt();
+		for(int i = 0; i<count; i++){
+			mainMaps.add(new Map(worldBuilder, bin.getString()));
+		}
+	}
+	private void save(){
+		BinaryFile bin = new BinaryFile(4);
+		bin.addInt(mainMaps.size());
+		for(Map map : mainMaps){
+			byte[] bytes = map.getUUID().getBytes();
+			bin.allocateBytes(bytes.length+4);
+			bin.addInt(bytes.length);
+			bin.addBytes(bytes, 0, bytes.length);
+		}
+		bin.compress(false);
+		bin.compile(Algorithms.getFile("Worlds", "List.dat"));
+	}
+	public void addMap(Map map){
+		mainMaps.add(map);
+		save();
+	}
+	public void removeMap(Map map){
+		mainMaps.remove(map);
+		save();
+	}
 }

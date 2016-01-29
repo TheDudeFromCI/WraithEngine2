@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2016 TheDudeFromCI
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,10 +33,7 @@ public class Algorithms {
     }
 
     public static File getFile(String... path) {
-        if (path.length == 0) {
-            throw new RuntimeException();
-        }
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(0);
         sb.append(WorldBuilder.outputFolder);
         for (String s : path) {
             sb.append(File.separatorChar);

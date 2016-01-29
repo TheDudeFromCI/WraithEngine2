@@ -72,7 +72,7 @@ public class WorldBuilder extends JFrame {
     public void addComponents() {
         chipsetList = new ChipsetList();
         JScrollPane scrollPane = new JScrollPane(chipsetList);
-        worldList = new WorldList();
+        worldList = new WorldList(this);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

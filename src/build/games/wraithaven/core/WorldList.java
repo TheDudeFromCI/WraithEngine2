@@ -5,10 +5,12 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.topdown;
+package build.games.wraithaven.core;
 
+import build.games.wraithaven.core.MapInterface;
 import build.games.wraithaven.core.NewMapDialog;
 import build.games.wraithaven.core.WraithEngine;
+import build.games.wraithaven.topdown.Map;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.awt.BorderLayout;
@@ -44,7 +46,7 @@ public class WorldList extends JPanel{
 			if(parent==root){
 				return mainMaps.get(index);
 			}else{
-				return ((Map)parent).getChild(index);
+				return ((MapInterface)parent).getChild(index);
 			}
 		}
 		@Override
@@ -52,7 +54,7 @@ public class WorldList extends JPanel{
 			if(parent==root){
 				return mainMaps.size();
 			}else{
-				return ((Map)parent).getChildCount();
+				return ((MapInterface)parent).getChildCount();
 			}
 		}
 		@Override
@@ -60,7 +62,7 @@ public class WorldList extends JPanel{
 			if(node==root){
 				return false;
 			}else{
-				return ((Map)node).getChildCount()==0;
+				return ((MapInterface)node).getChildCount()==0;
 			}
 		}
 		@Override
@@ -70,7 +72,7 @@ public class WorldList extends JPanel{
 			if(parent==root){
 				return mainMaps.indexOf(child);
 			}else{
-				return ((Map)parent).getIndexOf((Map)child);
+				return ((MapInterface)parent).getIndexOf((Map)child);
 			}
 		}
 		@Override
@@ -79,13 +81,11 @@ public class WorldList extends JPanel{
 		public void removeTreeModelListener(TreeModelListener l){}
 	}
 	private final JTree tree;
-	private final ArrayList<Map> mainMaps = new ArrayList(64);
-	private final WraithEngine worldBuilder;
+	private final ArrayList<MapInterface> mainMaps = new ArrayList(64);
 	private final MapStructure model;
-	public WorldList(WraithEngine wraithEngine){
-		this.worldBuilder = wraithEngine;
+	public WorldList(){
 		setLayout(new BorderLayout());
-		load(wraithEngine);
+		load();
 		tree = new JTree();
 		model = new MapStructure();
 		tree.setModel(model);
@@ -106,7 +106,7 @@ public class WorldList extends JPanel{
 							Object selected = selPath.getLastPathComponent();
 							tree.setSelectionPath(selPath);
 							if(selected instanceof Map){
-								((MapEditor)wraithEngine.getMapEditor()).getWorldScreen().selectMap((Map)selected);
+								WraithEngine.INSTANCE.getMapStyle().selectMap((MapInterface)selected);
 							}
 						}
 					}else if(button==MouseEvent.BUTTON3){
@@ -136,7 +136,7 @@ public class WorldList extends JPanel{
 			newMap.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e){
-					new NewMapDialog(worldBuilder, selectedMap);
+					new NewMapDialog(selectedMap);
 				}
 			});
 			menu.add(newMap);
@@ -152,7 +152,7 @@ public class WorldList extends JPanel{
 		tree.setModel(null);
 		tree.setModel(model);
 	}
-	private void load(WraithEngine worldBuilder){
+	private void load(){
 		File file = Algorithms.getFile("Worlds", "List.dat");
 		if(!file.exists()){
 			return;
@@ -161,13 +161,13 @@ public class WorldList extends JPanel{
 		bin.decompress(false);
 		int count = bin.getInt();
 		for(int i = 0; i<count; i++){
-			mainMaps.add(new Map(worldBuilder, bin.getString()));
+			mainMaps.add(WraithEngine.INSTANCE.getMapStyle().loadMap(bin.getString()));
 		}
 	}
 	private void save(){
 		BinaryFile bin = new BinaryFile(4);
 		bin.addInt(mainMaps.size());
-		for(Map map : mainMaps){
+		for(MapInterface map : mainMaps){
 			byte[] bytes = map.getUUID().getBytes();
 			bin.allocateBytes(bytes.length+4);
 			bin.addInt(bytes.length);
@@ -176,11 +176,11 @@ public class WorldList extends JPanel{
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Worlds", "List.dat"));
 	}
-	public void addMap(Map map){
+	public void addMap(MapInterface map){
 		mainMaps.add(map);
 		save();
 	}
-	public void removeMap(Map map){
+	public void removeMap(MapInterface map){
 		mainMaps.remove(map);
 		save();
 	}

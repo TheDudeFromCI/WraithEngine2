@@ -7,12 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.topdown.ChipsetImporter;
-import build.games.wraithaven.topdown.ChipsetList;
-import build.games.wraithaven.topdown.ChipsetPreview;
-import build.games.wraithaven.topdown.MapEditor;
-import build.games.wraithaven.topdown.WorldList;
-import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -36,6 +30,7 @@ public class WraithEngine extends JFrame{
 	public static String workspaceFolder;
 	public static String outputFolder;
 	public static String assetFolder;
+	public static WraithEngine INSTANCE;
 	public static void main(String[] args){
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -52,18 +47,23 @@ public class WraithEngine extends JFrame{
 		assetFolder = System.getProperty("user.dir")+File.separatorChar+"Assets";
 		new ProjectList();
 	}
+	private final MapStyle mapStyle;
 	private AbstractChipsetList chipsetList;
 	private AbstractMapEditor mapEditor;
 	private WorldList worldList;
-	public WraithEngine(){
+	public WraithEngine(MapStyle mapStyle){
+		this.mapStyle = mapStyle;
 		init();
 		addComponents();
 		setVisible(true);
 	}
+	public WorldList getWorldList(){
+		return worldList;
+	}
 	public void addComponents(){
-		chipsetList = new ChipsetList();
-		worldList = new WorldList(this);
-		mapEditor = new MapEditor(this);
+		chipsetList = mapStyle.getChipsetList();
+		worldList = new WorldList();
+		mapEditor = mapStyle.getMapEditor();
 		JScrollPane scrollPane = new JScrollPane(chipsetList);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -111,14 +111,7 @@ public class WraithEngine extends JFrame{
 				if(file==null){
 					return;
 				}
-				try{
-					new ChipsetPreview(WraithEngine.this, new ChipsetImporter(file));
-				}catch(WrongImageSizeException exception){
-					// Nothing to worry about.
-					// At this point, the window hasn't even attempted to build, so no resources wasted.
-				}catch(Exception exception){
-					exception.printStackTrace();
-				}
+				mapStyle.openChipsetPreview(file);
 			}
 		});
 		mnFile.add(mntmImportNewChipset);
@@ -134,9 +127,6 @@ public class WraithEngine extends JFrame{
 		});
 		mnFile.add(mntmExit);
 	}
-	public WorldList getWorldList(){
-		return worldList;
-	}
 	private boolean confirmExit(){
 		if(!mapEditor.needsSaving()){
 			return true;
@@ -150,11 +140,8 @@ public class WraithEngine extends JFrame{
 		}
 		return response==JOptionPane.NO_OPTION;
 	}
-	public AbstractChipsetList getChipsetList(){
-		return chipsetList;
-	}
-	public AbstractMapEditor getMapEditor(){
-		return mapEditor;
+	public MapStyle getMapStyle(){
+		return mapStyle;
 	}
 	private void init(){
 		setTitle("World Builder");

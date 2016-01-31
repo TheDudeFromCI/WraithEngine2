@@ -7,8 +7,9 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.topdown.TopDownMapStyle;
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.BinaryFile;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -182,7 +183,7 @@ public class ProjectList extends JFrame{
 	}
 	private void loadProject(String project){
 		WraithEngine.outputFolder += File.separatorChar+project;
-		new WraithEngine();
+		WraithEngine.INSTANCE = new WraithEngine(new TopDownMapStyle());
 	}
 	private String[] loadProjects(){
 		File file = Algorithms.getFile("Projects.dat");

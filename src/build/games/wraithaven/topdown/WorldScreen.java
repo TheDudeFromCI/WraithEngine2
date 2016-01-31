@@ -29,15 +29,15 @@ public class WorldScreen extends JPanel{
 	private final ChipsetTileSelection selectedTile;
 	private final BufferedImage selectionImage;
 	private final BufferedImage newMapImage;
-	private final WraithEngine wraithEngine;
+	private final MapEditor mapEditor;
 	private int scrollX;
 	private int scrollY;
 	private int pixelSize = 32;
 	private int mapSectionWidth = pixelSize*MapLayer.MAP_TILES_WIDTH;
 	private int mapSectionHeight = pixelSize*MapLayer.MAP_TILES_HEIGHT;
 	private Map loadedMap;
-	public WorldScreen(WraithEngine wraithEngine){
-		this.wraithEngine = wraithEngine;
+	public WorldScreen(ChipsetList chipsetList, MapEditor mapEditor){
+		this.mapEditor = mapEditor;
 		try{
 			selectionImage = ImageIO.read(Algorithms.getAsset("Selection Box.png"));
 			newMapImage = ImageIO.read(Algorithms.getAsset("New Map Box.png"));
@@ -45,7 +45,7 @@ public class WorldScreen extends JPanel{
 			exception.printStackTrace();
 			throw new RuntimeException();
 		}
-		selectedTile = ((ChipsetList)wraithEngine.getChipsetList()).getSelectedTile();
+		selectedTile = chipsetList.getSelectedTile();
 		InputAdapter inputAdapter = new InputAdapter(){
 			private boolean dragging;
 			private boolean drawing;
@@ -88,8 +88,7 @@ public class WorldScreen extends JPanel{
 							return; // Does exist, this is probably a repeated event or something.
 						}
 					}
-					loadedMap.addMapSection(new MapSection((ChipsetList)wraithEngine.getChipsetList(),
-						((MapEditor)wraithEngine.getMapEditor()).getToolbar(), loadedMap, mapX, mapY));
+					loadedMap.addMapSection(new MapSection(chipsetList, mapEditor.getToolbar(), loadedMap, mapX, mapY));
 					mouseMoved(x, y);
 					repaint();
 				}else{
@@ -106,22 +105,22 @@ public class WorldScreen extends JPanel{
 							if(button==MouseEvent.BUTTON2){ // Middle Click
 								int mx = (x-mapX)/pixelSize;
 								int my = (y-mapY)/pixelSize;
-								Tile tile = map.getTile(mx, my, ((MapEditor)wraithEngine.getMapEditor()).getToolbar().getEditingLayer());
+								Tile tile = map.getTile(mx, my, mapEditor.getToolbar().getEditingLayer());
 								if(tile==null){
 									selectedTile.reset();
-									wraithEngine.getChipsetList().repaint();
+									chipsetList.repaint();
 									return;
 								}
 								selectedTile.select(tile.getChipset(), tile.getId(), tile.getId()%Chipset.PREVIEW_TILES_WIDTH,
 									tile.getId()/Chipset.PREVIEW_TILES_WIDTH);
-								for(ChipsetListComponent list : ((ChipsetList)wraithEngine.getChipsetList()).getChipsets()){
+								for(ChipsetListComponent list : chipsetList.getChipsets()){
 									if(list.getChipset()==selectedTile.getChipset()){
 										// This is just to ensure that the desired chipset is actually selected.
 										list.setExpanded(true);
 										break;
 									}
 								}
-								wraithEngine.getChipsetList().repaint();
+								chipsetList.repaint();
 							}else if(shift){
 								final MapSection m = map;
 								new SwingWorker<Boolean,Boolean>(){
@@ -147,12 +146,10 @@ public class WorldScreen extends JPanel{
 								}.execute();
 							}else{
 								if(selectedTile.isActive()){
-									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize,
-										((MapEditor)wraithEngine.getMapEditor()).getToolbar().getEditingLayer(),
+									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapEditor.getToolbar().getEditingLayer(),
 										selectedTile.getChipset().getTile(selectedTile.getIndex()));
 								}else{
-									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize,
-										((MapEditor)wraithEngine.getMapEditor()).getToolbar().getEditingLayer(), null);
+									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapEditor.getToolbar().getEditingLayer(), null);
 								}
 								updateNeedsSaving();
 								repaint();
@@ -283,9 +280,9 @@ public class WorldScreen extends JPanel{
 	}
 	public void updateNeedsSaving(){
 		boolean toSave = needsSaving();
-		wraithEngine.setTitle("WraithEngine "+(toSave?'*':"")+WraithEngine.outputFolder);
-		if(((MapEditor)wraithEngine.getMapEditor()).getToolbar()!=null){
-			((MapEditor)wraithEngine.getMapEditor()).getToolbar().setNeedsSaving(toSave);
+		WraithEngine.INSTANCE.setTitle("WraithEngine "+(toSave?'*':"")+WraithEngine.outputFolder);
+		if(mapEditor.getToolbar()!=null){
+			mapEditor.getToolbar().setNeedsSaving(toSave);
 		}
 	}
 	public boolean needsSaving(){

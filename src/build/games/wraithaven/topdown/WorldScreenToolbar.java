@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -51,7 +50,7 @@ public class WorldScreenToolbar extends JPanel{
 	private final JCheckBox hideOtherLayers;
 	private int currentLayer;
 	private boolean hideLayers;
-	public WorldScreenToolbar(WraithEngine wraithEngine){
+	public WorldScreenToolbar(MapEditor mapEditor){
 		setPreferredSize(new Dimension(32, 32));
 		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		{
@@ -61,7 +60,7 @@ public class WorldScreenToolbar extends JPanel{
 			saveButton.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e){
-					((MapEditor)wraithEngine.getMapEditor()).getWorldScreen().save();
+					mapEditor.getWorldScreen().save();
 				}
 			});
 			add(saveButton);
@@ -105,7 +104,7 @@ public class WorldScreenToolbar extends JPanel{
 				@Override
 				public void stateChanged(ChangeEvent e){
 					if(hideLayers){
-						((MapEditor)wraithEngine.getMapEditor()).getWorldScreen().redrawAllMapSections();
+						mapEditor.getWorldScreen().redrawAllMapSections();
 					}
 				}
 			});
@@ -118,7 +117,7 @@ public class WorldScreenToolbar extends JPanel{
 				@Override
 				public void actionPerformed(ActionEvent e){
 					hideLayers = hideOtherLayers.isSelected();
-					((MapEditor)wraithEngine.getMapEditor()).getWorldScreen().redrawAllMapSections();
+					mapEditor.getWorldScreen().redrawAllMapSections();
 				}
 			});
 			add(hideOtherLayers);

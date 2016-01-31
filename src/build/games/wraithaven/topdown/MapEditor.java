@@ -8,7 +8,6 @@
 package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.AbstractMapEditor;
-import build.games.wraithaven.core.WraithEngine;
 import java.awt.BorderLayout;
 
 /**
@@ -17,9 +16,9 @@ import java.awt.BorderLayout;
 public class MapEditor extends AbstractMapEditor{
 	private final WorldScreen worldScreen;
 	private final WorldScreenToolbar toolbar;
-	public MapEditor(WraithEngine wraithEngine){
-		worldScreen = new WorldScreen(wraithEngine);
-		toolbar = new WorldScreenToolbar(wraithEngine);
+	public MapEditor(TopDownMapStyle mapStyle){
+		worldScreen = new WorldScreen((ChipsetList)mapStyle.getChipsetList(), (MapEditor)mapStyle.getMapEditor());
+		toolbar = new WorldScreenToolbar((MapEditor)mapStyle.getMapEditor());
 		init();
 	}
 	private void init(){

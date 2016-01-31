@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.core.WraithEngine;
+import build.games.wraithaven.core.MapInterface;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
@@ -16,39 +16,42 @@ import java.util.ArrayList;
 /**
  * @author TheDudeFromCI
  */
-public class Map{
+public class Map implements MapInterface{
 	private final ArrayList<MapSection> mapSections = new ArrayList(16);
 	private final ArrayList<Map> childMaps = new ArrayList(0);
 	private final String uuid;
-	private final WraithEngine wraithEngine;
+	private final TopDownMapStyle mapStyle;
 	private String name;
 	private boolean mapsLoaded;
-	public Map(WraithEngine worldBuilder, String uuid){
-		this.wraithEngine = worldBuilder;
+	public Map(TopDownMapStyle mapStyle, String uuid){
+		this.mapStyle = mapStyle;
 		this.uuid = uuid;
 		loadProperties();
 	}
-	public Map(WraithEngine worldBuilder, String uuid, String name){
-		this.wraithEngine = worldBuilder;
+	public Map(TopDownMapStyle mapStyle, String uuid, String name){
+		this.mapStyle = mapStyle;
 		this.uuid = uuid;
 		this.name = name;
 		saveProperties();
 	}
-	public Map getChild(int index){
+	@Override
+	public MapInterface getChild(int index){
 		return childMaps.get(index);
 	}
-	public void addChild(Map map){
-		childMaps.add(map);
+	public void addChild(MapInterface map){
+		childMaps.add((Map)map);
 		saveProperties();
 	}
 	public void removeChild(Map map){
 		childMaps.remove(map);
 		saveProperties();
 	}
+	@Override
 	public int getChildCount(){
 		return childMaps.size();
 	}
-	public int getIndexOf(Map child){
+	@Override
+	public int getIndexOf(MapInterface child){
 		return childMaps.indexOf(child);
 	}
 	public boolean needsSaving(){
@@ -66,7 +69,7 @@ public class Map{
 		name = bin.getString();
 		int childCount = bin.getInt();
 		for(int i = 0; i<childCount; i++){
-			Map map = new Map(wraithEngine, bin.getString());
+			Map map = new Map(mapStyle, bin.getString());
 			childMaps.add(map);
 		}
 	}
@@ -86,7 +89,7 @@ public class Map{
 		bin.decompress(false);
 		int mapCount = bin.getInt();
 		for(int i = 0; i<mapCount; i++){
-			mapSections.add(new MapSection((ChipsetList)wraithEngine.getChipsetList(), ((MapEditor)wraithEngine.getMapEditor()).getToolbar(), this,
+			mapSections.add(new MapSection((ChipsetList)mapStyle.getChipsetList(), ((MapEditor)mapStyle.getMapEditor()).getToolbar(), this,
 				bin.getInt(), bin.getInt()));
 		}
 	}
@@ -116,6 +119,7 @@ public class Map{
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Worlds", uuid, "List.dat"));
 	}
+	@Override
 	public String getUUID(){
 		return uuid;
 	}

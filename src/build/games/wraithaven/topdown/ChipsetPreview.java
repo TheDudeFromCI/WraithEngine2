@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.core.WraithEngine;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -20,16 +19,14 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class ChipsetPreview extends JFrame{
-	private final WraithEngine worldBuilder;
 	private final ChipsetImporter chipset;
-	public ChipsetPreview(WraithEngine worldBuilder, ChipsetImporter chipset){
-		this.worldBuilder = worldBuilder;
+	public ChipsetPreview(ChipsetList chipsetList, ChipsetImporter chipset){
 		this.chipset = chipset;
 		init();
-		addComponents();
+		addComponents(chipsetList);
 		setVisible(true);
 	}
-	private void addComponents(){
+	private void addComponents(ChipsetList chipsetList){
 		TileList tileList = new TileList(chipset.getPreviewImage());
 		JScrollPane scrollPane = new JScrollPane(tileList);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -56,7 +53,7 @@ public class ChipsetPreview extends JFrame{
 				chipset.saveImages();
 				Chipset c = chipset.asChipset();
 				c.setName(textField.getText());
-				((ChipsetList)worldBuilder.getChipsetList()).addChipset(c);
+				chipsetList.addChipset(c);
 				dispose();
 			}
 		});

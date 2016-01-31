@@ -71,8 +71,8 @@ public class WraithEngine extends JFrame{
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, worldList);
 		getContentPane().add(splitPane, BorderLayout.WEST);
-		splitPane.setDividerLocation(0.5);
 		splitPane.setDividerSize(2);
+		splitPane.setDividerLocation(400);
 		getContentPane().add(mapEditor, BorderLayout.CENTER);
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

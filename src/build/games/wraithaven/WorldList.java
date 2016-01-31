@@ -76,11 +76,15 @@ public class WorldList extends JPanel{
 	}
 	private final JTree tree;
 	private final ArrayList<Map> mainMaps = new ArrayList(64);
+	private final WorldBuilder worldBuilder;
+	private final MapStructure model;
 	public WorldList(WorldBuilder worldBuilder){
+		this.worldBuilder = worldBuilder;
 		setLayout(new BorderLayout());
 		load(worldBuilder);
 		tree = new JTree();
-		tree.setModel(new MapStructure());
+		model = new MapStructure();
+		tree.setModel(model);
 		tree.setRootVisible(true);
 		tree.setDragEnabled(true);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
@@ -124,7 +128,7 @@ public class WorldList extends JPanel{
 			newMap.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e){
-					new NewMapDialog(selectedMap);
+					new NewMapDialog(worldBuilder, selectedMap);
 				}
 			});
 			menu.add(newMap);
@@ -135,6 +139,10 @@ public class WorldList extends JPanel{
 			// TODO
 		}
 		menu.show(tree, x, y);
+	}
+	public void updateTreeModel(){
+		tree.setModel(null);
+		tree.setModel(model);
 	}
 	private void load(WorldBuilder worldBuilder){
 		File file = Algorithms.getFile("Worlds", "List.dat");

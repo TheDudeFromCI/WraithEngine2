@@ -7,9 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.core.MapInterface;
-import build.games.wraithaven.core.NewMapDialog;
-import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.topdown.Map;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
@@ -88,9 +85,9 @@ public class WorldList extends JPanel{
 		load();
 		tree = new JTree();
 		model = new MapStructure();
-		tree.setModel(model);
 		tree.setRootVisible(true);
 		tree.setDragEnabled(true);
+		tree.setToggleClickCount(0);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		MouseAdapter ml = new MouseAdapter(){
@@ -125,6 +122,15 @@ public class WorldList extends JPanel{
 		tree.addMouseListener(ml);
 		JScrollPane scrollPane = new JScrollPane(tree);
 		add(scrollPane);
+		updateTreeModel();
+	}
+	private void expandAllNodes(JTree tree, int startingIndex, int rowCount){
+		for(int i = startingIndex; i<rowCount; ++i){
+			tree.expandRow(i);
+		}
+		if(tree.getRowCount()!=rowCount){
+			expandAllNodes(tree, rowCount, tree.getRowCount());
+		}
 	}
 	private void showContextMenu(Map selectedMap, int x, int y){
 		// Show map properties.
@@ -151,6 +157,7 @@ public class WorldList extends JPanel{
 	public void updateTreeModel(){
 		tree.setModel(null);
 		tree.setModel(model);
+		expandAllNodes(tree, 0, tree.getRowCount());
 	}
 	private void load(){
 		File file = Algorithms.getFile("Worlds", "List.dat");

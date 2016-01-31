@@ -99,7 +99,11 @@ public class WorldList extends JPanel{
 					if(button==MouseEvent.BUTTON1){
 						// If left click.
 						if(e.getClickCount()==2){
-							// And a double click, load map.
+							Object selected = selPath.getLastPathComponent();
+							tree.setSelectionPath(selPath);
+							if(selected instanceof Map){
+								worldBuilder.getWorldScreen().selectMap((Map)selected);
+							}
 						}
 					}else if(button==MouseEvent.BUTTON3){
 						// If right click.

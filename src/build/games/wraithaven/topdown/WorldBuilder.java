@@ -14,8 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven;
+package build.games.wraithaven.topdown;
 
+import build.games.wraithaven.util.WrongImageSizeException;
+import build.games.wraithaven.topdown.WorldScreen;
+import build.games.wraithaven.topdown.ChipsetImporter;
+import build.games.wraithaven.topdown.ChipsetPreview;
+import build.games.wraithaven.topdown.ChipsetList;
+import build.games.wraithaven.core.ProjectList;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

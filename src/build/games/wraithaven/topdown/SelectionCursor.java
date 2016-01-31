@@ -14,43 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven;
+package build.games.wraithaven.topdown;
 
-public class ChipsetTileSelection {
+public class SelectionCursor {
 
-    private Chipset chipset;
-    private int index;
+    private boolean seen;
     private int x;
     private int y;
+    private boolean overVoid;
 
-    public Chipset getChipset() {
-        return chipset;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public int getSelectionX() {
+    public int getX() {
         return x;
     }
 
-    public int getSelectionY() {
+    public int getY() {
         return y;
     }
 
-    public boolean isActive() {
-        return chipset != null;
+    public void hide() {
+        seen = false;
     }
 
-    public void reset() {
-        chipset = null;
+    public boolean isOverVoid() {
+        return overVoid;
     }
 
-    public void select(Chipset chipset, int index, int x, int y) {
-        this.chipset = chipset;
-        this.index = index;
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void moveTo(int x, int y) {
+        seen = true;
         this.x = x;
         this.y = y;
+    }
+
+    public void setOverVoid(boolean overVoid) {
+        this.overVoid = overVoid;
     }
 }

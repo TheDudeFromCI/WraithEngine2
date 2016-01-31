@@ -5,8 +5,12 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven;
+package build.games.wraithaven.topdown;
 
+import build.games.wraithaven.core.NewMapDialog;
+import build.games.wraithaven.topdown.Map;
+import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

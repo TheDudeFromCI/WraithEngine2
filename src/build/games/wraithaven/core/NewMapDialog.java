@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.topdown.WorldBuilder;
 import build.games.wraithaven.topdown.Map;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
@@ -29,7 +28,7 @@ import javax.swing.SpinnerNumberModel;
  * @author TheDudeFromCI
  */
 public class NewMapDialog extends JFrame{
-	public NewMapDialog(WorldBuilder worldBuilder, Map parentMap){
+	public NewMapDialog(WraithEngine worldBuilder, Map parentMap){
 		setTitle("Create New Map");
 		setResizable(false);
 		GridBagLayout gridBagLayout = new GridBagLayout();

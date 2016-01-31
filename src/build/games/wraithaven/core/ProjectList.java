@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.topdown.WorldBuilder;
 import build.games.wraithaven.util.BinaryFile;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
@@ -182,8 +181,8 @@ public class ProjectList extends JFrame{
 		setLocationRelativeTo(null);
 	}
 	private void loadProject(String project){
-		WorldBuilder.outputFolder += File.separatorChar+project;
-		new WorldBuilder();
+		WraithEngine.outputFolder += File.separatorChar+project;
+		new WraithEngine();
 	}
 	private String[] loadProjects(){
 		File file = Algorithms.getFile("Projects.dat");

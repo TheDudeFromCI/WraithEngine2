@@ -8,9 +8,9 @@
 package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.NewMapDialog;
-import build.games.wraithaven.topdown.Map;
-import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.BinaryFile;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -80,12 +80,12 @@ public class WorldList extends JPanel{
 	}
 	private final JTree tree;
 	private final ArrayList<Map> mainMaps = new ArrayList(64);
-	private final WorldBuilder worldBuilder;
+	private final WraithEngine worldBuilder;
 	private final MapStructure model;
-	public WorldList(WorldBuilder worldBuilder){
-		this.worldBuilder = worldBuilder;
+	public WorldList(WraithEngine wraithEngine){
+		this.worldBuilder = wraithEngine;
 		setLayout(new BorderLayout());
-		load(worldBuilder);
+		load(wraithEngine);
 		tree = new JTree();
 		model = new MapStructure();
 		tree.setModel(model);
@@ -106,7 +106,7 @@ public class WorldList extends JPanel{
 							Object selected = selPath.getLastPathComponent();
 							tree.setSelectionPath(selPath);
 							if(selected instanceof Map){
-								worldBuilder.getWorldScreen().selectMap((Map)selected);
+								((MapEditor)wraithEngine.getMapEditor()).getWorldScreen().selectMap((Map)selected);
 							}
 						}
 					}else if(button==MouseEvent.BUTTON3){
@@ -152,7 +152,7 @@ public class WorldList extends JPanel{
 		tree.setModel(null);
 		tree.setModel(model);
 	}
-	private void load(WorldBuilder worldBuilder){
+	private void load(WraithEngine worldBuilder){
 		File file = Algorithms.getFile("Worlds", "List.dat");
 		if(!file.exists()){
 			return;

@@ -7,14 +7,9 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.topdown.Chipset;
-import build.games.wraithaven.topdown.ChipsetTileSelection;
-import build.games.wraithaven.topdown.MapLayer;
-import build.games.wraithaven.topdown.ChipsetListComponent;
-import build.games.wraithaven.topdown.MapSection;
-import build.games.wraithaven.topdown.Map;
-import build.games.wraithaven.util.InputAdapter;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -34,15 +29,15 @@ public class WorldScreen extends JPanel{
 	private final ChipsetTileSelection selectedTile;
 	private final BufferedImage selectionImage;
 	private final BufferedImage newMapImage;
-	private final WorldBuilder worldBuilder;
+	private final WraithEngine wraithEngine;
 	private int scrollX;
 	private int scrollY;
 	private int pixelSize = 32;
 	private int mapSectionWidth = pixelSize*MapLayer.MAP_TILES_WIDTH;
 	private int mapSectionHeight = pixelSize*MapLayer.MAP_TILES_HEIGHT;
 	private Map loadedMap;
-	public WorldScreen(WorldBuilder worldBuilder){
-		this.worldBuilder = worldBuilder;
+	public WorldScreen(WraithEngine wraithEngine){
+		this.wraithEngine = wraithEngine;
 		try{
 			selectionImage = ImageIO.read(Algorithms.getAsset("Selection Box.png"));
 			newMapImage = ImageIO.read(Algorithms.getAsset("New Map Box.png"));
@@ -50,7 +45,7 @@ public class WorldScreen extends JPanel{
 			exception.printStackTrace();
 			throw new RuntimeException();
 		}
-		selectedTile = worldBuilder.getChipsetList().getSelectedTile();
+		selectedTile = ((ChipsetList)wraithEngine.getChipsetList()).getSelectedTile();
 		InputAdapter inputAdapter = new InputAdapter(){
 			private boolean dragging;
 			private boolean drawing;
@@ -93,7 +88,8 @@ public class WorldScreen extends JPanel{
 							return; // Does exist, this is probably a repeated event or something.
 						}
 					}
-					loadedMap.addMapSection(new MapSection(worldBuilder.getChipsetList(), worldBuilder.getWorldScreenToolbar(), loadedMap, mapX, mapY));
+					loadedMap.addMapSection(new MapSection((ChipsetList)wraithEngine.getChipsetList(),
+						((MapEditor)wraithEngine.getMapEditor()).getToolbar(), loadedMap, mapX, mapY));
 					mouseMoved(x, y);
 					repaint();
 				}else{
@@ -110,22 +106,22 @@ public class WorldScreen extends JPanel{
 							if(button==MouseEvent.BUTTON2){ // Middle Click
 								int mx = (x-mapX)/pixelSize;
 								int my = (y-mapY)/pixelSize;
-								Tile tile = map.getTile(mx, my, worldBuilder.getWorldScreenToolbar().getEditingLayer());
+								Tile tile = map.getTile(mx, my, ((MapEditor)wraithEngine.getMapEditor()).getToolbar().getEditingLayer());
 								if(tile==null){
 									selectedTile.reset();
-									worldBuilder.getChipsetList().repaint();
+									wraithEngine.getChipsetList().repaint();
 									return;
 								}
 								selectedTile.select(tile.getChipset(), tile.getId(), tile.getId()%Chipset.PREVIEW_TILES_WIDTH,
 									tile.getId()/Chipset.PREVIEW_TILES_WIDTH);
-								for(ChipsetListComponent list : worldBuilder.getChipsetList().getChipsets()){
+								for(ChipsetListComponent list : ((ChipsetList)wraithEngine.getChipsetList()).getChipsets()){
 									if(list.getChipset()==selectedTile.getChipset()){
 										// This is just to ensure that the desired chipset is actually selected.
 										list.setExpanded(true);
 										break;
 									}
 								}
-								worldBuilder.getChipsetList().repaint();
+								wraithEngine.getChipsetList().repaint();
 							}else if(shift){
 								final MapSection m = map;
 								new SwingWorker<Boolean,Boolean>(){
@@ -151,10 +147,12 @@ public class WorldScreen extends JPanel{
 								}.execute();
 							}else{
 								if(selectedTile.isActive()){
-									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, worldBuilder.getWorldScreenToolbar().getEditingLayer(),
+									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize,
+										((MapEditor)wraithEngine.getMapEditor()).getToolbar().getEditingLayer(),
 										selectedTile.getChipset().getTile(selectedTile.getIndex()));
 								}else{
-									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, worldBuilder.getWorldScreenToolbar().getEditingLayer(), null);
+									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize,
+										((MapEditor)wraithEngine.getMapEditor()).getToolbar().getEditingLayer(), null);
 								}
 								updateNeedsSaving();
 								repaint();
@@ -285,9 +283,9 @@ public class WorldScreen extends JPanel{
 	}
 	public void updateNeedsSaving(){
 		boolean toSave = needsSaving();
-		worldBuilder.setTitle("WraithEngine "+(toSave?'*':"")+WorldBuilder.outputFolder);
-		if(worldBuilder.getWorldScreenToolbar()!=null){
-			worldBuilder.getWorldScreenToolbar().setNeedsSaving(toSave);
+		wraithEngine.setTitle("WraithEngine "+(toSave?'*':"")+WraithEngine.outputFolder);
+		if(((MapEditor)wraithEngine.getMapEditor()).getToolbar()!=null){
+			((MapEditor)wraithEngine.getMapEditor()).getToolbar().setNeedsSaving(toSave);
 		}
 	}
 	public boolean needsSaving(){

@@ -7,8 +7,9 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -19,16 +20,16 @@ public class Map{
 	private final ArrayList<MapSection> mapSections = new ArrayList(16);
 	private final ArrayList<Map> childMaps = new ArrayList(0);
 	private final String uuid;
-	private final WorldBuilder worldBuilder;
+	private final WraithEngine wraithEngine;
 	private String name;
 	private boolean mapsLoaded;
-	public Map(WorldBuilder worldBuilder, String uuid){
-		this.worldBuilder = worldBuilder;
+	public Map(WraithEngine worldBuilder, String uuid){
+		this.wraithEngine = worldBuilder;
 		this.uuid = uuid;
 		loadProperties();
 	}
-	public Map(WorldBuilder worldBuilder, String uuid, String name){
-		this.worldBuilder = worldBuilder;
+	public Map(WraithEngine worldBuilder, String uuid, String name){
+		this.wraithEngine = worldBuilder;
 		this.uuid = uuid;
 		this.name = name;
 		saveProperties();
@@ -65,7 +66,7 @@ public class Map{
 		name = bin.getString();
 		int childCount = bin.getInt();
 		for(int i = 0; i<childCount; i++){
-			Map map = new Map(worldBuilder, bin.getString());
+			Map map = new Map(wraithEngine, bin.getString());
 			childMaps.add(map);
 		}
 	}
@@ -85,7 +86,8 @@ public class Map{
 		bin.decompress(false);
 		int mapCount = bin.getInt();
 		for(int i = 0; i<mapCount; i++){
-			mapSections.add(new MapSection(worldBuilder.getChipsetList(), worldBuilder.getWorldScreenToolbar(), this, bin.getInt(), bin.getInt()));
+			mapSections.add(new MapSection((ChipsetList)wraithEngine.getChipsetList(), ((MapEditor)wraithEngine.getMapEditor()).getToolbar(), this,
+				bin.getInt(), bin.getInt()));
 		}
 	}
 	private void saveProperties(){

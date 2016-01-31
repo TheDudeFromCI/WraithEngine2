@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.util;
 
-import build.games.wraithaven.topdown.WorldBuilder;
+import build.games.wraithaven.core.WraithEngine;
 import java.io.File;
 
 public class Algorithms{
@@ -20,7 +20,7 @@ public class Algorithms{
 		file.delete();
 	}
 	public static File getAsset(String name){
-		File file = new File(WorldBuilder.assetFolder+File.separatorChar+name);
+		File file = new File(WraithEngine.assetFolder+File.separatorChar+name);
 		if(!file.exists()){
 			if(file.getName().contains(".")){
 				file.getParentFile().mkdirs();
@@ -32,7 +32,7 @@ public class Algorithms{
 	}
 	public static File getFile(String... path){
 		StringBuilder sb = new StringBuilder(0);
-		sb.append(WorldBuilder.outputFolder);
+		sb.append(WraithEngine.outputFolder);
 		for(String s : path){
 			sb.append(File.separatorChar);
 			sb.append(s);

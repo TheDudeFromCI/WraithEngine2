@@ -10,6 +10,14 @@ package build.games.wraithaven;
 import java.io.File;
 
 public class Algorithms{
+	public static void deleteFile(File file){
+		if(file.isDirectory()){
+			for(File f : file.listFiles()){
+				deleteFile(f);
+			}
+		}
+		file.delete();
+	}
 	public static File getAsset(String name){
 		File file = new File(WorldBuilder.assetFolder+File.separatorChar+name);
 		if(!file.exists()){

@@ -28,7 +28,7 @@ import javax.swing.event.ListSelectionListener;
 
 @SuppressWarnings("serial")
 public class ProjectList extends JFrame{
-	private final String[] projects;
+	private String[] projects;
 	public ProjectList(){
 		projects = loadProjects();
 		init();
@@ -69,17 +69,63 @@ public class ProjectList extends JFrame{
 		JButton btnLoadProject = new JButton("Load Project");
 		btnLoadProject.setEnabled(false);
 		panel.add(btnLoadProject);
-		list.addListSelectionListener(new ListSelectionListener(){
-			@Override
-			public void valueChanged(ListSelectionEvent event){
-				btnLoadProject.setEnabled(list.getSelectedIndex()!=-1);
-			}
-		});
 		btnLoadProject.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
 				loadProject(list.getSelectedValue());
 				dispose();
+			}
+		});
+		JButton deleteProject = new JButton("Delete Project");
+		deleteProject.setEnabled(false);
+		deleteProject.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this project? This CANNOT be undone!!!",
+					"Confirm Delete", JOptionPane.YES_NO_OPTION);
+				if(response==JOptionPane.YES_OPTION){
+					String toDelete = list.getSelectedValue();
+					File file = Algorithms.getFile(toDelete);
+					Algorithms.deleteFile(file);
+					String[] newProjectList = new String[projects.length-1];
+					int j = 0;
+					for(String project : projects){
+						if(project.equals(toDelete)){
+							continue;
+						}
+						newProjectList[j++] = project;
+					}
+					projects = newProjectList;
+					BinaryFile bin = new BinaryFile(4);
+					bin.addInt(newProjectList.length);
+					for(String s : newProjectList){
+						byte[] bytes = s.getBytes();
+						bin.allocateBytes(bytes.length+4);
+						bin.addInt(bytes.length);
+						bin.addBytes(bytes, 0, bytes.length);
+					}
+					bin.compress(false);
+					bin.compile(Algorithms.getFile("Projects.dat"));
+					list.setModel(new AbstractListModel<String>(){
+						@Override
+						public String getElementAt(int index){
+							return projects[index];
+						}
+						@Override
+						public int getSize(){
+							return projects.length;
+						}
+					});
+					list.setSelectedIndex(-1);
+				}
+			}
+		});
+		panel.add(deleteProject);
+		list.addListSelectionListener(new ListSelectionListener(){
+			@Override
+			public void valueChanged(ListSelectionEvent event){
+				btnLoadProject.setEnabled(list.getSelectedIndex()!=-1);
+				deleteProject.setEnabled(list.getSelectedIndex()!=-1);
 			}
 		});
 		JButton btnCreateNewProject = new JButton("Create New Project");
@@ -128,7 +174,7 @@ public class ProjectList extends JFrame{
 	private void init(){
 		setTitle("Choose Project");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(336, 435);
+		setSize(450, 450);
 		setResizable(false);
 		setLocationRelativeTo(null);
 	}

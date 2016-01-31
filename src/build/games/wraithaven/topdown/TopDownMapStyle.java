@@ -22,7 +22,7 @@ public class TopDownMapStyle implements MapStyle{
 	private final MapEditor mapEditor;
 	public TopDownMapStyle(){
 		chipsetList = new ChipsetList();
-		mapEditor = new MapEditor(this);
+		mapEditor = new MapEditor(chipsetList);
 	}
 	@Override
 	public AbstractChipsetList getChipsetList(){

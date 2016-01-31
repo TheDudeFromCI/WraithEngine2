@@ -16,9 +16,9 @@ import java.awt.BorderLayout;
 public class MapEditor extends AbstractMapEditor{
 	private final WorldScreen worldScreen;
 	private final WorldScreenToolbar toolbar;
-	public MapEditor(TopDownMapStyle mapStyle){
-		worldScreen = new WorldScreen((ChipsetList)mapStyle.getChipsetList(), (MapEditor)mapStyle.getMapEditor());
-		toolbar = new WorldScreenToolbar((MapEditor)mapStyle.getMapEditor());
+	public MapEditor(ChipsetList chipsetList){
+		worldScreen = new WorldScreen(chipsetList, this);
+		toolbar = new WorldScreenToolbar(this);
 		init();
 	}
 	private void init(){

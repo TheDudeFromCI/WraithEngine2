@@ -52,6 +52,7 @@ public class WraithEngine extends JFrame{
 	private AbstractMapEditor mapEditor;
 	private WorldList worldList;
 	public WraithEngine(MapStyle mapStyle){
+		INSTANCE = this;
 		this.mapStyle = mapStyle;
 		init();
 		addComponents();

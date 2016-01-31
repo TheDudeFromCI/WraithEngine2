@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.topdown.TopDownMapStyle;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.awt.BorderLayout;
@@ -31,7 +30,7 @@ import javax.swing.event.ListSelectionListener;
 
 @SuppressWarnings("serial")
 public class ProjectList extends JFrame{
-	private String[] projects;
+	private ProjectConstraints[] projects;
 	public ProjectList(){
 		projects = loadProjects();
 		init();
@@ -39,13 +38,13 @@ public class ProjectList extends JFrame{
 		setVisible(true);
 	}
 	private void addComponents(){
-		JList<String> list = new JList();
+		JList<ProjectConstraints> list = new JList();
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		list.setBackground(Color.LIGHT_GRAY);
-		list.setModel(new AbstractListModel<String>(){
+		list.setModel(new AbstractListModel<ProjectConstraints>(){
 			@Override
-			public String getElementAt(int index){
+			public ProjectConstraints getElementAt(int index){
 				return projects[index];
 			}
 			@Override
@@ -87,31 +86,30 @@ public class ProjectList extends JFrame{
 				int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this project? This CANNOT be undone!!!",
 					"Confirm Delete", JOptionPane.YES_NO_OPTION);
 				if(response==JOptionPane.YES_OPTION){
-					String toDelete = list.getSelectedValue();
-					File file = Algorithms.getFile(toDelete);
+					ProjectConstraints toDelete = list.getSelectedValue();
+					File file = Algorithms.getFile(toDelete.getUUID());
 					Algorithms.deleteFile(file);
-					String[] newProjectList = new String[projects.length-1];
+					ProjectConstraints[] newProjectList = new ProjectConstraints[projects.length-1];
 					int j = 0;
-					for(String project : projects){
-						if(project.equals(toDelete)){
+					for(ProjectConstraints project : projects){
+						if(project==toDelete){
 							continue;
 						}
 						newProjectList[j++] = project;
 					}
 					projects = newProjectList;
-					BinaryFile bin = new BinaryFile(4);
+					BinaryFile bin = new BinaryFile(4+newProjectList.length*4);
 					bin.addInt(newProjectList.length);
-					for(String s : newProjectList){
-						byte[] bytes = s.getBytes();
-						bin.allocateBytes(bytes.length+4);
-						bin.addInt(bytes.length);
-						bin.addBytes(bytes, 0, bytes.length);
+					for(ProjectConstraints s : newProjectList){
+						bin.addStringAllocated(s.getName());
+						bin.addStringAllocated(s.getUUID());
+						bin.addInt(s.getType());
 					}
 					bin.compress(false);
 					bin.compile(Algorithms.getFile("Projects.dat"));
-					list.setModel(new AbstractListModel<String>(){
+					list.setModel(new AbstractListModel<ProjectConstraints>(){
 						@Override
-						public String getElementAt(int index){
+						public ProjectConstraints getElementAt(int index){
 							return projects[index];
 						}
 						@Override
@@ -136,26 +134,28 @@ public class ProjectList extends JFrame{
 		btnCreateNewProject.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				String name = JOptionPane.showInputDialog("Please enter project name:");
-				if(name==null){
+				NewProjectDialog dialog = new NewProjectDialog();
+				int response = JOptionPane.showConfirmDialog(null, dialog, "New Project", JOptionPane.OK_CANCEL_OPTION);
+				if(response!=JOptionPane.OK_OPTION){
 					return;
 				}
-				BinaryFile bin = new BinaryFile(4);
+				String name = dialog.getProjectName();
+				String uuid = Algorithms.randomUUID();
+				int type = dialog.getMapStyle();
+				BinaryFile bin = new BinaryFile(4+projects.length*4+4);
 				bin.addInt(projects.length+1);
-				for(String s : projects){
-					byte[] bytes = s.getBytes();
-					bin.allocateBytes(bytes.length+4);
-					bin.addInt(bytes.length);
-					bin.addBytes(bytes, 0, bytes.length);
+				for(ProjectConstraints s : projects){
+					bin.addStringAllocated(s.getName());
+					bin.addStringAllocated(s.getUUID());
+					bin.addInt(s.getType());
 				}
-				byte[] bytes = name.getBytes();
-				bin.allocateBytes(bytes.length+4);
-				bin.addInt(bytes.length);
-				bin.addBytes(bytes, 0, bytes.length);
+				bin.addStringAllocated(name);
+				bin.addStringAllocated(uuid);
+				bin.addInt(type);
 				bin.compress(false);
 				bin.compile(Algorithms.getFile("Projects.dat"));
 				dispose();
-				loadProject(name);
+				loadProject(new ProjectConstraints(name, uuid, type));
 			}
 		});
 		JButton btnCancel = new JButton("Cancel");
@@ -181,20 +181,24 @@ public class ProjectList extends JFrame{
 		setResizable(false);
 		setLocationRelativeTo(null);
 	}
-	private void loadProject(String project){
-		WraithEngine.outputFolder += File.separatorChar+project;
-		WraithEngine.INSTANCE = new WraithEngine(new TopDownMapStyle());
+	private void loadProject(ProjectConstraints pc){
+		WraithEngine.outputFolder += File.separatorChar+pc.getUUID();
+		WraithEngine.projectName = pc.getName();
+		WraithEngine.INSTANCE = new WraithEngine(MapStyleFactory.loadMapStyle(pc.getType()));
 	}
-	private String[] loadProjects(){
+	private ProjectConstraints[] loadProjects(){
 		File file = Algorithms.getFile("Projects.dat");
 		if(!file.exists()){
-			return new String[0];
+			return new ProjectConstraints[0];
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
-		String[] list = new String[bin.getInt()];
+		ProjectConstraints[] list = new ProjectConstraints[bin.getInt()];
 		for(int i = 0; i<list.length; i++){
-			list[i] = bin.getString();
+			String name = bin.getString();
+			String uuid = bin.getString();
+			int type = bin.getInt();
+			list[i] = new ProjectConstraints(name, uuid, type);
 		}
 		return list;
 	}

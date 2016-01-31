@@ -280,7 +280,7 @@ public class WorldScreen extends JPanel{
 	}
 	public void updateNeedsSaving(){
 		boolean toSave = needsSaving();
-		WraithEngine.INSTANCE.setTitle("WraithEngine "+(toSave?'*':"")+WraithEngine.outputFolder);
+		WraithEngine.INSTANCE.setTitle("WraithEngine "+(toSave?'*':"")+WraithEngine.projectName);
 		if(mapEditor.getToolbar()!=null){
 			mapEditor.getToolbar().setNeedsSaving(toSave);
 		}

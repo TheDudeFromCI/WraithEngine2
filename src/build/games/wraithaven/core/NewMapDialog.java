@@ -34,6 +34,8 @@ public class NewMapDialog extends JFrame{
 		setLayout(gridBagLayout);
 		GridBagConstraints c = new GridBagConstraints();
 		JTextField mapName;
+		JSpinner widthSpinner;
+		JSpinner heightSpinner;
 		{
 			{
 				JLabel label = new JLabel("Map Name:");
@@ -73,9 +75,9 @@ public class NewMapDialog extends JFrame{
 				JLabel label = new JLabel("Width");
 				label.setHorizontalAlignment(JLabel.CENTER);
 				panel.add(label, BorderLayout.NORTH);
-				JSpinner spinner = new JSpinner();
-				spinner.setModel(new SpinnerNumberModel(20, 1, Integer.MAX_VALUE, 1));
-				panel.add(spinner, BorderLayout.CENTER);
+				widthSpinner = new JSpinner();
+				widthSpinner.setModel(new SpinnerNumberModel(20, 1, Integer.MAX_VALUE, 1));
+				panel.add(widthSpinner, BorderLayout.CENTER);
 				c.gridx = 1;
 				c.gridy = 1;
 				c.gridwidth = 1;
@@ -90,9 +92,9 @@ public class NewMapDialog extends JFrame{
 				JLabel label = new JLabel("Height");
 				label.setHorizontalAlignment(JLabel.CENTER);
 				panel.add(label, BorderLayout.NORTH);
-				JSpinner spinner = new JSpinner();
-				spinner.setModel(new SpinnerNumberModel(15, 1, Integer.MAX_VALUE, 1));
-				panel.add(spinner, BorderLayout.CENTER);
+				heightSpinner = new JSpinner();
+				heightSpinner.setModel(new SpinnerNumberModel(15, 1, Integer.MAX_VALUE, 1));
+				panel.add(heightSpinner, BorderLayout.CENTER);
 				c.gridx = 2;
 				c.gridy = 1;
 				c.gridwidth = 1;
@@ -120,7 +122,8 @@ public class NewMapDialog extends JFrame{
 					@Override
 					public void actionPerformed(ActionEvent e){
 						dispose();
-						MapInterface map = WraithEngine.INSTANCE.getMapStyle().generateNewMap(Algorithms.randomUUID(), mapName.getText());
+						MapInterface map = WraithEngine.INSTANCE.getMapStyle().generateNewMap(Algorithms.randomUUID(), mapName.getText(),
+							(int)widthSpinner.getValue(), (int)heightSpinner.getValue());
 						if(parentMap==null){
 							WraithEngine.INSTANCE.getWorldList().addMap(map);
 						}else{

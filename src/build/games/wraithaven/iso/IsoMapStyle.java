@@ -37,11 +37,11 @@ public class IsoMapStyle implements MapStyle{
 	}
 	@Override
 	public MapInterface loadMap(String uuid){
-		return new Map(uuid);
+		return new Map(chipsetList, uuid);
 	}
 	@Override
-	public MapInterface generateNewMap(String uuid, String name){
-		return new Map(uuid, name);
+	public MapInterface generateNewMap(String uuid, String name, int width, int height){
+		return new Map(chipsetList, uuid, name, width, height);
 	}
 	@Override
 	public void selectMap(MapInterface map){

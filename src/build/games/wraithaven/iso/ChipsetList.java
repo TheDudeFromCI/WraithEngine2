@@ -54,6 +54,14 @@ public class ChipsetList extends AbstractChipsetList{
 		repaint();
 		save();
 	}
+	public Tile getTile(String uuid){
+		for(Tile tile : tiles){
+			if(tile.getUUID().equals(uuid)){
+				return tile;
+			}
+		}
+		return null;
+	}
 	@Override
 	public void paintComponent(Graphics g){
 		g.setColor(Color.lightGray);

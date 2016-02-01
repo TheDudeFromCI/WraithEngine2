@@ -43,13 +43,11 @@ public class Tile{
 		}while(s!=ChipsetList.PREVIEW_TILE_SCALE);
 		return buf;
 	}
-	private final BufferedImage image;
 	private final BufferedImage previewImage;
 	private final String uuid;
 	public Tile(String uuid){
 		this.uuid = uuid;
 		try{
-			image = ImageIO.read(Algorithms.getFile("Chipsets", uuid+".png"));
 			previewImage = ImageIO.read(Algorithms.getFile("Chipsets", uuid+"preview.png"));
 		}catch(Exception exception){
 			throw new RuntimeException(exception.getMessage());
@@ -57,7 +55,6 @@ public class Tile{
 	}
 	public Tile(String uuid, BufferedImage image){
 		this.uuid = uuid;
-		this.image = image;
 		previewImage = scaleImage(image);
 		try{
 			ImageIO.write(image, "png", Algorithms.getFile("Chipsets", uuid+".png"));
@@ -65,9 +62,6 @@ public class Tile{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
-	}
-	public BufferedImage getImage(){
-		return image;
 	}
 	public BufferedImage getPreviewImage(){
 		return previewImage;

@@ -5,18 +5,32 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.core;
+package build.games.wraithaven.iso;
 
-import java.io.File;
+import build.games.wraithaven.util.Algorithms;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import javax.imageio.ImageIO;
 
 /**
  * @author TheDudeFromCI
  */
-public interface MapStyle{
-	public AbstractChipsetList getChipsetList();
-	public AbstractMapEditor getMapEditor();
-	public void openChipsetPreview(File file);
-	public MapInterface loadMap(String uuid);
-	public MapInterface generateNewMap(String uuid, String name, int width, int height);
-	public void selectMap(MapInterface map);
+public class MapImageStorage{
+	private final HashMap<Tile,BufferedImage> images = new HashMap(16);
+	public BufferedImage getImage(Tile tile){
+		if(images.containsKey(tile)){
+			return images.get(tile);
+		}
+		try{
+			BufferedImage image = ImageIO.read(Algorithms.getFile("Chipsets", tile.getUUID()+".png"));
+			images.put(tile, image);
+			return image;
+		}catch(Exception exception){
+			exception.printStackTrace();
+			return null;
+		}
+	}
+	public void clear(){
+		images.clear();
+	}
 }

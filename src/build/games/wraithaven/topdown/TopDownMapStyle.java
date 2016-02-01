@@ -52,7 +52,7 @@ public class TopDownMapStyle implements MapStyle{
 		mapEditor.getWorldScreen().selectMap((Map)map);
 	}
 	@Override
-	public MapInterface generateNewMap(String uuid, String name){
+	public MapInterface generateNewMap(String uuid, String name, int width, int height){
 		return new Map(this, uuid, name);
 	}
 }

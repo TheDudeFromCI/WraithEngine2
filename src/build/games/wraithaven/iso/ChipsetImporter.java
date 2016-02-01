@@ -34,6 +34,8 @@ import javax.swing.JPanel;
  */
 public class ChipsetImporter{
 	public static final int TILE_SIZE = 96;
+	public static final int TILE_TOP_WIDTH = TILE_SIZE/2;
+	public static final int TILE_TOP_HEIGHT = TILE_SIZE/4;
 	private final JLabel tilePreview;
 	private BufferedImage left;
 	private BufferedImage right;

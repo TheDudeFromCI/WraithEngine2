@@ -8,6 +8,8 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
@@ -15,12 +17,40 @@ import javax.imageio.ImageIO;
  * @author TheDudeFromCI
  */
 public class Tile{
+	private static BufferedImage scaleImage(BufferedImage image){
+		BufferedImage buf = image;
+		int s = ChipsetImporter.TILE_SIZE;
+		do{
+			if(s>ChipsetList.PREVIEW_TILE_SCALE){
+				s /= 2;
+				if(s<ChipsetList.PREVIEW_TILE_SCALE){
+					s = ChipsetList.PREVIEW_TILE_SCALE;
+				}
+			}else{
+				s *= 2;
+				if(s>ChipsetList.PREVIEW_TILE_SCALE){
+					s = ChipsetList.PREVIEW_TILE_SCALE;
+				}
+			}
+			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D g = out.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+			g.drawImage(buf, 0, 0, s, s, null);
+			g.dispose();
+			buf = out;
+		}while(s!=ChipsetList.PREVIEW_TILE_SCALE);
+		return buf;
+	}
 	private final BufferedImage image;
+	private final BufferedImage previewImage;
 	private final String uuid;
 	public Tile(String uuid){
 		this.uuid = uuid;
 		try{
 			image = ImageIO.read(Algorithms.getFile("Chipsets", uuid+".png"));
+			previewImage = ImageIO.read(Algorithms.getFile("Chipsets", uuid+"preview.png"));
 		}catch(Exception exception){
 			throw new RuntimeException(exception.getMessage());
 		}
@@ -28,14 +58,19 @@ public class Tile{
 	public Tile(String uuid, BufferedImage image){
 		this.uuid = uuid;
 		this.image = image;
+		previewImage = scaleImage(image);
 		try{
 			ImageIO.write(image, "png", Algorithms.getFile("Chipsets", uuid+".png"));
+			ImageIO.write(previewImage, "png", Algorithms.getFile("Chipsets", uuid+"preview.png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
 	}
 	public BufferedImage getImage(){
 		return image;
+	}
+	public BufferedImage getPreviewImage(){
+		return previewImage;
 	}
 	public String getUUID(){
 		return uuid;

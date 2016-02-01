@@ -17,7 +17,8 @@ import java.util.ArrayList;
  * @author TheDudeFromCI
  */
 public class ChipsetList extends AbstractChipsetList{
-	public static final int PREVIEW_TILES_WIDTH = 4;
+	public static final int PREVIEW_TILES_WIDTH = 6;
+	public static final int PREVIEW_TILE_SCALE = 48;
 	private final ArrayList<Tile> tiles = new ArrayList(64);
 	public ChipsetList(){
 		updatePrefferedSize();
@@ -31,21 +32,21 @@ public class ChipsetList extends AbstractChipsetList{
 	public void paintComponent(Graphics g){
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		final int maxWidth = PREVIEW_TILES_WIDTH*ChipsetImporter.TILE_SIZE;
+		final int maxWidth = PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE;
 		int x = 0;
 		int y = 0;
 		for(Tile tile : tiles){
-			g.drawImage(tile.getImage(), x, y, null);
-			x += ChipsetImporter.TILE_SIZE;
+			g.drawImage(tile.getPreviewImage(), x, y, null);
+			x += PREVIEW_TILE_SCALE;
 			if(x==maxWidth){
 				x = 0;
-				y += ChipsetImporter.TILE_SIZE;
+				y += PREVIEW_TILE_SCALE;
 			}
 		}
 		g.dispose();
 	}
 	private void updatePrefferedSize(){
 		setPreferredSize(
-			new Dimension(PREVIEW_TILES_WIDTH*ChipsetImporter.TILE_SIZE, Math.max((int)Math.ceil(tiles.size()/(double)PREVIEW_TILES_WIDTH), 150)));
+			new Dimension(PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, Math.max((int)Math.ceil(tiles.size()/(double)PREVIEW_TILES_WIDTH), 150)));
 	}
 }

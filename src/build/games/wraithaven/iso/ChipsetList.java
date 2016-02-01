@@ -62,6 +62,9 @@ public class ChipsetList extends AbstractChipsetList{
 		}
 		return null;
 	}
+	public ArrayList<Tile> getAllTiles(){
+		return tiles;
+	}
 	@Override
 	public void paintComponent(Graphics g){
 		g.setColor(Color.lightGray);

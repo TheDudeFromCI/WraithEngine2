@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.topdown.Map;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.awt.BorderLayout;
@@ -69,7 +68,7 @@ public class WorldList extends JPanel{
 			if(parent==root){
 				return mainMaps.indexOf(child);
 			}else{
-				return ((MapInterface)parent).getIndexOf((Map)child);
+				return ((MapInterface)parent).getIndexOf((MapInterface)child);
 			}
 		}
 		@Override
@@ -102,7 +101,7 @@ public class WorldList extends JPanel{
 						if(e.getClickCount()==2){
 							Object selected = selPath.getLastPathComponent();
 							tree.setSelectionPath(selPath);
-							if(selected instanceof Map){
+							if(selected instanceof MapInterface){
 								WraithEngine.INSTANCE.getMapStyle().selectMap((MapInterface)selected);
 							}
 						}
@@ -110,8 +109,8 @@ public class WorldList extends JPanel{
 						// If right click.
 						Object selected = selPath.getLastPathComponent();
 						tree.setSelectionPath(selPath);
-						if(selected instanceof Map){
-							showContextMenu((Map)selected, e.getX(), e.getY());
+						if(selected instanceof MapInterface){
+							showContextMenu((MapInterface)selected, e.getX(), e.getY());
 						}else{
 							showContextMenu(null, e.getX(), e.getY());
 						}
@@ -132,7 +131,7 @@ public class WorldList extends JPanel{
 			expandAllNodes(tree, rowCount, tree.getRowCount());
 		}
 	}
-	private void showContextMenu(Map selectedMap, int x, int y){
+	private void showContextMenu(MapInterface selectedMap, int x, int y){
 		// Show map properties.
 		// If selectedMap is null, then global properties.
 		JPopupMenu menu = new JPopupMenu();

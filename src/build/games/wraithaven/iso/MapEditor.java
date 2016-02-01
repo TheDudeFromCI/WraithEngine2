@@ -17,6 +17,8 @@ import java.awt.Graphics;
 public class MapEditor extends AbstractMapEditor{
 	private final MapImageStorage imageStorage;
 	private Map map;
+	private int scrollX;
+	private int scrollY;
 	public MapEditor(){
 		imageStorage = new MapImageStorage();
 	}
@@ -35,6 +37,7 @@ public class MapEditor extends AbstractMapEditor{
 		}
 	}
 	public void selectMap(Map map){
+		System.out.println("LOADED!");
 		if(this.map!=null){
 			this.map.dispose();
 			imageStorage.clear();
@@ -47,7 +50,7 @@ public class MapEditor extends AbstractMapEditor{
 	}
 	@Override
 	public void paintComponent(Graphics g){
-		g.setColor(map==null?Color.gray:Color.lightGray);
+		g.setColor(map==null?Color.darkGray:Color.lightGray);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		if(map!=null){
 			Tile[] tiles = map.getAllTiles();

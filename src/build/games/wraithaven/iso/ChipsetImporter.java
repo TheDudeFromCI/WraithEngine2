@@ -38,6 +38,7 @@ public class ChipsetImporter{
 	private BufferedImage left;
 	private BufferedImage right;
 	private BufferedImage top;
+	private BufferedImage finalImage;
 	public ChipsetImporter(ChipsetList chipsetList, File file){
 		JFrame frame = new JFrame();
 		frame.setTitle("Import Tile");
@@ -74,7 +75,7 @@ public class ChipsetImporter{
 				{
 					// Load inital tile textures.
 					try{
-						top = ImageIO.read(Algorithms.getAsset("White Panel.png"));
+						top = ImageIO.read(file);
 						left = top;
 						right = top;
 					}catch(Exception exception){
@@ -88,7 +89,57 @@ public class ChipsetImporter{
 			{
 				JPanel panel = new JPanel();
 				panel.setLayout(new VerticalFlowLayout(0, 5));
-				//
+				JButton chooseNewTopButton = new JButton("Load New Top");
+				JButton chooseNewLeftButton = new JButton("Choose New Left");
+				JButton chooseNewRightButton = new JButton("Choose New Right");
+				chooseNewTopButton.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						File file = Algorithms.userChooseImage("Upload Texture", "Open");
+						if(file==null){
+							return;
+						}
+						try{
+							top = ImageIO.read(file);
+							updatePreview();
+						}catch(Exception exception){
+							exception.printStackTrace();
+						}
+					}
+				});
+				chooseNewLeftButton.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						File file = Algorithms.userChooseImage("Upload Texture", "Open");
+						if(file==null){
+							return;
+						}
+						try{
+							left = ImageIO.read(file);
+							updatePreview();
+						}catch(Exception exception){
+							exception.printStackTrace();
+						}
+					}
+				});
+				chooseNewRightButton.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						File file = Algorithms.userChooseImage("Upload Texture", "Open");
+						if(file==null){
+							return;
+						}
+						try{
+							right = ImageIO.read(file);
+							updatePreview();
+						}catch(Exception exception){
+							exception.printStackTrace();
+						}
+					}
+				});
+				panel.add(chooseNewTopButton);
+				panel.add(chooseNewLeftButton);
+				panel.add(chooseNewRightButton);
 				frame.add(panel, BorderLayout.CENTER);
 			}
 		}
@@ -97,7 +148,8 @@ public class ChipsetImporter{
 		frame.setVisible(true);
 	}
 	private void updatePreview(){
-		tilePreview.setIcon(new ImageIcon(generateCube(left, right, top)));
+		finalImage = generateCube(left, right, top);
+		tilePreview.setIcon(new ImageIcon(finalImage));
 	}
 	private static BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
 		BufferedImage topPanel = rotate(top);
@@ -111,9 +163,16 @@ public class ChipsetImporter{
 		BufferedImage buf = image;
 		int s = image.getWidth();
 		do{
-			s /= 2;
-			if(s<TILE_SIZE){
-				s = TILE_SIZE;
+			if(s>TILE_SIZE){
+				s /= 2;
+				if(s<TILE_SIZE){
+					s = TILE_SIZE;
+				}
+			}else{
+				s *= 2;
+				if(s>TILE_SIZE){
+					s = TILE_SIZE;
+				}
 			}
 			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g = out.createGraphics();
@@ -123,7 +182,7 @@ public class ChipsetImporter{
 			g.drawImage(buf, 0, 0, s, s, null);
 			g.dispose();
 			buf = out;
-		}while(s!=TILE_SIZE);
+		}while(s!=TILE_SIZE); // This loop enhances quality, while resizing!
 		return buf;
 	}
 	private static BufferedImage combine(BufferedImage left, BufferedImage right, BufferedImage top){

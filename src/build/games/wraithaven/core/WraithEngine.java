@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.core;
 
+import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -14,7 +15,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -23,7 +23,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
-import javax.swing.filechooser.FileFilter;
 
 @SuppressWarnings("serial")
 public class WraithEngine extends JFrame{
@@ -93,23 +92,7 @@ public class WraithEngine extends JFrame{
 		mntmImportNewChipset.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent event){
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setFileFilter(new FileFilter(){
-					@Override
-					public boolean accept(File file){
-						return file.isDirectory()||file.getName().endsWith(".png");
-					}
-					@Override
-					public String getDescription(){
-						return "*.PNG Files";
-					}
-				});
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				fileChooser.setMultiSelectionEnabled(false);
-				fileChooser.setDialogTitle("Import New Chipset");
-				fileChooser.setAcceptAllFileFilterUsed(true);
-				fileChooser.showDialog(null, "Import");
-				File file = fileChooser.getSelectedFile();
+				File file = Algorithms.userChooseImage("Import New Chipset", "Import");
 				if(file==null){
 					return;
 				}

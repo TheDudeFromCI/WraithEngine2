@@ -9,6 +9,8 @@ package build.games.wraithaven.util;
 
 import build.games.wraithaven.core.WraithEngine;
 import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 public class Algorithms{
 	public static void deleteFile(File file){
@@ -47,9 +49,6 @@ public class Algorithms{
 		}
 		return file;
 	}
-	public static int groupLocation(int x, int w){
-		return x>=0?x/w*w:(x-(w-1))/w*w;
-	}
 	public static String randomUUID(){
 		final int uuidSize = 24;
 		StringBuilder sb = new StringBuilder(uuidSize);
@@ -57,5 +56,29 @@ public class Algorithms{
 			sb.append(Integer.toHexString((int)(Math.random()*16)));
 		}
 		return sb.toString();
+	}
+	/**
+	 * A quick method for asking the user to load an image file. Currently only supports PNG files.
+	 *
+	 * @return The image file the user has chosen, or null if no image was chosen.
+	 */
+	public static File userChooseImage(String title, String button){
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileFilter(new FileFilter(){
+			@Override
+			public boolean accept(File file){
+				return file.isDirectory()||file.getName().endsWith(".png");
+			}
+			@Override
+			public String getDescription(){
+				return "*.PNG Files";
+			}
+		});
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setMultiSelectionEnabled(false);
+		fileChooser.setDialogTitle(title);
+		fileChooser.setAcceptAllFileFilterUsed(true);
+		fileChooser.showDialog(null, button);
+		return fileChooser.getSelectedFile();
 	}
 }

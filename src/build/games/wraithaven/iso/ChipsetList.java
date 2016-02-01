@@ -8,9 +8,12 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractChipsetList;
+import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.BinaryFile;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -21,12 +24,35 @@ public class ChipsetList extends AbstractChipsetList{
 	public static final int PREVIEW_TILE_SCALE = 48;
 	private final ArrayList<Tile> tiles = new ArrayList(64);
 	public ChipsetList(){
+		load();
 		updatePrefferedSize();
+	}
+	private void load(){
+		File file = Algorithms.getFile("Chipsets", "List.dat");
+		if(!file.exists()){
+			return;
+		}
+		BinaryFile bin = new BinaryFile(file);
+		bin.decompress(false);
+		int tileCount = bin.getInt();
+		for(int i = 0; i<tileCount; i++){
+			tiles.add(new Tile(bin.getString()));
+		}
+	}
+	private void save(){
+		BinaryFile bin = new BinaryFile(4);
+		bin.addInt(tiles.size());
+		for(Tile tile : tiles){
+			bin.addStringAllocated(tile.getUUID());
+		}
+		bin.compress(false);
+		bin.compile(Algorithms.getFile("Chipsets", "List.dat"));
 	}
 	public void addTile(Tile tile){
 		tiles.add(tile);
 		updatePrefferedSize();
 		repaint();
+		save();
 	}
 	@Override
 	public void paintComponent(Graphics g){

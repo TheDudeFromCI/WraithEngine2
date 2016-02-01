@@ -8,8 +8,10 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractMapEditor;
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
 
 /**
  * @author TheDudeFromCI
@@ -21,6 +23,48 @@ public class MapEditor extends AbstractMapEditor{
 	private int scrollY;
 	public MapEditor(){
 		imageStorage = new MapImageStorage();
+		InputAdapter ml = new InputAdapter(){
+			private boolean dragging;
+			private int scrollXStart;
+			private int scrollYStart;
+			private int mouseXStart;
+			private int mouseYStart;
+			@Override
+			public void mouseDragged(MouseEvent event){
+				if(dragging){
+					scrollX = event.getX()-mouseXStart+scrollXStart;
+					scrollY = event.getY()-mouseYStart+scrollYStart;
+					repaint();
+				}
+			}
+			@Override
+			public void mouseExited(MouseEvent event){
+				dragging = false;
+				repaint();
+			}
+			@Override
+			public void mousePressed(MouseEvent event){
+				int button = event.getButton();
+				if(button==MouseEvent.BUTTON3){
+					dragging = true;
+					scrollXStart = scrollX;
+					scrollYStart = scrollY;
+					mouseXStart = event.getX();
+					mouseYStart = event.getY();
+				}else{
+					dragging = false;
+				}
+			}
+			@Override
+			public void mouseReleased(MouseEvent event){
+				dragging = false;
+			}
+		};
+		addMouseListener(ml);
+		addMouseMotionListener(ml);
+		addMouseWheelListener(ml);
+		addKeyListener(ml);
+		setFocusable(true);
 	}
 	@Override
 	public boolean needsSaving(){
@@ -37,7 +81,6 @@ public class MapEditor extends AbstractMapEditor{
 		}
 	}
 	public void selectMap(Map map){
-		System.out.println("LOADED!");
 		if(this.map!=null){
 			this.map.dispose();
 			imageStorage.clear();
@@ -69,7 +112,8 @@ public class MapEditor extends AbstractMapEditor{
 					if(tiles[i]==null){
 						continue;
 					}
-					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*ChipsetImporter.TILE_TOP_WIDTH, (x+y)*ChipsetImporter.TILE_TOP_HEIGHT, null);
+					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*ChipsetImporter.TILE_TOP_WIDTH+scrollX,
+						(x+y)*ChipsetImporter.TILE_TOP_HEIGHT+scrollY, null);
 				}
 			}
 		}

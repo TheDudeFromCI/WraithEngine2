@@ -37,14 +37,14 @@ public class IsoMapStyle implements MapStyle{
 	}
 	@Override
 	public MapInterface loadMap(String uuid){
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose Tools | Templates.
+		return new Map(uuid);
 	}
 	@Override
 	public MapInterface generateNewMap(String uuid, String name){
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose Tools | Templates.
+		return new Map(uuid, name);
 	}
 	@Override
 	public void selectMap(MapInterface map){
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose Tools | Templates.
+		mapEditor.selectMap((Map)map);
 	}
 }

@@ -8,18 +8,41 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractMapEditor;
+import java.awt.Color;
+import java.awt.Graphics;
 
 /**
  * @author TheDudeFromCI
  */
 public class MapEditor extends AbstractMapEditor{
+	private Map map;
 	@Override
 	public boolean needsSaving(){
-		// TODO
-		return false;
+		if(map==null){
+			return false;
+		}
+		return map.needsSaving();
 	}
 	@Override
 	public void save(){
-		// TODO
+		if(map!=null){
+			map.save();
+		}
+	}
+	public void selectMap(Map map){
+		if(this.map!=null){
+			this.map.dispose();
+		}
+		this.map = map;
+		map.load();
+	}
+	@Override
+	public void paintComponent(Graphics g){
+		g.setColor(map==null?Color.gray:Color.lightGray);
+		g.fillRect(0, 0, getWidth(), getHeight());
+		if(map!=null){
+			// TODO
+		}
+		g.dispose();
 	}
 }

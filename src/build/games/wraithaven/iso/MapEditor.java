@@ -12,6 +12,7 @@ import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * @author TheDudeFromCI
@@ -21,6 +22,9 @@ public class MapEditor extends AbstractMapEditor{
 	private Map map;
 	private int scrollX;
 	private int scrollY;
+	private int tileSize = ChipsetImporter.TILE_SIZE;
+	private int tileWidth = tileSize/2;
+	private int tileHeight = tileSize/4;
 	public MapEditor(){
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
@@ -58,6 +62,21 @@ public class MapEditor extends AbstractMapEditor{
 			@Override
 			public void mouseReleased(MouseEvent event){
 				dragging = false;
+			}
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent event){
+				if(dragging){
+					return;
+				}
+				int change = -event.getWheelRotation()*4;
+				int pixelSizeBefore = tileSize;
+				tileSize = Math.max(Math.min(tileSize+change, ChipsetImporter.TILE_SIZE*4), ChipsetImporter.TILE_SIZE/4);
+				tileWidth = tileSize/2;
+				tileHeight = tileSize/4;
+				float per = tileSize/(float)pixelSizeBefore;
+				scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
+				scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
+				repaint();
 			}
 		};
 		addMouseListener(ml);
@@ -112,8 +131,7 @@ public class MapEditor extends AbstractMapEditor{
 					if(tiles[i]==null){
 						continue;
 					}
-					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*ChipsetImporter.TILE_TOP_WIDTH+scrollX,
-						(x+y)*ChipsetImporter.TILE_TOP_HEIGHT+scrollY, null);
+					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*tileWidth+scrollX, (x+y)*tileHeight+scrollY, tileSize, tileSize, null);
 				}
 			}
 		}

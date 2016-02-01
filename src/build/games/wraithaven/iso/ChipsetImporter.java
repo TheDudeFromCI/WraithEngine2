@@ -54,7 +54,8 @@ public class ChipsetImporter{
 					@Override
 					public void actionPerformed(ActionEvent e){
 						frame.dispose();
-						// TODO Import tile.
+						Tile tile = new Tile(Algorithms.randomUUID(), finalImage);
+						chipsetList.addTile(tile);
 					}
 				});
 				panel.add(okButton);

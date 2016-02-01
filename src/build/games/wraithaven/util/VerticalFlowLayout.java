@@ -20,6 +20,11 @@ public class VerticalFlowLayout implements LayoutManager2{
 	private final ArrayList<Component> components = new ArrayList(4);
 	private int hgap = 0;
 	private int vgap = 0;
+	public VerticalFlowLayout(){}
+	public VerticalFlowLayout(int hgap, int vgap){
+		this.hgap = hgap;
+		this.vgap = vgap;
+	}
 	public void setHGap(int hgap){
 		this.hgap = hgap;
 	}

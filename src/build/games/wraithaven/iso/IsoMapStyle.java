@@ -17,17 +17,23 @@ import java.io.File;
  * @author TheDudeFromCI
  */
 public class IsoMapStyle implements MapStyle{
+	private final ChipsetList chipsetList;
+	private final MapEditor mapEditor;
+	public IsoMapStyle(){
+		chipsetList = new ChipsetList();
+		mapEditor = new MapEditor();
+	}
 	@Override
 	public AbstractChipsetList getChipsetList(){
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose Tools | Templates.
+		return chipsetList;
 	}
 	@Override
 	public AbstractMapEditor getMapEditor(){
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose Tools | Templates.
+		return mapEditor;
 	}
 	@Override
 	public void openChipsetPreview(File file){
-		throw new UnsupportedOperationException("Not supported yet."); // To change body of generated methods, choose Tools | Templates.
+		new ChipsetImporter(chipsetList, file);
 	}
 	@Override
 	public MapInterface loadMap(String uuid){

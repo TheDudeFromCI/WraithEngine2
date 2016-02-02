@@ -112,6 +112,7 @@ public class Map implements MapInterface{
 		}
 		loaded = false;
 		tiles = null;
+		needsSaving = false;
 	}
 	private void saveProperties(){
 		BinaryFile bin = new BinaryFile(4+8);
@@ -135,6 +136,10 @@ public class Map implements MapInterface{
 		for(int i = 0; i<childMapCount; i++){
 			childMaps.add(new Map(chipsetList, bin.getString()));
 		}
+	}
+	public void setTile(int x, int z, Tile tile){
+		tiles[z*width+x] = tile;
+		needsSaving = true;
 	}
 	@Override
 	public String getUUID(){

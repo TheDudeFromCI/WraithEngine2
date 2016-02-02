@@ -8,6 +8,7 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractMapEditor;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -16,6 +17,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import javax.swing.JOptionPane;
 
 /**
  * @author TheDudeFromCI
@@ -35,6 +37,7 @@ public class MapEditor extends AbstractMapEditor{
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
 			private boolean dragging;
+			private boolean drawing;
 			private int scrollXStart;
 			private int scrollYStart;
 			private int mouseXStart;
@@ -46,11 +49,15 @@ public class MapEditor extends AbstractMapEditor{
 					scrollY = event.getY()-mouseYStart+scrollYStart;
 					repaint();
 				}
+				if(drawing){
+					mouseClicked(event.getX(), event.getY(), 1);
+				}
 				mouseMoved(event);
 			}
 			@Override
 			public void mouseExited(MouseEvent event){
 				dragging = false;
+				drawing = false;
 				repaint();
 			}
 			@Override
@@ -60,7 +67,24 @@ public class MapEditor extends AbstractMapEditor{
 				int tileX = (int)Math.floor((x/(float)tileWidth+y/(float)tileHeight)/2);
 				int tileY = (int)Math.floor((y/(float)tileHeight-(x/(float)tileWidth))/2);
 				cursorSelection.setScreenLocation((tileX-tileY)*tileWidth+scrollX, (tileX+tileY)*tileHeight+scrollY);
+				cursorSelection.setTileLocation(tileX, tileY);
 				repaint();
+			}
+			@Override
+			public void mouseClicked(MouseEvent event){
+				mouseClicked(event.getX(), event.getY(), event.getButton());
+			}
+			public void mouseClicked(int x, int y, int button){
+				if(map==null){
+					return;
+				}
+				if(button==MouseEvent.BUTTON1){
+					if(cursorSelection.isOverMap()){
+						map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
+						updateNeedsSaving();
+						repaint();
+					}
+				}
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
@@ -74,14 +98,20 @@ public class MapEditor extends AbstractMapEditor{
 				}else{
 					dragging = false;
 				}
+				drawing = button==MouseEvent.BUTTON1;
+			}
+			@Override
+			public void mouseEntered(MouseEvent event){
+				mouseMoved(event);
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
 				dragging = false;
+				drawing = false;
 			}
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent event){
-				if(dragging){
+				if(dragging||drawing){
 					return;
 				}
 				int change = -event.getWheelRotation()*4;
@@ -103,6 +133,10 @@ public class MapEditor extends AbstractMapEditor{
 		addKeyListener(ml);
 		setFocusable(true);
 		generateSelectionHexagon();
+	}
+	private void updateNeedsSaving(){
+		boolean needsSaving = needsSaving();
+		WraithEngine.INSTANCE.setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
 	}
 	private void generateSelectionHexagon(){
 		int[] x = new int[4];
@@ -135,13 +169,26 @@ public class MapEditor extends AbstractMapEditor{
 	}
 	public void selectMap(Map map){
 		if(this.map!=null){
+			if(needsSaving()){
+				int response = JOptionPane.showConfirmDialog(null, "Map not saved! Would you like to save before exiting?", "Confirm Save Map",
+					JOptionPane.YES_NO_CANCEL_OPTION);
+				if(response==JOptionPane.YES_OPTION){
+					this.map.save();
+				}else if(response!=JOptionPane.NO_OPTION){
+					return;
+				}
+			}
 			this.map.dispose();
 			imageStorage.clear();
 		}
 		this.map = map;
 		if(map!=null){ // In case we are given a 'null' map.
+			cursorSelection.setMapSize(map.getWidth(), map.getHeight());
 			map.load();
+		}else{
+			cursorSelection.setMapSize(0, 0);
 		}
+		updateNeedsSaving();
 		repaint();
 	}
 	private boolean isOnScreen(int x, int y, int w, int h){
@@ -180,7 +227,7 @@ public class MapEditor extends AbstractMapEditor{
 			}
 			g.setStroke(new BasicStroke(2));
 			g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
-			g.setColor(Color.white);
+			g.setColor(cursorSelection.isOverMap()?Color.white:Color.red);
 			g.drawPolygon(selectionHexagon);
 		}
 		g.dispose();

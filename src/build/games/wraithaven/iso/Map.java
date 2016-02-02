@@ -38,20 +38,6 @@ public class Map implements MapInterface{
 		this.width = width;
 		this.height = height;
 		saveProperties();
-		{
-			load();
-			// Debug
-			ArrayList<Tile> tileList = chipsetList.getAllTiles();
-			for(int i = 0; i<tiles.length; i++){
-				if(Math.random()<0.5){
-					continue;
-				}
-				tiles[i] = tileList.get((int)(Math.random()*tileList.size()));
-			}
-			needsSaving = true;
-			save();
-			dispose();
-		}
 	}
 	public boolean needsSaving(){
 		return needsSaving;

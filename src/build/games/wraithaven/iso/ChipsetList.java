@@ -10,9 +10,14 @@ package build.games.wraithaven.iso;
 import build.games.wraithaven.core.AbstractChipsetList;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.util.InputAdapter;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -20,12 +25,48 @@ import java.util.ArrayList;
  * @author TheDudeFromCI
  */
 public class ChipsetList extends AbstractChipsetList{
+	private static Polygon generateCursor(){
+		int[] x = new int[4];
+		int[] y = new int[4];
+		x[0] = 0;
+		y[0] = 0;
+		x[1] = PREVIEW_TILE_SCALE;
+		y[1] = 0;
+		x[2] = PREVIEW_TILE_SCALE;
+		y[2] = PREVIEW_TILE_SCALE;
+		x[3] = 0;
+		y[3] = PREVIEW_TILE_SCALE;
+		return new Polygon(x, y, 4);
+	}
 	public static final int PREVIEW_TILES_WIDTH = 6;
 	public static final int PREVIEW_TILE_SCALE = 48;
 	private final ArrayList<Tile> tiles = new ArrayList(64);
+	private final CursorSelection cursorSelection;
+	private final Polygon cursor;
 	public ChipsetList(){
+		cursorSelection = new CursorSelection();
+		cursor = generateCursor();
 		load();
 		updatePrefferedSize();
+		InputAdapter ia = new InputAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent event){
+				int x = event.getX()/PREVIEW_TILE_SCALE;
+				int y = event.getY()/PREVIEW_TILE_SCALE;
+				int index = y*PREVIEW_TILES_WIDTH+x;
+				if(index>=tiles.size()){
+					cursorSelection.setSelectedTile(null, -1);
+					repaint();
+					return;
+				}
+				cursorSelection.setSelectedTile(tiles.get(index), index);
+				repaint();
+			}
+		};
+		addMouseListener(ia);
+	}
+	public CursorSelection getCursorSelection(){
+		return cursorSelection;
 	}
 	private void load(){
 		File file = Algorithms.getFile("Chipsets", "List.dat");
@@ -66,7 +107,8 @@ public class ChipsetList extends AbstractChipsetList{
 		return tiles;
 	}
 	@Override
-	public void paintComponent(Graphics g){
+	public void paintComponent(Graphics g1){
+		Graphics2D g = (Graphics2D)g1;
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		final int maxWidth = PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE;
@@ -79,6 +121,13 @@ public class ChipsetList extends AbstractChipsetList{
 				x = 0;
 				y += PREVIEW_TILE_SCALE;
 			}
+		}
+		if(cursorSelection.isActive()){
+			g.setStroke(new BasicStroke(3));
+			g.translate(cursorSelection.getSelectedTileIndex()%PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE,
+				cursorSelection.getSelectedTileIndex()/PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE);
+			g.setColor(Color.white);
+			g.drawPolygon(cursor);
 		}
 		g.dispose();
 	}

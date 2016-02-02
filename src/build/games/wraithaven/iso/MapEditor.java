@@ -22,7 +22,7 @@ import java.awt.event.MouseWheelEvent;
  */
 public class MapEditor extends AbstractMapEditor{
 	private final MapImageStorage imageStorage;
-	private final CursorSelection cursorSelection = new CursorSelection();
+	private final CursorSelection cursorSelection;
 	private Map map;
 	private int tileSize = ChipsetImporter.TILE_SIZE;
 	private int tileWidth = tileSize/2;
@@ -30,7 +30,8 @@ public class MapEditor extends AbstractMapEditor{
 	private int scrollX;
 	private int scrollY;
 	private Polygon selectionHexagon;
-	public MapEditor(){
+	public MapEditor(CursorSelection cursorSelection){
+		this.cursorSelection = cursorSelection;
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
 			private boolean dragging;

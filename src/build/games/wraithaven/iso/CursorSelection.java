@@ -13,6 +13,8 @@ package build.games.wraithaven.iso;
 public class CursorSelection{
 	private int screenX;
 	private int screenY;
+	private Tile selectedTile;
+	private int selectedTileIndex;
 	public void setScreenLocation(int x, int y){
 		screenX = x;
 		screenY = y;
@@ -22,5 +24,18 @@ public class CursorSelection{
 	}
 	public int getScreenY(){
 		return screenY;
+	}
+	public Tile getSelectedTile(){
+		return selectedTile;
+	}
+	public void setSelectedTile(Tile tile, int index){
+		selectedTile = tile;
+		selectedTileIndex = index;
+	}
+	public int getSelectedTileIndex(){
+		return selectedTileIndex;
+	}
+	public boolean isActive(){
+		return selectedTile!=null;
 	}
 }

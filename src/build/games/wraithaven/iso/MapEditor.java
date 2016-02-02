@@ -54,7 +54,11 @@ public class MapEditor extends AbstractMapEditor{
 			}
 			@Override
 			public void mouseMoved(MouseEvent event){
-				cursorSelection.setScreenLocation(event.getX(), event.getY());
+				int x = event.getX()-scrollX;
+				int y = event.getY()-scrollY;
+				int tileX = (int)Math.floor((x/(float)tileWidth+y/(float)tileHeight)/2);
+				int tileY = (int)Math.floor((y/(float)tileHeight-(x/(float)tileWidth))/2);
+				cursorSelection.setScreenLocation((tileX-tileY)*tileWidth+scrollX, (tileX+tileY)*tileHeight+scrollY);
 				repaint();
 			}
 			@Override
@@ -88,6 +92,7 @@ public class MapEditor extends AbstractMapEditor{
 				float per = tileSize/(float)pixelSizeBefore;
 				scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
 				scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
+				mouseMoved(event);
 				repaint();
 			}
 		};
@@ -99,23 +104,19 @@ public class MapEditor extends AbstractMapEditor{
 		generateSelectionHexagon();
 	}
 	private void generateSelectionHexagon(){
-		int[] x = new int[6];
-		int[] y = new int[6];
+		int[] x = new int[4];
+		int[] y = new int[4];
 		int r = tileSize/2;
 		int f = tileSize/4;
 		x[0] = 0;
-		y[0] = -r;
+		y[0] = 0;
 		x[1] = r;
-		y[1] = -f;
-		x[2] = r;
-		y[2] = f;
-		x[3] = 0;
-		y[3] = r;
-		x[4] = -r;
-		y[4] = f;
-		x[5] = -r;
-		y[5] = -f;
-		selectionHexagon = new Polygon(x, y, 6);
+		y[1] = f;
+		x[2] = 0;
+		y[2] = r;
+		x[3] = -r;
+		y[3] = f;
+		selectionHexagon = new Polygon(x, y, 4);
 	}
 	@Override
 	public boolean needsSaving(){
@@ -164,7 +165,8 @@ public class MapEditor extends AbstractMapEditor{
 					if(tiles[i]==null){
 						continue;
 					}
-					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*tileWidth+scrollX, (x+y)*tileHeight+scrollY, tileSize, tileSize, null);
+					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*tileWidth+scrollX-tileSize/2, (x+y)*tileHeight+scrollY, tileSize, tileSize,
+						null);
 				}
 			}
 			g.setStroke(new BasicStroke(2));

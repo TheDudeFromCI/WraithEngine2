@@ -31,7 +31,8 @@ public class MapEditor extends AbstractMapEditor{
 	private int tileHeight;
 	private int scrollX;
 	private int scrollY;
-	private Polygon selectionHexagon;
+	private Polygon selectionSquare;
+	private Polygon mapBorder;
 	public MapEditor(ChipsetList chipsetList){
 		tileSize = WraithEngine.projectBitSize;
 		tileWidth = tileSize/2;
@@ -131,7 +132,8 @@ public class MapEditor extends AbstractMapEditor{
 				tileSize = Math.max(Math.min(tileSize+change, WraithEngine.projectBitSize*4), WraithEngine.projectBitSize/4);
 				tileWidth = tileSize/2;
 				tileHeight = tileSize/4;
-				generateSelectionHexagon();
+				generateSelectionSquare();
+				generateMapBorder();
 				float per = tileSize/(float)pixelSizeBefore;
 				scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
 				scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
@@ -144,13 +146,13 @@ public class MapEditor extends AbstractMapEditor{
 		addMouseWheelListener(ml);
 		addKeyListener(ml);
 		setFocusable(true);
-		generateSelectionHexagon();
+		generateSelectionSquare();
 	}
 	private void updateNeedsSaving(){
 		boolean needsSaving = needsSaving();
 		WraithEngine.INSTANCE.setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
 	}
-	private void generateSelectionHexagon(){
+	private void generateSelectionSquare(){
 		int[] x = new int[4];
 		int[] y = new int[4];
 		int r = tileSize/2;
@@ -163,7 +165,25 @@ public class MapEditor extends AbstractMapEditor{
 		y[2] = r;
 		x[3] = -r;
 		y[3] = f;
-		selectionHexagon = new Polygon(x, y, 4);
+		selectionSquare = new Polygon(x, y, 4);
+	}
+	private void generateMapBorder(){
+		if(map==null){
+			return;
+		}
+		int[] x = new int[4];
+		int[] y = new int[4];
+		int w = map.getWidth();
+		int h = map.getHeight();
+		x[0] = 0;
+		y[0] = 0;
+		x[1] = w*tileWidth;
+		y[1] = w*tileHeight;
+		x[2] = (w-h)*tileWidth;
+		y[2] = (w+h)*tileHeight;
+		x[3] = -h*tileWidth;
+		y[3] = h*tileHeight;
+		mapBorder = new Polygon(x, y, 4);
 	}
 	@Override
 	public boolean needsSaving(){
@@ -196,6 +216,7 @@ public class MapEditor extends AbstractMapEditor{
 		this.map = map;
 		if(map!=null){ // In case we are given a 'null' map.
 			cursorSelection.setMapSize(map.getWidth(), map.getHeight());
+			generateMapBorder();
 			map.load();
 		}else{
 			cursorSelection.setMapSize(0, 0);
@@ -237,11 +258,16 @@ public class MapEditor extends AbstractMapEditor{
 					}
 				}
 			}
+			g.setColor(Color.blue);
+			g.translate(scrollX, scrollY);
+			g.drawPolygon(mapBorder);
+			g.translate(-scrollX, -scrollY);
 			if(cursorSelection.isOnEditor()){
 				g.setStroke(new BasicStroke(2));
-				g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
 				g.setColor(cursorSelection.isOverMap()?Color.white:Color.red);
-				g.drawPolygon(selectionHexagon);
+				g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
+				g.drawPolygon(selectionSquare);
+				g.translate(-cursorSelection.getScreenX(), -cursorSelection.getScreenY());
 			}
 		}
 		g.dispose();

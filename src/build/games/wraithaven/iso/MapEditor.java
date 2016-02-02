@@ -24,11 +24,11 @@ public class MapEditor extends AbstractMapEditor{
 	private final MapImageStorage imageStorage;
 	private final CursorSelection cursorSelection = new CursorSelection();
 	private Map map;
-	private int scrollX;
-	private int scrollY;
 	private int tileSize = ChipsetImporter.TILE_SIZE;
 	private int tileWidth = tileSize/2;
 	private int tileHeight = tileSize/4;
+	private int scrollX;
+	private int scrollY;
 	private Polygon selectionHexagon;
 	public MapEditor(){
 		imageStorage = new MapImageStorage();
@@ -143,16 +143,21 @@ public class MapEditor extends AbstractMapEditor{
 		}
 		repaint();
 	}
+	private boolean isOnScreen(int x, int y, int w, int h){
+		return x<w&&x+tileSize>=0&&y<h&&y+tileSize>=0;
+	}
 	@Override
 	public void paintComponent(Graphics g1){
 		Graphics2D g = (Graphics2D)g1;
 		g.setColor(map==null?Color.darkGray:Color.lightGray);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		int width = getWidth();
+		int height = getHeight();
+		g.fillRect(0, 0, width, height);
 		if(map!=null){
 			Tile[] tiles = map.getAllTiles();
 			int w = map.getWidth();
 			int h = map.getHeight();
-			int a, b, i, x, y;
+			int a, b, i, x, y, u, v;
 			int maxA = w+h-1;
 			for(a = 0; a<maxA; a++){
 				for(b = 0; b<=a; b++){
@@ -165,8 +170,11 @@ public class MapEditor extends AbstractMapEditor{
 					if(tiles[i]==null){
 						continue;
 					}
-					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*tileWidth+scrollX-tileSize/2, (x+y)*tileHeight+scrollY, tileSize, tileSize,
-						null);
+					u = (x-y)*tileWidth+scrollX-tileWidth;
+					v = (x+y)*tileHeight+scrollY;
+					if(isOnScreen(u, v, width, height)){
+						g.drawImage(imageStorage.getImage(tiles[i]), u, v, tileSize, tileSize, null);
+					}
 				}
 			}
 			g.setStroke(new BasicStroke(2));

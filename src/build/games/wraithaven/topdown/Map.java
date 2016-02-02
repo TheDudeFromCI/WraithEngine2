@@ -17,6 +17,7 @@ import java.util.ArrayList;
  * @author TheDudeFromCI
  */
 public class Map implements MapInterface{
+	public static final short MAP_FILE_VERSION = 0;
 	private final ArrayList<MapSection> mapSections = new ArrayList(16);
 	private final ArrayList<Map> childMaps = new ArrayList(0);
 	private final String uuid;
@@ -38,6 +39,7 @@ public class Map implements MapInterface{
 	public MapInterface getChild(int index){
 		return childMaps.get(index);
 	}
+	@Override
 	public void addChild(MapInterface map){
 		childMaps.add((Map)map);
 		saveProperties();
@@ -66,11 +68,18 @@ public class Map implements MapInterface{
 		File file = Algorithms.getFile("Worlds", uuid, "Properties.dat");
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
-		name = bin.getString();
-		int childCount = bin.getInt();
-		for(int i = 0; i<childCount; i++){
-			Map map = new Map(mapStyle, bin.getString());
-			childMaps.add(map);
+		short version = bin.getShort();
+		switch(version){
+			case 0:
+				name = bin.getString();
+				int childCount = bin.getInt();
+				for(int i = 0; i<childCount; i++){
+					Map map = new Map(mapStyle, bin.getString());
+					childMaps.add(map);
+				}
+				break;
+			default:
+				throw new RuntimeException();
 		}
 	}
 	public void save(){
@@ -87,30 +96,33 @@ public class Map implements MapInterface{
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
-		int mapCount = bin.getInt();
-		for(int i = 0; i<mapCount; i++){
-			mapSections.add(new MapSection((ChipsetList)mapStyle.getChipsetList(), ((MapEditor)mapStyle.getMapEditor()).getToolbar(), this,
-				bin.getInt(), bin.getInt()));
+		int version = bin.getShort();
+		switch(version){
+			case 0:
+				int mapCount = bin.getInt();
+				for(int i = 0; i<mapCount; i++){
+					mapSections.add(new MapSection((ChipsetList)mapStyle.getChipsetList(), ((MapEditor)mapStyle.getMapEditor()).getToolbar(), this,
+						bin.getInt(), bin.getInt()));
+				}
+				break;
+			default:
+				throw new RuntimeException();
 		}
 	}
 	private void saveProperties(){
-		BinaryFile bin = new BinaryFile(0);
-		byte[] bytes = name.getBytes();
-		bin.allocateBytes(bytes.length+8);
-		bin.addInt(bytes.length);
-		bin.addBytes(bytes, 0, bytes.length);
+		BinaryFile bin = new BinaryFile(2);
+		bin.addShort(MAP_FILE_VERSION);
+		bin.addStringAllocated(name);
 		bin.addInt(childMaps.size());
 		for(Map child : childMaps){
-			bytes = child.getUUID().getBytes();
-			bin.allocateBytes(bytes.length+4);
-			bin.addInt(bytes.length);
-			bin.addBytes(bytes, 0, bytes.length);
+			bin.addStringAllocated(child.getUUID());
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Worlds", uuid, "Properties.dat"));
 	}
 	private void saveMaps(){
-		BinaryFile bin = new BinaryFile(4+mapSections.size()*8);
+		BinaryFile bin = new BinaryFile(4+mapSections.size()*8+2);
+		bin.addShort(MAP_FILE_VERSION);
 		bin.addInt(mapSections.size());
 		for(MapSection map : mapSections){
 			bin.addInt(map.getMapX());

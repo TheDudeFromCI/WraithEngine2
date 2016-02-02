@@ -20,7 +20,7 @@ public class Map implements MapInterface{
 	private final String uuid;
 	private final ArrayList<Map> childMaps = new ArrayList(1);
 	private final ChipsetList chipsetList;
-	private Tile[] tiles;
+	private TileInstance[] tiles;
 	private int width;
 	private int height;
 	private String name;
@@ -46,28 +46,30 @@ public class Map implements MapInterface{
 		if(!loaded){
 			throw new RuntimeException();
 		}
-		BinaryFile bin = new BinaryFile(tiles.length*4+4);
+		BinaryFile bin = new BinaryFile(tiles.length*8+4);
 		ArrayList<Tile> tileReferences = new ArrayList(16);
-		for(Tile t : tiles){
-			if(t!=null&&!tileReferences.contains(t)){
-				tileReferences.add(t);
+		for(TileInstance t : tiles){
+			if(t!=null&&!tileReferences.contains(t.getTile())){
+				tileReferences.add(t.getTile());
 			}
 		}
 		bin.addInt(tileReferences.size());
 		for(Tile t : tileReferences){
 			bin.addStringAllocated(t.getUUID());
 		}
-		for(Tile t : tiles){
+		for(TileInstance t : tiles){
 			if(t==null){
 				bin.addInt(-1);
+				bin.addInt(0);
 			}else{
-				bin.addInt(tileReferences.indexOf(t));
+				bin.addInt(tileReferences.indexOf(t.getTile()));
+				bin.addInt(t.getHeight());
 			}
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Worlds", "Tiles", uuid+".dat"));
 	}
-	public Tile getTile(int x, int z){
+	public TileInstance getTile(int x, int z){
 		return tiles[z*width+x];
 	}
 	public void load(){
@@ -77,12 +79,12 @@ public class Map implements MapInterface{
 		loaded = true;
 		File file = Algorithms.getFile("Worlds", "Tiles", uuid+".dat");
 		if(!file.exists()){
-			tiles = new Tile[width*height];
+			tiles = new TileInstance[width*height];
 			return;
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(true);
-		tiles = new Tile[width*height];
+		tiles = new TileInstance[width*height];
 		Tile[] tileReferences = new Tile[bin.getInt()];
 		for(int i = 0; i<tileReferences.length; i++){
 			tileReferences[i] = chipsetList.getTile(bin.getString());
@@ -90,9 +92,10 @@ public class Map implements MapInterface{
 		for(int i = 0; i<tiles.length; i++){
 			int id = bin.getInt();
 			if(id==-1){
+				bin.skip(4);
 				continue;
 			}
-			tiles[i] = tileReferences[id];
+			tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
 		}
 	}
 	public void dispose(){
@@ -127,7 +130,11 @@ public class Map implements MapInterface{
 		}
 	}
 	public void setTile(int x, int z, Tile tile){
-		tiles[z*width+x] = tile;
+		if(tile==null){
+			tiles[z*width+x] = null;
+		}else{
+			tiles[z*width+x] = new TileInstance(tile);
+		}
 		needsSaving = true;
 	}
 	@Override
@@ -151,11 +158,7 @@ public class Map implements MapInterface{
 		childMaps.add((Map)map);
 		save();
 	}
-	public void addTile(Tile tile, int x, int z){
-		tiles[z*width+x] = tile;
-		needsSaving = true;
-	}
-	public Tile[] getAllTiles(){
+	public TileInstance[] getAllTiles(){
 		return tiles;
 	}
 	public int getWidth(){

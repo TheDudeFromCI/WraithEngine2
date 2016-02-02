@@ -39,7 +39,7 @@ public class ChipsetList extends AbstractChipsetList{
 		return new Polygon(x, y, 4);
 	}
 	public static final int PREVIEW_TILES_WIDTH = 6;
-	public static final int PREVIEW_TILE_SCALE = 48;
+	public static final int PREVIEW_TILE_SCALE = 32;
 	private final ArrayList<Tile> tiles = new ArrayList(64);
 	private final CursorSelection cursorSelection;
 	private final Polygon cursor;

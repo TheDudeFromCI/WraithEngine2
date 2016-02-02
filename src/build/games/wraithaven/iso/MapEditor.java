@@ -97,8 +97,8 @@ public class MapEditor extends AbstractMapEditor{
 					}
 				}else if(button==MouseEvent.BUTTON2){
 					if(cursorSelection.isOverMap()){
-						Tile tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-						cursorSelection.setSelectedTile(tile, tile==null?-1:chipsetList.getIndexOfTile(tile));
+						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
+						cursorSelection.setSelectedTile(tile==null?null:tile.getTile(), tile==null?-1:chipsetList.getIndexOfTile(tile.getTile()));
 						chipsetList.repaint();
 					}
 				}
@@ -235,7 +235,7 @@ public class MapEditor extends AbstractMapEditor{
 		int height = getHeight();
 		g.fillRect(0, 0, width, height);
 		if(map!=null){
-			Tile[] tiles = map.getAllTiles();
+			TileInstance[] tiles = map.getAllTiles();
 			int w = map.getWidth();
 			int h = map.getHeight();
 			int a, b, i, x, y, u, v;
@@ -254,7 +254,7 @@ public class MapEditor extends AbstractMapEditor{
 					u = (x-y)*tileWidth+scrollX-tileWidth;
 					v = (x+y)*tileHeight+scrollY;
 					if(isOnScreen(u, v, width, height)){
-						g.drawImage(imageStorage.getImage(tiles[i]), u, v, tileSize, tileSize, null);
+						g.drawImage(imageStorage.getImage(tiles[i].getTile()), u, v, tileSize, tileSize, null);
 					}
 				}
 			}

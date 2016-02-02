@@ -58,6 +58,13 @@ public class MapEditor extends AbstractMapEditor{
 			public void mouseExited(MouseEvent event){
 				dragging = false;
 				drawing = false;
+				cursorSelection.hide();
+				repaint();
+			}
+			@Override
+			public void mouseEntered(MouseEvent event){
+				cursorSelection.show();
+				mouseMoved(event);
 				repaint();
 			}
 			@Override
@@ -99,10 +106,6 @@ public class MapEditor extends AbstractMapEditor{
 					dragging = false;
 				}
 				drawing = button==MouseEvent.BUTTON1;
-			}
-			@Override
-			public void mouseEntered(MouseEvent event){
-				mouseMoved(event);
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
@@ -225,10 +228,12 @@ public class MapEditor extends AbstractMapEditor{
 					}
 				}
 			}
-			g.setStroke(new BasicStroke(2));
-			g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
-			g.setColor(cursorSelection.isOverMap()?Color.white:Color.red);
-			g.drawPolygon(selectionHexagon);
+			if(cursorSelection.isOnEditor()){
+				g.setStroke(new BasicStroke(2));
+				g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
+				g.setColor(cursorSelection.isOverMap()?Color.white:Color.red);
+				g.drawPolygon(selectionHexagon);
+			}
 		}
 		g.dispose();
 	}

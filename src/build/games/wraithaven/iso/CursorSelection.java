@@ -19,9 +19,19 @@ public class CursorSelection{
 	private int selectedTileIndex;
 	private int mapWidth;
 	private int mapHeight;
+	private boolean onEditor;
 	public void setScreenLocation(int x, int y){
 		screenX = x;
 		screenY = y;
+	}
+	public void show(){
+		onEditor = true;
+	}
+	public void hide(){
+		onEditor = false;
+	}
+	public boolean isOnEditor(){
+		return onEditor;
 	}
 	public int getScreenX(){
 		return screenX;

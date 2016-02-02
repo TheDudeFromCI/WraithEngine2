@@ -9,8 +9,11 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractMapEditor;
 import build.games.wraithaven.util.InputAdapter;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
@@ -19,12 +22,14 @@ import java.awt.event.MouseWheelEvent;
  */
 public class MapEditor extends AbstractMapEditor{
 	private final MapImageStorage imageStorage;
+	private final CursorSelection cursorSelection = new CursorSelection();
 	private Map map;
 	private int scrollX;
 	private int scrollY;
 	private int tileSize = ChipsetImporter.TILE_SIZE;
 	private int tileWidth = tileSize/2;
 	private int tileHeight = tileSize/4;
+	private Polygon selectionHexagon;
 	public MapEditor(){
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
@@ -40,10 +45,16 @@ public class MapEditor extends AbstractMapEditor{
 					scrollY = event.getY()-mouseYStart+scrollYStart;
 					repaint();
 				}
+				mouseMoved(event);
 			}
 			@Override
 			public void mouseExited(MouseEvent event){
 				dragging = false;
+				repaint();
+			}
+			@Override
+			public void mouseMoved(MouseEvent event){
+				cursorSelection.setScreenLocation(event.getX(), event.getY());
 				repaint();
 			}
 			@Override
@@ -73,6 +84,7 @@ public class MapEditor extends AbstractMapEditor{
 				tileSize = Math.max(Math.min(tileSize+change, ChipsetImporter.TILE_SIZE*4), ChipsetImporter.TILE_SIZE/4);
 				tileWidth = tileSize/2;
 				tileHeight = tileSize/4;
+				generateSelectionHexagon();
 				float per = tileSize/(float)pixelSizeBefore;
 				scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
 				scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
@@ -84,6 +96,26 @@ public class MapEditor extends AbstractMapEditor{
 		addMouseWheelListener(ml);
 		addKeyListener(ml);
 		setFocusable(true);
+		generateSelectionHexagon();
+	}
+	private void generateSelectionHexagon(){
+		int[] x = new int[6];
+		int[] y = new int[6];
+		int r = tileSize/2;
+		int f = tileSize/4;
+		x[0] = 0;
+		y[0] = -r;
+		x[1] = r;
+		y[1] = -f;
+		x[2] = r;
+		y[2] = f;
+		x[3] = 0;
+		y[3] = r;
+		x[4] = -r;
+		y[4] = f;
+		x[5] = -r;
+		y[5] = -f;
+		selectionHexagon = new Polygon(x, y, 6);
 	}
 	@Override
 	public boolean needsSaving(){
@@ -111,14 +143,15 @@ public class MapEditor extends AbstractMapEditor{
 		repaint();
 	}
 	@Override
-	public void paintComponent(Graphics g){
+	public void paintComponent(Graphics g1){
+		Graphics2D g = (Graphics2D)g1;
 		g.setColor(map==null?Color.darkGray:Color.lightGray);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		if(map!=null){
 			Tile[] tiles = map.getAllTiles();
 			int w = map.getWidth();
 			int h = map.getHeight();
-			int a, b, maxB, i, x, y;
+			int a, b, i, x, y;
 			int maxA = w+h-1;
 			for(a = 0; a<maxA; a++){
 				for(b = 0; b<=a; b++){
@@ -134,6 +167,10 @@ public class MapEditor extends AbstractMapEditor{
 					g.drawImage(imageStorage.getImage(tiles[i]), (x-y)*tileWidth+scrollX, (x+y)*tileHeight+scrollY, tileSize, tileSize, null);
 				}
 			}
+			g.setStroke(new BasicStroke(2));
+			g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
+			g.setColor(Color.white);
+			g.drawPolygon(selectionHexagon);
 		}
 		g.dispose();
 	}

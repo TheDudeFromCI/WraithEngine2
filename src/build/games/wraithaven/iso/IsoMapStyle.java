@@ -21,7 +21,7 @@ public class IsoMapStyle implements MapStyle{
 	private final MapEditor mapEditor;
 	public IsoMapStyle(){
 		chipsetList = new ChipsetList();
-		mapEditor = new MapEditor(chipsetList.getCursorSelection());
+		mapEditor = new MapEditor(chipsetList);
 	}
 	@Override
 	public AbstractChipsetList getChipsetList(){

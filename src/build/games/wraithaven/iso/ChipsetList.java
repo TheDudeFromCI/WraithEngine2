@@ -65,6 +65,9 @@ public class ChipsetList extends AbstractChipsetList{
 		};
 		addMouseListener(ia);
 	}
+	public int getIndexOfTile(Tile tile){
+		return tiles.indexOf(tile);
+	}
 	public CursorSelection getCursorSelection(){
 		return cursorSelection;
 	}

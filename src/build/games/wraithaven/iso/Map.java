@@ -67,6 +67,9 @@ public class Map implements MapInterface{
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Worlds", "Tiles", uuid+".dat"));
 	}
+	public Tile getTile(int x, int z){
+		return tiles[z*width+x];
+	}
 	public void load(){
 		if(loaded){
 			throw new RuntimeException();

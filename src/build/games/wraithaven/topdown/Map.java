@@ -96,7 +96,7 @@ public class Map implements MapInterface{
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
-		int version = bin.getShort();
+		short version = bin.getShort();
 		switch(version){
 			case 0:
 				int mapCount = bin.getInt();
@@ -110,7 +110,7 @@ public class Map implements MapInterface{
 		}
 	}
 	private void saveProperties(){
-		BinaryFile bin = new BinaryFile(2);
+		BinaryFile bin = new BinaryFile(6);
 		bin.addShort(MAP_FILE_VERSION);
 		bin.addStringAllocated(name);
 		bin.addInt(childMaps.size());

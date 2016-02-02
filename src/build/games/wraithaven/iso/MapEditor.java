@@ -32,11 +32,11 @@ public class MapEditor extends AbstractMapEditor{
 	private int scrollX;
 	private int scrollY;
 	private Polygon selectionHexagon;
-	public MapEditor(CursorSelection cursorSelection){
+	public MapEditor(ChipsetList chipsetList){
 		tileSize = WraithEngine.projectBitSize;
 		tileWidth = tileSize/2;
 		tileHeight = tileSize/4;
-		this.cursorSelection = cursorSelection;
+		this.cursorSelection = chipsetList.getCursorSelection();
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
 			private boolean dragging;
@@ -93,6 +93,12 @@ public class MapEditor extends AbstractMapEditor{
 						map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
 						updateNeedsSaving();
 						repaint();
+					}
+				}else if(button==MouseEvent.BUTTON2){
+					if(cursorSelection.isOverMap()){
+						Tile tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
+						cursorSelection.setSelectedTile(tile, tile==null?-1:chipsetList.getIndexOfTile(tile));
+						chipsetList.repaint();
 					}
 				}
 			}

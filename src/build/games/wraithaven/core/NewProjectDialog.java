@@ -14,7 +14,9 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 /**
  * @author TheDudeFromCI
@@ -34,6 +36,7 @@ public class NewProjectDialog extends JPanel{
 	}
 	private final JTextField projectName;
 	private final JComboBox<MapStyleOption> mapStyle;
+	private final JSpinner bitSize;
 	public NewProjectDialog(){
 		VerticalFlowLayout verticalFlowLayout = new VerticalFlowLayout();
 		verticalFlowLayout.setVGap(5);
@@ -62,11 +65,24 @@ public class NewProjectDialog extends JPanel{
 			panel.add(mapStyle, BorderLayout.CENTER);
 			add(panel);
 		}
+		{
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout(5, 0));
+			JLabel label = new JLabel("Bit Size:");
+			panel.add(label, BorderLayout.WEST);
+			bitSize = new JSpinner();
+			bitSize.setModel(new SpinnerNumberModel(16, 8, 128, 8));
+			panel.add(bitSize, BorderLayout.CENTER);
+			add(panel);
+		}
 	}
 	public String getProjectName(){
 		return projectName.getText();
 	}
 	public int getMapStyle(){
 		return ((MapStyleOption)mapStyle.getSelectedItem()).id;
+	}
+	public int getBitSize(){
+		return (int)bitSize.getValue();
 	}
 }

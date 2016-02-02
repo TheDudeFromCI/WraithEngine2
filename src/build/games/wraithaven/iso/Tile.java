@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -19,7 +20,7 @@ import javax.imageio.ImageIO;
 public class Tile{
 	private static BufferedImage scaleImage(BufferedImage image){
 		BufferedImage buf = image;
-		int s = ChipsetImporter.TILE_SIZE;
+		int s = WraithEngine.projectBitSize;
 		do{
 			if(s>ChipsetList.PREVIEW_TILE_SCALE){
 				s /= 2;

@@ -30,6 +30,7 @@ public class WraithEngine extends JFrame{
 	public static String outputFolder;
 	public static String assetFolder;
 	public static String projectName;
+	public static int projectBitSize;
 	public static WraithEngine INSTANCE;
 	public static void main(String[] args){
 		try{

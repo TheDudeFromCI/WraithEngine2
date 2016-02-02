@@ -26,13 +26,16 @@ public class MapEditor extends AbstractMapEditor{
 	private final MapImageStorage imageStorage;
 	private final CursorSelection cursorSelection;
 	private Map map;
-	private int tileSize = ChipsetImporter.TILE_SIZE;
-	private int tileWidth = tileSize/2;
-	private int tileHeight = tileSize/4;
+	private int tileSize;
+	private int tileWidth;
+	private int tileHeight;
 	private int scrollX;
 	private int scrollY;
 	private Polygon selectionHexagon;
 	public MapEditor(CursorSelection cursorSelection){
+		tileSize = WraithEngine.projectBitSize;
+		tileWidth = tileSize/2;
+		tileHeight = tileSize/4;
 		this.cursorSelection = cursorSelection;
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
@@ -119,7 +122,7 @@ public class MapEditor extends AbstractMapEditor{
 				}
 				int change = -event.getWheelRotation()*4;
 				int pixelSizeBefore = tileSize;
-				tileSize = Math.max(Math.min(tileSize+change, ChipsetImporter.TILE_SIZE*4), ChipsetImporter.TILE_SIZE/4);
+				tileSize = Math.max(Math.min(tileSize+change, WraithEngine.projectBitSize*4), WraithEngine.projectBitSize/4);
 				tileWidth = tileSize/2;
 				tileHeight = tileSize/4;
 				generateSelectionHexagon();

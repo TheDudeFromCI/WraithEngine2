@@ -98,12 +98,13 @@ public class ProjectList extends JFrame{
 						newProjectList[j++] = project;
 					}
 					projects = newProjectList;
-					BinaryFile bin = new BinaryFile(4+newProjectList.length*4);
+					BinaryFile bin = new BinaryFile(4+newProjectList.length*8);
 					bin.addInt(newProjectList.length);
 					for(ProjectConstraints s : newProjectList){
 						bin.addStringAllocated(s.getName());
 						bin.addStringAllocated(s.getUUID());
 						bin.addInt(s.getType());
+						bin.addInt(s.getBitSize());
 					}
 					bin.compress(false);
 					bin.compile(Algorithms.getFile("Projects.dat"));
@@ -142,20 +143,23 @@ public class ProjectList extends JFrame{
 				String name = dialog.getProjectName();
 				String uuid = Algorithms.randomUUID();
 				int type = dialog.getMapStyle();
-				BinaryFile bin = new BinaryFile(4+projects.length*4+4);
+				int bitSize = dialog.getBitSize();
+				BinaryFile bin = new BinaryFile(4+projects.length*8+8);
 				bin.addInt(projects.length+1);
 				for(ProjectConstraints s : projects){
 					bin.addStringAllocated(s.getName());
 					bin.addStringAllocated(s.getUUID());
 					bin.addInt(s.getType());
+					bin.addInt(s.getBitSize());
 				}
 				bin.addStringAllocated(name);
 				bin.addStringAllocated(uuid);
 				bin.addInt(type);
+				bin.addInt(bitSize);
 				bin.compress(false);
 				bin.compile(Algorithms.getFile("Projects.dat"));
 				dispose();
-				loadProject(new ProjectConstraints(name, uuid, type));
+				loadProject(new ProjectConstraints(name, uuid, type, bitSize));
 			}
 		});
 		JButton btnCancel = new JButton("Cancel");
@@ -184,6 +188,7 @@ public class ProjectList extends JFrame{
 	private void loadProject(ProjectConstraints pc){
 		WraithEngine.outputFolder += File.separatorChar+pc.getUUID();
 		WraithEngine.projectName = pc.getName();
+		WraithEngine.projectBitSize = pc.getBitSize();
 		WraithEngine.INSTANCE = new WraithEngine(MapStyleFactory.loadMapStyle(pc.getType()));
 	}
 	private ProjectConstraints[] loadProjects(){
@@ -198,7 +203,8 @@ public class ProjectList extends JFrame{
 			String name = bin.getString();
 			String uuid = bin.getString();
 			int type = bin.getInt();
-			list[i] = new ProjectConstraints(name, uuid, type);
+			int bitSize = bin.getInt();
+			list[i] = new ProjectConstraints(name, uuid, type, bitSize);
 		}
 		return list;
 	}

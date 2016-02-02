@@ -14,10 +14,15 @@ public class ProjectConstraints{
 	private final String name;
 	private final String uuid;
 	private final int type;
-	public ProjectConstraints(String name, String uuid, int type){
+	private final int bitSize;
+	public ProjectConstraints(String name, String uuid, int type, int bitSize){
 		this.name = name;
 		this.uuid = uuid;
 		this.type = type;
+		this.bitSize = bitSize;
+	}
+	public int getBitSize(){
+		return bitSize;
 	}
 	public String getName(){
 		return name;

@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BorderLayout;
@@ -33,7 +34,6 @@ import javax.swing.JPanel;
  * @author TheDudeFromCI
  */
 public class ChipsetImporter{
-	public static final int TILE_SIZE = 64;
 	private final JLabel tilePreview;
 	private BufferedImage left;
 	private BufferedImage right;
@@ -164,15 +164,15 @@ public class ChipsetImporter{
 		BufferedImage buf = image;
 		int s = image.getWidth();
 		do{
-			if(s>TILE_SIZE){
+			if(s>WraithEngine.projectBitSize){
 				s /= 2;
-				if(s<TILE_SIZE){
-					s = TILE_SIZE;
+				if(s<WraithEngine.projectBitSize){
+					s = WraithEngine.projectBitSize;
 				}
 			}else{
 				s *= 2;
-				if(s>TILE_SIZE){
-					s = TILE_SIZE;
+				if(s>WraithEngine.projectBitSize){
+					s = WraithEngine.projectBitSize;
 				}
 			}
 			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
@@ -183,7 +183,7 @@ public class ChipsetImporter{
 			g.drawImage(buf, 0, 0, s, s, null);
 			g.dispose();
 			buf = out;
-		}while(s!=TILE_SIZE); // This loop enhances quality, while resizing!
+		}while(s!=WraithEngine.projectBitSize); // This loop enhances quality, while resizing!
 		return buf;
 	}
 	private static BufferedImage combine(BufferedImage left, BufferedImage right, BufferedImage top){

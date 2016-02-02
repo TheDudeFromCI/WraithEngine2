@@ -7,8 +7,9 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.BinaryFile;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -28,7 +29,8 @@ public class MapSection{
 		this.mapX = mapX;
 		this.mapY = mapY;
 		this.worldScreenToolbar = worldScreenToolbar;
-		image = new BufferedImage(Chipset.BIT_SIZE*MapLayer.MAP_TILES_WIDTH, Chipset.BIT_SIZE*MapLayer.MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		image = new BufferedImage(WraithEngine.projectBitSize*MapLayer.MAP_TILES_WIDTH, WraithEngine.projectBitSize*MapLayer.MAP_TILES_HEIGHT,
+			BufferedImage.TYPE_INT_ARGB);
 		load(chipsetList);
 		redraw();
 	}

@@ -36,6 +36,7 @@ public class MapEditor extends AbstractMapEditor{
 			painter.getMap().save();
 			painter.getMapImageStorage().clear(); // To keep memory down, drop all images on save. Just in case some of the loaded tiles are no longer
 			// being used.
+			painter.updateNeedsSaving();
 		}
 	}
 	public void selectMap(Map map){

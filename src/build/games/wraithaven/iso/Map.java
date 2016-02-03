@@ -46,6 +46,10 @@ public class Map implements MapInterface{
 		if(!loaded){
 			throw new RuntimeException();
 		}
+		if(!needsSaving){
+			return;
+		}
+		needsSaving = false;
 		BinaryFile bin = new BinaryFile(tiles.length*8+4);
 		ArrayList<Tile> tileReferences = new ArrayList(16);
 		for(TileInstance t : tiles){

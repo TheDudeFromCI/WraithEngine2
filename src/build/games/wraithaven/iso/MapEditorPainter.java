@@ -175,7 +175,7 @@ public class MapEditorPainter extends JPanel{
 		generateSelectionSquare();
 		generateIsoCubeBorder();
 	}
-	private void updateNeedsSaving(){
+	public void updateNeedsSaving(){
 		boolean needsSaving = mapEditor.needsSaving();
 		WraithEngine.INSTANCE.setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
 		toolbar.setNeedsSaving(needsSaving);

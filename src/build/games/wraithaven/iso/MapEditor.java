@@ -8,318 +8,37 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractMapEditor;
-import build.games.wraithaven.core.WraithEngine;
-import build.games.wraithaven.util.InputAdapter;
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import javax.swing.JOptionPane;
+import java.awt.BorderLayout;
 
 /**
  * @author TheDudeFromCI
  */
 public class MapEditor extends AbstractMapEditor{
-	private final MapImageStorage imageStorage;
-	private final CursorSelection cursorSelection;
-	private Map map;
-	private int tileSize;
-	private int tileWidth;
-	private int tileHeight;
-	private int scrollX;
-	private int scrollY;
-	private Polygon selectionSquare;
-	private Polygon mapBorder;
-	private Polygon isoCubeBorder;
+	private final Toolbar toolbar;
+	private final MapEditorPainter painter;
 	public MapEditor(ChipsetList chipsetList){
-		tileSize = WraithEngine.projectBitSize;
-		tileWidth = tileSize/2;
-		tileHeight = tileSize/4;
-		this.cursorSelection = chipsetList.getCursorSelection();
-		imageStorage = new MapImageStorage();
-		InputAdapter ml = new InputAdapter(){
-			private boolean dragging;
-			private boolean drawing;
-			private int scrollXStart;
-			private int scrollYStart;
-			private int mouseXStart;
-			private int mouseYStart;
-			@Override
-			public void mouseDragged(MouseEvent event){
-				if(dragging){
-					scrollX = event.getX()-mouseXStart+scrollXStart;
-					scrollY = event.getY()-mouseYStart+scrollYStart;
-					repaint();
-				}
-				if(drawing){
-					mouseClicked(event.getX(), event.getY(), 1);
-				}
-				mouseMoved(event);
-			}
-			@Override
-			public void mouseExited(MouseEvent event){
-				dragging = false;
-				drawing = false;
-				cursorSelection.hide();
-				repaint();
-			}
-			@Override
-			public void mouseEntered(MouseEvent event){
-				cursorSelection.show();
-				mouseMoved(event);
-				repaint();
-			}
-			@Override
-			public void mouseMoved(MouseEvent event){
-				if(map==null){
-					return;
-				}
-				int x = event.getX()-scrollX;
-				int y = event.getY()-scrollY;
-				int tileX = (int)Math.floor((x/(float)tileWidth+y/(float)tileHeight)/2);
-				int tileY = (int)Math.floor((y/(float)tileHeight-(x/(float)tileWidth))/2);
-				cursorSelection.setScreenLocation((tileX-tileY)*tileWidth+scrollX, (tileX+tileY)*tileHeight+scrollY);
-				cursorSelection.setTileLocation(tileX, tileY);
-				repaint();
-			}
-			@Override
-			public void mouseClicked(MouseEvent event){
-				mouseClicked(event.getX(), event.getY(), event.getButton());
-			}
-			public void mouseClicked(int x, int y, int button){
-				if(map==null){
-					return;
-				}
-				if(button==MouseEvent.BUTTON1){
-					if(cursorSelection.isOverMap()){
-						map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
-						updateNeedsSaving();
-						repaint();
-					}
-				}else if(button==MouseEvent.BUTTON2){
-					if(cursorSelection.isOverMap()){
-						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-						cursorSelection.setSelectedTile(tile==null?null:tile.getTile(), tile==null?-1:chipsetList.getIndexOfTile(tile.getTile()));
-						chipsetList.repaint();
-					}
-				}
-			}
-			@Override
-			public void mousePressed(MouseEvent event){
-				int button = event.getButton();
-				if(button==MouseEvent.BUTTON3){
-					dragging = true;
-					scrollXStart = scrollX;
-					scrollYStart = scrollY;
-					mouseXStart = event.getX();
-					mouseYStart = event.getY();
-				}else{
-					dragging = false;
-				}
-				drawing = button==MouseEvent.BUTTON1;
-			}
-			@Override
-			public void mouseReleased(MouseEvent event){
-				dragging = false;
-				drawing = false;
-			}
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent event){
-				if(map==null){
-					return;
-				}
-				if(dragging||drawing){
-					return;
-				}
-				if(event.isShiftDown()){
-					if(cursorSelection.isOverMap()){
-						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-						if(tile!=null){
-							tile.setHeight(tile.getHeight()-event.getWheelRotation());
-							map.setNeedsSaving();
-							repaint();
-						}
-					}
-				}else{
-					int change = -event.getWheelRotation()*4;
-					int pixelSizeBefore = tileSize;
-					tileSize = Math.max(Math.min(tileSize+change, WraithEngine.projectBitSize*4), WraithEngine.projectBitSize/4);
-					tileWidth = tileSize/2;
-					tileHeight = tileSize/4;
-					generateSelectionSquare();
-					generateMapBorder();
-					generateIsoCubeBorder();
-					float per = tileSize/(float)pixelSizeBefore;
-					scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
-					scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
-					mouseMoved(event);
-					repaint();
-				}
-			}
-		};
-		addMouseListener(ml);
-		addMouseMotionListener(ml);
-		addMouseWheelListener(ml);
-		addKeyListener(ml);
-		setFocusable(true);
-		generateSelectionSquare();
-		generateIsoCubeBorder();
-	}
-	private void updateNeedsSaving(){
-		boolean needsSaving = needsSaving();
-		WraithEngine.INSTANCE.setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
-	}
-	private void generateIsoCubeBorder(){
-		int[] x = new int[6];
-		int[] y = new int[6];
-		int r = tileSize/2;
-		int f = tileSize/4;
-		x[0] = 0;
-		y[0] = -r;
-		x[1] = r;
-		y[1] = -f;
-		x[2] = r;
-		y[2] = f;
-		x[3] = 0;
-		y[3] = r;
-		x[4] = -r;
-		y[4] = f;
-		x[5] = -r;
-		y[5] = -f;
-		isoCubeBorder = new Polygon(x, y, 6);
-	}
-	private void generateSelectionSquare(){
-		int[] x = new int[4];
-		int[] y = new int[4];
-		int r = tileSize/2;
-		int f = tileSize/4;
-		x[0] = 0;
-		y[0] = 0;
-		x[1] = r;
-		y[1] = f;
-		x[2] = 0;
-		y[2] = r;
-		x[3] = -r;
-		y[3] = f;
-		selectionSquare = new Polygon(x, y, 4);
-	}
-	private void generateMapBorder(){
-		if(map==null){
-			return;
-		}
-		int[] x = new int[4];
-		int[] y = new int[4];
-		int w = map.getWidth();
-		int h = map.getHeight();
-		x[0] = 0;
-		y[0] = 0;
-		x[1] = w*tileWidth;
-		y[1] = w*tileHeight;
-		x[2] = (w-h)*tileWidth;
-		y[2] = (w+h)*tileHeight;
-		x[3] = -h*tileWidth;
-		y[3] = h*tileHeight;
-		mapBorder = new Polygon(x, y, 4);
+		toolbar = new Toolbar(this);
+		painter = new MapEditorPainter(chipsetList, toolbar, this);
+		setLayout(new BorderLayout());
+		add(toolbar, BorderLayout.NORTH);
+		add(painter, BorderLayout.CENTER);
 	}
 	@Override
 	public boolean needsSaving(){
-		if(map==null){
+		if(painter.getMap()==null){
 			return false;
 		}
-		return map.needsSaving();
+		return painter.getMap().needsSaving();
 	}
 	@Override
 	public void save(){
-		if(map!=null){
-			map.save();
-			imageStorage.clear(); // To keep memory down, drop all images on save. Just in case some of the loaded tiles are no longer being used.
+		if(painter.getMap()!=null){
+			painter.getMap().save();
+			painter.getMapImageStorage().clear(); // To keep memory down, drop all images on save. Just in case some of the loaded tiles are no longer
+			// being used.
 		}
 	}
 	public void selectMap(Map map){
-		if(this.map!=null){
-			if(needsSaving()){
-				int response = JOptionPane.showConfirmDialog(null, "Map not saved! Would you like to save before exiting?", "Confirm Save Map",
-					JOptionPane.YES_NO_CANCEL_OPTION);
-				if(response==JOptionPane.YES_OPTION){
-					this.map.save();
-				}else if(response!=JOptionPane.NO_OPTION){
-					return;
-				}
-			}
-			this.map.dispose();
-			imageStorage.clear();
-		}
-		this.map = map;
-		if(map!=null){ // In case we are given a 'null' map.
-			cursorSelection.setMapSize(map.getWidth(), map.getHeight());
-			generateMapBorder();
-			map.load();
-		}else{
-			cursorSelection.setMapSize(0, 0);
-		}
-		updateNeedsSaving();
-		repaint();
-	}
-	private boolean isOnScreen(int x, int y, int w, int h){
-		return x<w&&x+tileSize>=0&&y<h&&y+tileSize>=0;
-	}
-	@Override
-	public void paintComponent(Graphics g1){
-		Graphics2D g = (Graphics2D)g1;
-		g.setColor(map==null?Color.darkGray:Color.lightGray);
-		int width = getWidth();
-		int height = getHeight();
-		g.fillRect(0, 0, width, height);
-		if(map!=null){
-			TileInstance[] tiles = map.getAllTiles();
-			int w = map.getWidth();
-			int h = map.getHeight();
-			int a, b, i, x, y, u, v;
-			int maxA = w+h-1;
-			for(a = 0; a<maxA; a++){
-				for(b = 0; b<=a; b++){
-					x = b;
-					y = a-b;
-					if(x>=w||y>=h){
-						continue;
-					}
-					i = y*w+x;
-					if(tiles[i]==null){
-						continue;
-					}
-					u = (x-y)*tileWidth+scrollX-tileWidth;
-					v = (x+y)*tileHeight+scrollY-tiles[i].getHeight()*tileSize/8;
-					if(isOnScreen(u, v, width, height)){
-						g.drawImage(imageStorage.getImage(tiles[i].getTile()), u, v, tileSize, tileSize, null);
-						if(x==cursorSelection.getTileX()&&y==cursorSelection.getTileY()){
-							Composite com = g.getComposite();
-							g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
-							g.setColor(Color.white);
-							g.translate(u+tileWidth, v+tileWidth);
-							g.fillPolygon(isoCubeBorder);
-							g.translate(-u-tileWidth, -v-tileWidth);
-							g.setComposite(com);
-						}
-					}
-				}
-			}
-			g.setColor(Color.blue);
-			g.translate(scrollX, scrollY);
-			g.drawPolygon(mapBorder);
-			g.translate(-scrollX, -scrollY);
-			if(cursorSelection.isOnEditor()){
-				g.setStroke(new BasicStroke(2));
-				g.setColor(cursorSelection.isOverMap()?Color.white:Color.red);
-				g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
-				g.drawPolygon(selectionSquare);
-				g.translate(-cursorSelection.getScreenX(), -cursorSelection.getScreenY());
-			}
-		}
-		g.dispose();
+		painter.selectMap(map);
 	}
 }

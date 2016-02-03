@@ -10,8 +10,10 @@ package build.games.wraithaven.iso;
 import build.games.wraithaven.core.AbstractMapEditor;
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.InputAdapter;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -33,6 +35,7 @@ public class MapEditor extends AbstractMapEditor{
 	private int scrollY;
 	private Polygon selectionSquare;
 	private Polygon mapBorder;
+	private Polygon isoCubeBorder;
 	public MapEditor(ChipsetList chipsetList){
 		tileSize = WraithEngine.projectBitSize;
 		tileWidth = tileSize/2;
@@ -73,6 +76,9 @@ public class MapEditor extends AbstractMapEditor{
 			}
 			@Override
 			public void mouseMoved(MouseEvent event){
+				if(map==null){
+					return;
+				}
 				int x = event.getX()-scrollX;
 				int y = event.getY()-scrollY;
 				int tileX = (int)Math.floor((x/(float)tileWidth+y/(float)tileHeight)/2);
@@ -124,21 +130,36 @@ public class MapEditor extends AbstractMapEditor{
 			}
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent event){
+				if(map==null){
+					return;
+				}
 				if(dragging||drawing){
 					return;
 				}
-				int change = -event.getWheelRotation()*4;
-				int pixelSizeBefore = tileSize;
-				tileSize = Math.max(Math.min(tileSize+change, WraithEngine.projectBitSize*4), WraithEngine.projectBitSize/4);
-				tileWidth = tileSize/2;
-				tileHeight = tileSize/4;
-				generateSelectionSquare();
-				generateMapBorder();
-				float per = tileSize/(float)pixelSizeBefore;
-				scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
-				scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
-				mouseMoved(event);
-				repaint();
+				if(event.isShiftDown()){
+					if(cursorSelection.isOverMap()){
+						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
+						if(tile!=null){
+							tile.setHeight(tile.getHeight()+event.getWheelRotation());
+							map.setNeedsSaving();
+							repaint();
+						}
+					}
+				}else{
+					int change = -event.getWheelRotation()*4;
+					int pixelSizeBefore = tileSize;
+					tileSize = Math.max(Math.min(tileSize+change, WraithEngine.projectBitSize*4), WraithEngine.projectBitSize/4);
+					tileWidth = tileSize/2;
+					tileHeight = tileSize/4;
+					generateSelectionSquare();
+					generateMapBorder();
+					generateIsoCubeBorder();
+					float per = tileSize/(float)pixelSizeBefore;
+					scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
+					scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
+					mouseMoved(event);
+					repaint();
+				}
 			}
 		};
 		addMouseListener(ml);
@@ -147,10 +168,30 @@ public class MapEditor extends AbstractMapEditor{
 		addKeyListener(ml);
 		setFocusable(true);
 		generateSelectionSquare();
+		generateIsoCubeBorder();
 	}
 	private void updateNeedsSaving(){
 		boolean needsSaving = needsSaving();
 		WraithEngine.INSTANCE.setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
+	}
+	private void generateIsoCubeBorder(){
+		int[] x = new int[6];
+		int[] y = new int[6];
+		int r = tileSize/2;
+		int f = tileSize/4;
+		x[0] = 0;
+		y[0] = -r;
+		x[1] = r;
+		y[1] = -f;
+		x[2] = r;
+		y[2] = f;
+		x[3] = 0;
+		y[3] = r;
+		x[4] = -r;
+		y[4] = f;
+		x[5] = -r;
+		y[5] = -f;
+		isoCubeBorder = new Polygon(x, y, 6);
 	}
 	private void generateSelectionSquare(){
 		int[] x = new int[4];
@@ -252,9 +293,18 @@ public class MapEditor extends AbstractMapEditor{
 						continue;
 					}
 					u = (x-y)*tileWidth+scrollX-tileWidth;
-					v = (x+y)*tileHeight+scrollY;
+					v = (x+y)*tileHeight+scrollY-tiles[i].getHeight()*tileSize/8;
 					if(isOnScreen(u, v, width, height)){
 						g.drawImage(imageStorage.getImage(tiles[i].getTile()), u, v, tileSize, tileSize, null);
+						if(x==cursorSelection.getTileX()&&y==cursorSelection.getTileY()){
+							Composite com = g.getComposite();
+							g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
+							g.setColor(Color.white);
+							g.translate(u+tileWidth, v+tileWidth);
+							g.fillPolygon(isoCubeBorder);
+							g.translate(-u-tileWidth, -v-tileWidth);
+							g.setComposite(com);
+						}
 					}
 				}
 			}

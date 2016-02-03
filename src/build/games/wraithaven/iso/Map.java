@@ -72,6 +72,9 @@ public class Map implements MapInterface{
 	public TileInstance getTile(int x, int z){
 		return tiles[z*width+x];
 	}
+	public void setNeedsSaving(){
+		needsSaving = true;
+	}
 	public void load(){
 		if(loaded){
 			throw new RuntimeException();

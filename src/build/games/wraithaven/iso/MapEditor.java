@@ -140,7 +140,7 @@ public class MapEditor extends AbstractMapEditor{
 					if(cursorSelection.isOverMap()){
 						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
 						if(tile!=null){
-							tile.setHeight(tile.getHeight()+event.getWheelRotation());
+							tile.setHeight(tile.getHeight()-event.getWheelRotation());
 							map.setNeedsSaving();
 							repaint();
 						}

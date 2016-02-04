@@ -22,6 +22,7 @@ public class Map implements MapInterface{
 	private final ArrayList<Map> childMaps = new ArrayList(1);
 	private final ChipsetList chipsetList;
 	private TileInstance[] tiles;
+	private ArrayList<Entity> entities;
 	private int width;
 	private int height;
 	private String name;
@@ -53,27 +54,61 @@ public class Map implements MapInterface{
 		}
 		needsSaving = false;
 		BinaryFile bin = new BinaryFile(tiles.length*8+4);
-		ArrayList<Tile> tileReferences = new ArrayList(16);
-		for(TileInstance t : tiles){
-			if(t!=null&&!tileReferences.contains(t.getTile())){
-				tileReferences.add(t.getTile());
+		{
+			// Tiles
+			ArrayList<Tile> tileReferences = new ArrayList(16);
+			for(TileInstance t : tiles){
+				if(t!=null&&!tileReferences.contains(t.getTile())){
+					tileReferences.add(t.getTile());
+				}
+			}
+			bin.addInt(tileReferences.size());
+			for(Tile t : tileReferences){
+				bin.addStringAllocated(t.getUUID());
+			}
+			for(TileInstance t : tiles){
+				if(t==null){
+					bin.addInt(-1);
+					bin.addInt(0);
+				}else{
+					bin.addInt(tileReferences.indexOf(t.getTile()));
+					bin.addInt(t.getHeight());
+				}
 			}
 		}
-		bin.addInt(tileReferences.size());
-		for(Tile t : tileReferences){
-			bin.addStringAllocated(t.getUUID());
-		}
-		for(TileInstance t : tiles){
-			if(t==null){
-				bin.addInt(-1);
-				bin.addInt(0);
-			}else{
-				bin.addInt(tileReferences.indexOf(t.getTile()));
-				bin.addInt(t.getHeight());
+		{
+			// Entities
+			ArrayList<EntityType> entityReferences = new ArrayList(4);
+			for(Entity e : entities){
+				if(!entityReferences.contains(e.getEntityType())){
+					entityReferences.add(e.getEntityType());
+				}
+			}
+			bin.allocateBytes(8+entities.size()*12);
+			bin.addInt(entityReferences.size());
+			for(EntityType type : entityReferences){
+				bin.addStringAllocated(type.getUUID());
+			}
+			bin.addInt(entities.size());
+			for(Entity e : entities){
+				bin.addInt(entityReferences.indexOf(e.getEntityType()));
+				bin.addInt(e.getX());
+				bin.addInt(e.getZ());
 			}
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Worlds", "Tiles", uuid+".dat"));
+	}
+	public ArrayList<Entity> getAllEntities(){
+		return entities;
+	}
+	public void addEntity(Entity e){
+		entities.add(e);
+		needsSaving = true;
+	}
+	public void removeEntity(Entity e){
+		entities.remove(e);
+		needsSaving = true;
 	}
 	public TileInstance getTile(int x, int z){
 		return tiles[z*width+x];
@@ -93,18 +128,37 @@ public class Map implements MapInterface{
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(true);
-		tiles = new TileInstance[width*height];
-		Tile[] tileReferences = new Tile[bin.getInt()];
-		for(int i = 0; i<tileReferences.length; i++){
-			tileReferences[i] = chipsetList.getTile(bin.getString());
-		}
-		for(int i = 0; i<tiles.length; i++){
-			int id = bin.getInt();
-			if(id==-1){
-				bin.skip(4);
-				continue;
+		{
+			// Tiles
+			tiles = new TileInstance[width*height];
+			Tile[] tileReferences = new Tile[bin.getInt()];
+			for(int i = 0; i<tileReferences.length; i++){
+				tileReferences[i] = chipsetList.getTile(bin.getString());
 			}
-			tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
+			for(int i = 0; i<tiles.length; i++){
+				int id = bin.getInt();
+				if(id==-1){
+					bin.skip(4);
+					continue;
+				}
+				tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
+			}
+		}
+		{
+			// Entities
+			EntityType[] types = new EntityType[bin.getInt()];
+			for(int i = 0; i<types.length; i++){
+				types[i] = new EntityType(bin.getString());
+			}
+			int entityCount = bin.getInt();
+			entities = new ArrayList(entityCount);
+			int type, x, z;
+			for(int i = 0; i<entityCount; i++){
+				type = bin.getInt();
+				x = bin.getInt();
+				z = bin.getInt();
+				entities.add(new Entity(types[type], x, z));
+			}
 		}
 	}
 	public void dispose(){
@@ -113,6 +167,7 @@ public class Map implements MapInterface{
 		}
 		loaded = false;
 		tiles = null;
+		entities = null;
 		needsSaving = false;
 	}
 	private void saveProperties(){

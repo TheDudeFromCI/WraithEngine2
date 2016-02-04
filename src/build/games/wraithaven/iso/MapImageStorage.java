@@ -16,14 +16,28 @@ import javax.imageio.ImageIO;
  * @author TheDudeFromCI
  */
 public class MapImageStorage{
-	private final HashMap<Tile,BufferedImage> images = new HashMap(16);
+	private final HashMap<Tile,BufferedImage> tileImages = new HashMap(8);
+	private final HashMap<EntityType,BufferedImage> entityImages = new HashMap(4);
 	public BufferedImage getImage(Tile tile){
-		if(images.containsKey(tile)){
-			return images.get(tile);
+		if(tileImages.containsKey(tile)){
+			return tileImages.get(tile);
 		}
 		try{
 			BufferedImage image = ImageIO.read(Algorithms.getFile("Chipsets", tile.getUUID()+".png"));
-			images.put(tile, image);
+			tileImages.put(tile, image);
+			return image;
+		}catch(Exception exception){
+			exception.printStackTrace();
+			return null;
+		}
+	}
+	public BufferedImage getImage(EntityType entity){
+		if(entityImages.containsKey(entity)){
+			return entityImages.get(entity);
+		}
+		try{
+			BufferedImage image = ImageIO.read(Algorithms.getFile("Entities", entity.getUUID()+".png"));
+			entityImages.put(entity, image);
 			return image;
 		}catch(Exception exception){
 			exception.printStackTrace();
@@ -31,6 +45,7 @@ public class MapImageStorage{
 		}
 	}
 	public void clear(){
-		images.clear();
+		tileImages.clear();
+		entityImages.clear();
 	}
 }

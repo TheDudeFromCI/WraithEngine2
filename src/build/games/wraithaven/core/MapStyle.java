@@ -19,4 +19,5 @@ public interface MapStyle{
 	public MapInterface loadMap(String uuid);
 	public MapInterface generateNewMap(String uuid, String name, int width, int height);
 	public void selectMap(MapInterface map);
+	public MapInterface getSelectedMap();
 }

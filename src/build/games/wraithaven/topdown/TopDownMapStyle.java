@@ -55,4 +55,8 @@ public class TopDownMapStyle implements MapStyle{
 	public MapInterface generateNewMap(String uuid, String name, int width, int height){
 		return new Map(this, uuid, name);
 	}
+	@Override
+	public MapInterface getSelectedMap(){
+		return mapEditor.getSelectedMap();
+	}
 }

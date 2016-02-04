@@ -42,4 +42,7 @@ public class MapEditor extends AbstractMapEditor{
 	public void selectMap(Map map){
 		painter.selectMap(map);
 	}
+	public Map getSelectedMap(){
+		return painter.getMap();
+	}
 }

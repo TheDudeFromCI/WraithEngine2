@@ -191,9 +191,18 @@ public class WorldList extends JPanel{
 		if(response!=JOptionPane.YES_OPTION){
 			return;
 		}
-		map.getParent().removeChild(map);
+		MapInterface parent = map.getParent();
+		if(parent==null){
+			mainMaps.remove(map);
+			save();
+		}else{
+			parent.removeChild(map);
+		}
 		map.delete();
 		updateTreeModel();
+		if(WraithEngine.INSTANCE.getMapStyle().getSelectedMap()==map){
+			WraithEngine.INSTANCE.getMapStyle().selectMap(null);
+		}
 	}
 	private void load(){
 		File file = Algorithms.getFile("Worlds", "List.dat");

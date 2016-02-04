@@ -38,4 +38,7 @@ public class MapEditor extends AbstractMapEditor{
 	public void save(){
 		worldScreen.save();
 	}
+	public Map getSelectedMap(){
+		return worldScreen.getSelectedMap();
+	}
 }

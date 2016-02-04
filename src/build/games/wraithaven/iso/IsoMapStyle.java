@@ -47,4 +47,8 @@ public class IsoMapStyle implements MapStyle{
 	public void selectMap(MapInterface map){
 		mapEditor.selectMap((Map)map);
 	}
+	@Override
+	public MapInterface getSelectedMap(){
+		return mapEditor.getSelectedMap();
+	}
 }

@@ -172,7 +172,7 @@ public class Map implements MapInterface{
 	@Override
 	public void addChild(MapInterface map){
 		childMaps.add((Map)map);
-		save();
+		saveProperties();
 	}
 	public TileInstance[] getAllTiles(){
 		return tiles;

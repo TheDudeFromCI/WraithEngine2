@@ -274,7 +274,9 @@ public class WorldScreen extends JPanel{
 			loadedMap.dispose();
 		}
 		loadedMap = map;
-		map.loadMaps();
+		if(map!=null){
+			map.loadMaps();
+		}
 		repaint();
 		updateNeedsSaving(); // Mostly, this is just to disable the star. This should never say 'unsaved'.
 	}
@@ -290,6 +292,9 @@ public class WorldScreen extends JPanel{
 			return loadedMap.needsSaving();
 		}
 		return false;
+	}
+	public Map getSelectedMap(){
+		return loadedMap;
 	}
 	@Override
 	public void paintComponent(Graphics g1){

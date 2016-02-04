@@ -8,6 +8,7 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.MapInterface;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
@@ -26,6 +27,7 @@ public class Map implements MapInterface{
 	private String name;
 	private boolean loaded;
 	private boolean needsSaving;
+	private String parent;
 	public Map(ChipsetList chipsetList, String uuid){
 		this.chipsetList = chipsetList;
 		this.uuid = uuid;
@@ -114,13 +116,17 @@ public class Map implements MapInterface{
 		needsSaving = false;
 	}
 	private void saveProperties(){
-		BinaryFile bin = new BinaryFile(4+8);
+		BinaryFile bin = new BinaryFile(4+8+1);
 		bin.addInt(width);
 		bin.addInt(height);
 		bin.addStringAllocated(name);
 		bin.addInt(childMaps.size());
 		for(Map map : childMaps){
 			bin.addStringAllocated(map.getUUID());
+		}
+		bin.addBoolean(parent!=null);
+		if(parent!=null){
+			bin.addStringAllocated(parent);
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Worlds", uuid+".dat"));
@@ -134,6 +140,9 @@ public class Map implements MapInterface{
 		int childMapCount = bin.getInt();
 		for(int i = 0; i<childMapCount; i++){
 			childMaps.add(new Map(chipsetList, bin.getString()));
+		}
+		if(bin.getBoolean()){
+			parent = bin.getString();
 		}
 	}
 	public void setTile(int x, int z, Tile tile){
@@ -177,5 +186,29 @@ public class Map implements MapInterface{
 	@Override
 	public String toString(){
 		return name;
+	}
+	@Override
+	public void delete(){
+		for(Map map : childMaps){
+			map.delete();
+		}
+		Algorithms.deleteFile(Algorithms.getFile("Worlds", uuid));
+	}
+	@Override
+	public MapInterface getParent(){
+		if(parent==null){
+			return null;
+		}
+		return WraithEngine.INSTANCE.getWorldList().getMap(parent);
+	}
+	@Override
+	public void setParent(MapInterface parent){
+		this.parent = parent.getUUID();
+		saveProperties();
+	}
+	@Override
+	public void removeChild(MapInterface map){
+		childMaps.remove(map);
+		saveProperties();
 	}
 }

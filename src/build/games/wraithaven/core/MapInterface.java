@@ -16,4 +16,8 @@ public interface MapInterface{
 	public int getChildCount();
 	public int getIndexOf(MapInterface map);
 	public void addChild(MapInterface map);
+	public void delete();
+	public MapInterface getParent();
+	public void setParent(MapInterface parent);
+	public void removeChild(MapInterface map);
 }

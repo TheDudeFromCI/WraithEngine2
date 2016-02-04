@@ -9,15 +9,17 @@ package build.games.wraithaven.core;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.DropMode;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -89,7 +91,7 @@ public class WorldList extends JPanel{
 		tree.setToggleClickCount(0);
 		tree.setDropMode(DropMode.ON_OR_INSERT);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		MouseAdapter ml = new MouseAdapter(){
+		InputAdapter ml = new InputAdapter(){
 			@Override
 			public void mousePressed(MouseEvent e){
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
@@ -117,8 +119,23 @@ public class WorldList extends JPanel{
 					}
 				}
 			}
+			@Override
+			public void keyPressed(KeyEvent event){
+				if(event.getKeyCode()==KeyEvent.VK_DELETE){
+					TreePath path = tree.getSelectionPath();
+					if(path==null){
+						return;
+					}
+					Object selected = tree.getSelectionPath().getLastPathComponent();
+					if(selected==null||!(selected instanceof MapInterface)){
+						return;
+					}
+					deleteMap((MapInterface)selected);
+				}
+			}
 		};
 		tree.addMouseListener(ml);
+		tree.addKeyListener(ml);
 		JScrollPane scrollPane = new JScrollPane(tree);
 		add(scrollPane);
 		updateTreeModel();
@@ -149,7 +166,17 @@ public class WorldList extends JPanel{
 		if(selectedMap==null){
 			// TODO
 		}else{
-			// TODO
+			{
+				// Delete
+				JMenuItem item = new JMenuItem("Delete");
+				item.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						deleteMap(selectedMap);
+					}
+				});
+				menu.add(item);
+			}
 		}
 		menu.show(tree, x, y);
 	}
@@ -157,6 +184,16 @@ public class WorldList extends JPanel{
 		tree.setModel(null);
 		tree.setModel(model);
 		expandAllNodes(tree, 0, tree.getRowCount());
+	}
+	private void deleteMap(MapInterface map){
+		int response = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete this map? All child maps will also be deleted.",
+			"Confirm Delete", JOptionPane.YES_NO_OPTION);
+		if(response!=JOptionPane.YES_OPTION){
+			return;
+		}
+		map.getParent().removeChild(map);
+		map.delete();
+		updateTreeModel();
 	}
 	private void load(){
 		File file = Algorithms.getFile("Worlds", "List.dat");
@@ -189,5 +226,26 @@ public class WorldList extends JPanel{
 	public void removeMap(MapInterface map){
 		mainMaps.remove(map);
 		save();
+	}
+	public MapInterface getMap(String uuid){
+		for(MapInterface map : mainMaps){
+			MapInterface map2 = getMap(map, uuid);
+			if(map2!=null){
+				return map2;
+			}
+		}
+		return null;
+	}
+	private MapInterface getMap(MapInterface map, String uuid){
+		if(map.getUUID().equals(uuid)){
+			return map;
+		}
+		for(int i = 0; i<map.getChildCount(); i++){
+			MapInterface map2 = getMap(map.getChild(i), uuid);
+			if(map2!=null){
+				return map2;
+			}
+		}
+		return null;
 	}
 }

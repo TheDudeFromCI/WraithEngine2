@@ -8,6 +8,7 @@
 package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.MapInterface;
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
@@ -17,13 +18,14 @@ import java.util.ArrayList;
  * @author TheDudeFromCI
  */
 public class Map implements MapInterface{
-	public static final short MAP_FILE_VERSION = 0;
+	public static final short MAP_FILE_VERSION = 1;
 	private final ArrayList<MapSection> mapSections = new ArrayList(16);
 	private final ArrayList<Map> childMaps = new ArrayList(0);
 	private final String uuid;
 	private final TopDownMapStyle mapStyle;
 	private String name;
 	private boolean mapsLoaded;
+	private String parent;
 	public Map(TopDownMapStyle mapStyle, String uuid){
 		this.mapStyle = mapStyle;
 		this.uuid = uuid;
@@ -70,13 +72,26 @@ public class Map implements MapInterface{
 		bin.decompress(false);
 		short version = bin.getShort();
 		switch(version){
-			case 0:
+			case 0:{
 				name = bin.getString();
 				int childCount = bin.getInt();
 				for(int i = 0; i<childCount; i++){
 					Map map = new Map(mapStyle, bin.getString());
 					childMaps.add(map);
 				}
+			}
+				break;
+			case 1:{
+				name = bin.getString();
+				int childCount = bin.getInt();
+				for(int i = 0; i<childCount; i++){
+					Map map = new Map(mapStyle, bin.getString());
+					childMaps.add(map);
+				}
+				if(bin.getBoolean()){
+					parent = bin.getString();
+				}
+			}
 				break;
 			default:
 				throw new RuntimeException();
@@ -99,6 +114,7 @@ public class Map implements MapInterface{
 		short version = bin.getShort();
 		switch(version){
 			case 0:
+			case 1:
 				int mapCount = bin.getInt();
 				for(int i = 0; i<mapCount; i++){
 					mapSections.add(new MapSection((ChipsetList)mapStyle.getChipsetList(), ((MapEditor)mapStyle.getMapEditor()).getToolbar(), this,
@@ -110,12 +126,16 @@ public class Map implements MapInterface{
 		}
 	}
 	private void saveProperties(){
-		BinaryFile bin = new BinaryFile(6);
+		BinaryFile bin = new BinaryFile(7);
 		bin.addShort(MAP_FILE_VERSION);
 		bin.addStringAllocated(name);
 		bin.addInt(childMaps.size());
 		for(Map child : childMaps){
 			bin.addStringAllocated(child.getUUID());
+		}
+		bin.addBoolean(parent!=null);
+		if(parent!=null){
+			bin.addStringAllocated(parent);
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Worlds", uuid, "Properties.dat"));
@@ -166,5 +186,28 @@ public class Map implements MapInterface{
 	@Override
 	public String toString(){
 		return name;
+	}
+	@Override
+	public void delete(){
+		for(Map map : childMaps){
+			map.delete();
+		}
+		Algorithms.deleteFile(Algorithms.getFile("Worlds", uuid));
+	}
+	@Override
+	public MapInterface getParent(){
+		if(parent==null){
+			return null;
+		}
+		return WraithEngine.INSTANCE.getWorldList().getMap(parent);
+	}
+	@Override
+	public void setParent(MapInterface parent){
+		this.parent = parent.getUUID();
+	}
+	@Override
+	public void removeChild(MapInterface map){
+		childMaps.remove(map);
+		saveMaps();
 	}
 }

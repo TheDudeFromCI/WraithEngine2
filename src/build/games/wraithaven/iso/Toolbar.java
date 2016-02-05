@@ -44,6 +44,7 @@ public class Toolbar extends JPanel{
 		setPreferredSize(new Dimension(32, 32));
 		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		{
+			// Save Button
 			saveButton = createIcon("Save Icon.png", "Save Icon Down.png", "Save Icon Disabled.png");
 			saveButton.setEnabled(false);
 			saveButton.setToolTipText("Click to save.");

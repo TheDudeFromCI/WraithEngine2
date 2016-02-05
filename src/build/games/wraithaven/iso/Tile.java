@@ -22,15 +22,15 @@ public class Tile{
 		BufferedImage buf = image;
 		int s = WraithEngine.projectBitSize;
 		do{
-			if(s>ChipsetList.PREVIEW_TILE_SCALE){
+			if(s>ChipsetListPainter.PREVIEW_TILE_SCALE){
 				s /= 2;
-				if(s<ChipsetList.PREVIEW_TILE_SCALE){
-					s = ChipsetList.PREVIEW_TILE_SCALE;
+				if(s<ChipsetListPainter.PREVIEW_TILE_SCALE){
+					s = ChipsetListPainter.PREVIEW_TILE_SCALE;
 				}
 			}else{
 				s *= 2;
-				if(s>ChipsetList.PREVIEW_TILE_SCALE){
-					s = ChipsetList.PREVIEW_TILE_SCALE;
+				if(s>ChipsetListPainter.PREVIEW_TILE_SCALE){
+					s = ChipsetListPainter.PREVIEW_TILE_SCALE;
 				}
 			}
 			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
@@ -41,7 +41,7 @@ public class Tile{
 			g.drawImage(buf, 0, 0, s, s, null);
 			g.dispose();
 			buf = out;
-		}while(s!=ChipsetList.PREVIEW_TILE_SCALE);
+		}while(s!=ChipsetListPainter.PREVIEW_TILE_SCALE);
 		return buf;
 	}
 	private final BufferedImage previewImage;

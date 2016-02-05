@@ -51,4 +51,8 @@ public class IsoMapStyle implements MapStyle{
 	public MapInterface getSelectedMap(){
 		return mapEditor.getSelectedMap();
 	}
+	@Override
+	public boolean useChipsetScrollbar(){
+		return false;
+	}
 }

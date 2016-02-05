@@ -5,20 +5,11 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.core;
+package build.games.wraithaven.iso;
 
-import java.io.File;
+import javax.swing.JPanel;
 
 /**
  * @author TheDudeFromCI
  */
-public interface MapStyle{
-	public AbstractChipsetList getChipsetList();
-	public AbstractMapEditor getMapEditor();
-	public void openChipsetPreview(File file);
-	public MapInterface loadMap(String uuid);
-	public MapInterface generateNewMap(String uuid, String name, int width, int height);
-	public void selectMap(MapInterface map);
-	public MapInterface getSelectedMap();
-	public boolean useChipsetScrollbar();
-}
+public class EntityList extends JPanel{}

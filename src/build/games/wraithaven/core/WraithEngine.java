@@ -9,6 +9,7 @@ package build.games.wraithaven.core;
 
 import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -66,11 +67,17 @@ public class WraithEngine extends JFrame{
 		chipsetList = mapStyle.getChipsetList();
 		worldList = new WorldList();
 		mapEditor = mapStyle.getMapEditor();
-		JScrollPane scrollPane = new JScrollPane(chipsetList);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, worldList);
+		Component chipsetListSlot;
+		if(mapStyle.useChipsetScrollbar()){
+			JScrollPane scrollPane = new JScrollPane(chipsetList);
+			scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			chipsetListSlot = scrollPane;
+		}else{
+			chipsetListSlot = chipsetList;
+		}
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, chipsetListSlot, worldList);
 		getContentPane().add(splitPane, BorderLayout.WEST);
 		splitPane.setDividerSize(2);
 		splitPane.setDividerLocation(400);

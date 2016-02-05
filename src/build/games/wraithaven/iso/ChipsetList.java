@@ -9,6 +9,7 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.AbstractChipsetList;
 import java.awt.BorderLayout;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 /**
@@ -23,7 +24,7 @@ public class ChipsetList extends AbstractChipsetList{
 		add(tabbedPane, BorderLayout.CENTER);
 		{
 			// Tabs
-			tabbedPane.addTab("Tiles", painter);
+			tabbedPane.addTab("Tiles", new JScrollPane(painter));
 		}
 	}
 	public Tile getTile(String uuid){

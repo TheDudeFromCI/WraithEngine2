@@ -17,14 +17,17 @@ import javax.swing.JTabbedPane;
  */
 public class ChipsetList extends AbstractChipsetList{
 	private final ChipsetListPainter painter;
+	private final EntityList entityList;
 	public ChipsetList(){
 		painter = new ChipsetListPainter();
+		entityList = new EntityList();
 		JTabbedPane tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
 		add(tabbedPane, BorderLayout.CENTER);
 		{
 			// Tabs
 			tabbedPane.addTab("Tiles", new JScrollPane(painter));
+			tabbedPane.addTab("Entities", new JScrollPane(entityList));
 		}
 	}
 	public Tile getTile(String uuid){

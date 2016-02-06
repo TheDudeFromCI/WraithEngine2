@@ -67,4 +67,7 @@ public class Chipset{
 	public void setName(String name){
 		this.name = name;
 	}
+	public int getSize(){
+		return tiles.length;
+	}
 }

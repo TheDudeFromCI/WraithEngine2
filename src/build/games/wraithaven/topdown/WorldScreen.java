@@ -10,9 +10,12 @@ package build.games.wraithaven.topdown;
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.InputAdapter;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -27,7 +30,6 @@ import javax.swing.SwingWorker;
 public class WorldScreen extends JPanel{
 	private final SelectionCursor cursor = new SelectionCursor();
 	private final ChipsetTileSelection selectedTile;
-	private final BufferedImage selectionImage;
 	private final BufferedImage newMapImage;
 	private final TopDownMapStyle mapStyle;
 	private int scrollX;
@@ -36,10 +38,12 @@ public class WorldScreen extends JPanel{
 	private int mapSectionWidth = pixelSize*MapLayer.MAP_TILES_WIDTH;
 	private int mapSectionHeight = pixelSize*MapLayer.MAP_TILES_HEIGHT;
 	private Map loadedMap;
+	private Polygon selectionBox;
+	private int selectionBoxWidth;
+	private int selectionBoxHeight;
 	public WorldScreen(TopDownMapStyle mapStyle){
 		this.mapStyle = mapStyle;
 		try{
-			selectionImage = ImageIO.read(Algorithms.getAsset("Selection Box.png"));
 			newMapImage = ImageIO.read(Algorithms.getAsset("New Map Box.png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
@@ -111,8 +115,9 @@ public class WorldScreen extends JPanel{
 									mapStyle.getChipsetList().repaint();
 									return;
 								}
-								selectedTile.select(tile.getChipset(), tile.getId(), tile.getId()%Chipset.PREVIEW_TILES_WIDTH,
-									tile.getId()/Chipset.PREVIEW_TILES_WIDTH);
+								selectedTile.select(tile.getChipset(), new int[]{
+									tile.getId()
+								}, tile.getId()%Chipset.PREVIEW_TILES_WIDTH, tile.getId()/Chipset.PREVIEW_TILES_WIDTH, 1, 1);
 								for(ChipsetListComponent list : mapStyle.getChipsetList().getChipsets()){
 									if(list.getChipset()==selectedTile.getChipset()){
 										// This is just to ensure that the desired chipset is actually selected.
@@ -146,8 +151,26 @@ public class WorldScreen extends JPanel{
 								}.execute();
 							}else{
 								if(selectedTile.isActive()){
-									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapStyle.getMapEditor().getToolbar().getEditingLayer(),
-										selectedTile.getChipset().getTile(selectedTile.getIndex()));
+									int tileX = (x-mapX)/pixelSize;
+									int tileY = (y-mapY)/pixelSize;
+									int tileZ = mapStyle.getMapEditor().getToolbar().getEditingLayer();
+									int w = selectedTile.getWidth();
+									int h = selectedTile.getHeight();
+									int[] indices = selectedTile.getIndex();
+									int a, b, u, v;
+									for(a = 0; a<w; a++){
+										for(b = 0; b<h; b++){
+											u = a+tileX;
+											v = b+tileY;
+											if(u>=20){
+												continue;
+											}
+											if(v>=15){
+												continue;
+											}
+											map.setTile(u, v, tileZ, selectedTile.getChipset().getTile(indices[b*w+a]));
+										}
+									}
 								}else{
 									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapStyle.getMapEditor().getToolbar().getEditingLayer(), null);
 								}
@@ -322,7 +345,13 @@ public class WorldScreen extends JPanel{
 						(int)Math.floor(cursor.getY()/(float)MapLayer.MAP_TILES_HEIGHT)*mapSectionHeight+scrollY, mapSectionWidth, mapSectionHeight,
 						null);
 				}else{
-					g.drawImage(selectionImage, cursor.getX()*pixelSize+scrollX, cursor.getY()*pixelSize+scrollY, pixelSize, pixelSize, null);
+					generateSelectionBox(selectedTile.getWidth()*pixelSize, selectedTile.getHeight()*pixelSize);
+					g.setStroke(new BasicStroke(3));
+					float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
+					g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
+					g.translate(cursor.getX()*pixelSize+scrollX, cursor.getY()*pixelSize+scrollY);
+					g.drawPolygon(selectionBox);
+					repaint();
 				}
 			}
 		}
@@ -336,5 +365,23 @@ public class WorldScreen extends JPanel{
 			map.redraw();
 		}
 		repaint();
+	}
+	private void generateSelectionBox(int width, int height){
+		if(selectionBoxWidth==width&&selectionBoxHeight==height){
+			return;
+		}
+		selectionBoxWidth = width;
+		selectionBoxHeight = height;
+		int[] x = new int[4];
+		int[] y = new int[4];
+		x[0] = 0;
+		y[0] = 0;
+		x[1] = width;
+		y[1] = 0;
+		x[2] = width;
+		y[2] = height;
+		x[3] = 0;
+		y[3] = height;
+		selectionBox = new Polygon(x, y, 4);
 	}
 }

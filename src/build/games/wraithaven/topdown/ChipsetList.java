@@ -9,6 +9,8 @@ package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.util.InputAdapter;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,13 +18,11 @@ import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
@@ -34,17 +34,16 @@ public class ChipsetList extends JPanel{
 	private static final Font TITLE_BAR_FONT = new Font("Tahoma", Font.BOLD|Font.ITALIC, 20);
 	private final ArrayList<ChipsetListComponent> chipsets = new ArrayList(8);
 	private final ChipsetTileSelection selection = new ChipsetTileSelection();
-	private BufferedImage selectionBox;
+	private Polygon selectionBox;
+	private int selectionBoxWidth;
+	private int selectionBoxHeight;
 	public ChipsetList(){
-		try{
-			selectionBox = ImageIO.read(Algorithms.getAsset("Selection Box.png"));
-		}catch(Exception exception){
-			exception.printStackTrace();
-		}
 		setMinimumSize(new Dimension(Chipset.TILE_OUT_SIZE*Chipset.PREVIEW_TILES_WIDTH, 300));
 		updateSize();
 		load();
-		addMouseListener(new MouseAdapter(){
+		InputAdapter ml = new InputAdapter(){
+			private int dragXStart;
+			private int dragYStart;
 			private void checkForTileSelection(int x, int y){
 				int height = 0;
 				for(ChipsetListComponent c : chipsets){
@@ -53,7 +52,9 @@ public class ChipsetList extends JPanel{
 						if(y>=height&&y<height+c.getImage().getHeight()){
 							int selX = x/Chipset.TILE_OUT_SIZE;
 							int selY = (y-height)/Chipset.TILE_OUT_SIZE;
-							selection.select(c.getChipset(), selY*Chipset.PREVIEW_TILES_WIDTH+selX, selX, selY);
+							selection.select(c.getChipset(), new int[]{
+								selY*Chipset.PREVIEW_TILES_WIDTH+selX
+							}, selX, selY, 1, 1);
 							repaint();
 							return;
 						}
@@ -89,7 +90,70 @@ public class ChipsetList extends JPanel{
 				updateSize();
 				repaint();
 			}
-		});
+			@Override
+			public void mouseDragged(MouseEvent e){
+				if(getComponentTitleAt(dragYStart)==null){
+					int height = 0;
+					for(ChipsetListComponent c : chipsets){
+						height += TITLE_BAR_HEIGHT;
+						if(c.isExpanded()){
+							if(dragYStart>=height&&dragYStart<height+c.getImage().getHeight()){
+								int selX = dragXStart/Chipset.TILE_OUT_SIZE;
+								int selY = (dragYStart-height)/Chipset.TILE_OUT_SIZE;
+								int endX = e.getX();
+								int endY = e.getY();
+								if(endY>=height+c.getImage().getHeight()){
+									endY = height+c.getImage().getHeight();
+								}
+								int selX2 = endX/Chipset.TILE_OUT_SIZE;
+								int selY2 = (endY-height)/Chipset.TILE_OUT_SIZE;
+								int x = Math.min(selX, selX2);
+								int y = Math.min(selY, selY2);
+								int w = Math.max(selX, selX2)-x+1;
+								int h = Math.max(selY, selY2)-y+1;
+								int[] indices = new int[w*h];
+								int a, b;
+								for(a = 0; a<w; a++){
+									for(b = 0; b<h; b++){
+										indices[b*w+a] = (b+y)*Chipset.PREVIEW_TILES_WIDTH+(a+x);
+									}
+								}
+								selection.select(c.getChipset(), indices, x, y, w, h);
+								repaint();
+								return;
+							}
+							height += c.getImage().getHeight();
+						}
+					}
+					selection.reset();
+				}
+			}
+			@Override
+			public void mousePressed(MouseEvent e){
+				dragXStart = e.getX();
+				dragYStart = e.getY();
+			}
+		};
+		addMouseListener(ml);
+		addMouseMotionListener(ml);
+	}
+	private void generateSelectionBox(int width, int height){
+		if(selectionBoxWidth==width&&selectionBoxHeight==height){
+			return;
+		}
+		selectionBoxWidth = width;
+		selectionBoxHeight = height;
+		int[] x = new int[4];
+		int[] y = new int[4];
+		x[0] = 0;
+		y[0] = 0;
+		x[1] = width;
+		y[1] = 0;
+		x[2] = width;
+		y[2] = height;
+		x[3] = 0;
+		y[3] = height;
+		selectionBox = new Polygon(x, y, 4);
 	}
 	public void addChipset(Chipset chipset){
 		chipsets.add(new ChipsetListComponent(chipset));
@@ -154,11 +218,13 @@ public class ChipsetList extends JPanel{
 			}
 		}
 		if(selection.isActive()){
-			final int size = 4;
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.drawImage(selectionBox, selection.getSelectionX()*Chipset.TILE_OUT_SIZE-size,
-				selection.getSelectionY()*Chipset.TILE_OUT_SIZE+selectionVerticalOffset-size, Chipset.TILE_OUT_SIZE+size*2,
-				Chipset.TILE_OUT_SIZE+size*2, null);
+			generateSelectionBox(selection.getWidth()*Chipset.TILE_OUT_SIZE, selection.getHeight()*Chipset.TILE_OUT_SIZE);
+			g.setStroke(new BasicStroke(3));
+			float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
+			g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
+			g.translate(selection.getSelectionX()*Chipset.TILE_OUT_SIZE, selection.getSelectionY()*Chipset.TILE_OUT_SIZE+selectionVerticalOffset);
+			g.drawPolygon(selectionBox);
+			repaint();
 		}
 		g.dispose();
 	}

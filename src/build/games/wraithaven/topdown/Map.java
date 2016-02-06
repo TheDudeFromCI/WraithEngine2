@@ -8,7 +8,6 @@
 package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.MapInterface;
-import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
@@ -117,8 +116,7 @@ public class Map implements MapInterface{
 			case 1:
 				int mapCount = bin.getInt();
 				for(int i = 0; i<mapCount; i++){
-					mapSections.add(new MapSection((ChipsetList)mapStyle.getChipsetList(), ((MapEditor)mapStyle.getMapEditor()).getToolbar(), this,
-						bin.getInt(), bin.getInt()));
+					mapSections.add(new MapSection(mapStyle.getChipsetList(), mapStyle.getMapEditor().getToolbar(), this, bin.getInt(), bin.getInt()));
 				}
 				break;
 			default:
@@ -199,7 +197,7 @@ public class Map implements MapInterface{
 		if(parent==null){
 			return null;
 		}
-		return WraithEngine.INSTANCE.getWorldList().getMap(parent);
+		return mapStyle.getWorldList().getMap(parent);
 	}
 	@Override
 	public void setParent(MapInterface parent){

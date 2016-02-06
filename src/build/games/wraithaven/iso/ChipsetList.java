@@ -7,15 +7,15 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.core.AbstractChipsetList;
 import java.awt.BorderLayout;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 /**
  * @author TheDudeFromCI
  */
-public class ChipsetList extends AbstractChipsetList{
+public class ChipsetList extends JPanel{
 	private final ChipsetListPainter painter;
 	private final EntityList entityList;
 	public ChipsetList(){

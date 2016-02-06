@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.core.AbstractChipsetList;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.awt.Color;
@@ -24,9 +23,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class ChipsetList extends AbstractChipsetList{
+public class ChipsetList extends JPanel{
 	private static final int TITLE_BAR_HEIGHT = 30;
 	private static final Color TITLE_BAR_COLOR = new Color(220, 220, 220);
 	private static final Color TITLE_BAR_COLOR_2 = new Color(235, 235, 235);

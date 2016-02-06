@@ -27,7 +27,7 @@ import javax.swing.SpinnerNumberModel;
  * @author TheDudeFromCI
  */
 public class NewMapDialog extends JFrame{
-	public NewMapDialog(MapInterface parentMap){
+	public NewMapDialog(MapInterface parentMap, WorldList worldList){
 		setTitle("Create New Map");
 		setResizable(false);
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -122,14 +122,14 @@ public class NewMapDialog extends JFrame{
 					@Override
 					public void actionPerformed(ActionEvent e){
 						dispose();
-						MapInterface map = WraithEngine.INSTANCE.getMapStyle().generateNewMap(Algorithms.randomUUID(), mapName.getText(),
+						MapInterface map = worldList.getMapContainer().generateMap(Algorithms.randomUUID(), mapName.getText(),
 							(int)widthSpinner.getValue(), (int)heightSpinner.getValue());
 						if(parentMap==null){
-							WraithEngine.INSTANCE.getWorldList().addMap(map);
+							worldList.addMap(map);
 						}else{
 							parentMap.addChild(map);
 						}
-						WraithEngine.INSTANCE.getWorldList().updateTreeModel();
+						worldList.updateTreeModel();
 					}
 				});
 				cancel.addActionListener(new ActionListener(){

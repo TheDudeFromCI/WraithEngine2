@@ -7,17 +7,21 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.core.AbstractMapEditor;
+import build.games.wraithaven.core.MapContainer;
+import build.games.wraithaven.core.MapInterface;
 import java.awt.BorderLayout;
+import javax.swing.JPanel;
 
 /**
  * @author TheDudeFromCI
  */
-public class MapEditor extends AbstractMapEditor{
+public class MapEditor extends JPanel implements MapContainer{
 	private final WorldScreen worldScreen;
 	private final WorldScreenToolbar toolbar;
-	public MapEditor(ChipsetList chipsetList){
-		worldScreen = new WorldScreen(chipsetList, this);
+	private final TopDownMapStyle mapStyle;
+	public MapEditor(TopDownMapStyle mapStyle){
+		this.mapStyle = mapStyle;
+		worldScreen = new WorldScreen(mapStyle);
 		toolbar = new WorldScreenToolbar(this);
 		init();
 	}
@@ -38,7 +42,20 @@ public class MapEditor extends AbstractMapEditor{
 	public void save(){
 		worldScreen.save();
 	}
+	@Override
 	public Map getSelectedMap(){
 		return worldScreen.getSelectedMap();
+	}
+	@Override
+	public void selectMap(MapInterface map){
+		worldScreen.selectMap((Map)map);
+	}
+	@Override
+	public MapInterface loadMap(String uuid){
+		return new Map(mapStyle, uuid);
+	}
+	@Override
+	public MapInterface generateMap(String uuid, String name, int width, int height){
+		return new Map(mapStyle, uuid, name);
 	}
 }

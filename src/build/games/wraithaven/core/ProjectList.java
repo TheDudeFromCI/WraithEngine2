@@ -189,7 +189,7 @@ public class ProjectList extends JFrame{
 		WraithEngine.outputFolder += File.separatorChar+pc.getUUID();
 		WraithEngine.projectName = pc.getName();
 		WraithEngine.projectBitSize = pc.getBitSize();
-		WraithEngine.INSTANCE = new WraithEngine(MapStyleFactory.loadMapStyle(pc.getType()));
+		MapStyleFactory.loadMapStyle(pc.getType()).buildWindow();
 	}
 	private ProjectConstraints[] loadProjects(){
 		File file = Algorithms.getFile("Projects.dat");

@@ -7,18 +7,9 @@
  */
 package build.games.wraithaven.core;
 
-import java.io.File;
-
 /**
  * @author TheDudeFromCI
  */
 public interface MapStyle{
-	public AbstractChipsetList getChipsetList();
-	public AbstractMapEditor getMapEditor();
-	public void openChipsetPreview(File file);
-	public MapInterface loadMap(String uuid);
-	public MapInterface generateNewMap(String uuid, String name, int width, int height);
-	public void selectMap(MapInterface map);
-	public MapInterface getSelectedMap();
-	public boolean useChipsetScrollbar();
+	public void buildWindow();
 }

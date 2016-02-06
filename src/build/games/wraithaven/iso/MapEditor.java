@@ -7,30 +7,32 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.core.AbstractMapEditor;
+import build.games.wraithaven.core.MapContainer;
+import build.games.wraithaven.core.MapInterface;
 import java.awt.BorderLayout;
+import javax.swing.JPanel;
 
 /**
  * @author TheDudeFromCI
  */
-public class MapEditor extends AbstractMapEditor{
+public class MapEditor extends JPanel implements MapContainer{
 	private final Toolbar toolbar;
 	private final MapEditorPainter painter;
-	public MapEditor(ChipsetList chipsetList){
+	private final IsoMapStyle iso;
+	public MapEditor(IsoMapStyle iso){
+		this.iso = iso;
 		toolbar = new Toolbar(this);
-		painter = new MapEditorPainter(chipsetList, toolbar, this);
+		painter = new MapEditorPainter(iso, toolbar, this);
 		setLayout(new BorderLayout());
 		add(toolbar, BorderLayout.NORTH);
 		add(painter, BorderLayout.CENTER);
 	}
-	@Override
 	public boolean needsSaving(){
 		if(painter.getMap()==null){
 			return false;
 		}
 		return painter.getMap().needsSaving();
 	}
-	@Override
 	public void save(){
 		if(painter.getMap()!=null){
 			painter.getMap().save();
@@ -42,7 +44,20 @@ public class MapEditor extends AbstractMapEditor{
 	public void selectMap(Map map){
 		painter.selectMap(map);
 	}
+	@Override
 	public Map getSelectedMap(){
 		return painter.getMap();
+	}
+	@Override
+	public void selectMap(MapInterface map){
+		painter.selectMap((Map)map);
+	}
+	@Override
+	public MapInterface loadMap(String uuid){
+		return new Map(iso, uuid);
+	}
+	@Override
+	public MapInterface generateMap(String uuid, String name, int width, int height){
+		return new Map(iso, uuid, name, width, height);
 	}
 }

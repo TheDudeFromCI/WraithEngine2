@@ -81,7 +81,9 @@ public class WorldList extends JPanel{
 	private final JTree tree;
 	private final ArrayList<MapInterface> mainMaps = new ArrayList(64);
 	private final MapStructure model;
-	public WorldList(){
+	private final MapContainer mapContainer;
+	public WorldList(MapContainer mapContainer){
+		this.mapContainer = mapContainer;
 		setLayout(new BorderLayout());
 		load();
 		tree = new JTree();
@@ -104,7 +106,7 @@ public class WorldList extends JPanel{
 							Object selected = selPath.getLastPathComponent();
 							tree.setSelectionPath(selPath);
 							if(selected instanceof MapInterface){
-								WraithEngine.INSTANCE.getMapStyle().selectMap((MapInterface)selected);
+								mapContainer.selectMap((MapInterface)selected);
 							}
 						}
 					}else if(button==MouseEvent.BUTTON3){
@@ -158,7 +160,7 @@ public class WorldList extends JPanel{
 			newMap.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e){
-					new NewMapDialog(selectedMap);
+					new NewMapDialog(selectedMap, WorldList.this);
 				}
 			});
 			menu.add(newMap);
@@ -200,8 +202,8 @@ public class WorldList extends JPanel{
 		}
 		map.delete();
 		updateTreeModel();
-		if(WraithEngine.INSTANCE.getMapStyle().getSelectedMap()==map){
-			WraithEngine.INSTANCE.getMapStyle().selectMap(null);
+		if(mapContainer.getSelectedMap()==map){
+			mapContainer.selectMap(null);
 		}
 	}
 	private void load(){
@@ -213,7 +215,7 @@ public class WorldList extends JPanel{
 		bin.decompress(false);
 		int count = bin.getInt();
 		for(int i = 0; i<count; i++){
-			mainMaps.add(WraithEngine.INSTANCE.getMapStyle().loadMap(bin.getString()));
+			mainMaps.add(mapContainer.loadMap(bin.getString()));
 		}
 	}
 	private void save(){
@@ -227,6 +229,9 @@ public class WorldList extends JPanel{
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Worlds", "List.dat"));
+	}
+	public MapContainer getMapContainer(){
+		return mapContainer;
 	}
 	public void addMap(MapInterface map){
 		mainMaps.add(map);

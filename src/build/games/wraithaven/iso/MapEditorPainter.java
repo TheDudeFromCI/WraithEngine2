@@ -29,6 +29,7 @@ public class MapEditorPainter extends JPanel{
 	private final CursorSelection cursorSelection;
 	private final Toolbar toolbar;
 	private final MapEditor mapEditor;
+	private final IsoMapStyle mapStyle;
 	private Map map;
 	private int tileSize;
 	private int tileWidth;
@@ -38,13 +39,14 @@ public class MapEditorPainter extends JPanel{
 	private Polygon selectionSquare;
 	private Polygon mapBorder;
 	private Polygon isoCubeBorder;
-	public MapEditorPainter(ChipsetList chipsetList, Toolbar toolbar, MapEditor mapEditor){
+	public MapEditorPainter(IsoMapStyle mapStyle, Toolbar toolbar, MapEditor mapEditor){
+		this.mapStyle = mapStyle;
 		this.toolbar = toolbar;
 		this.mapEditor = mapEditor;
 		tileSize = WraithEngine.projectBitSize;
 		tileWidth = tileSize/2;
 		tileHeight = tileSize/4;
-		this.cursorSelection = chipsetList.getCursorSelection();
+		this.cursorSelection = mapStyle.getChipsetList().getCursorSelection();
 		imageStorage = new MapImageStorage();
 		InputAdapter ml = new InputAdapter(){
 			private boolean dragging;
@@ -108,8 +110,9 @@ public class MapEditorPainter extends JPanel{
 				}else if(button==MouseEvent.BUTTON2){
 					if(cursorSelection.isOverMap()){
 						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-						cursorSelection.setSelectedTile(tile==null?null:tile.getTile(), tile==null?-1:chipsetList.getIndexOfTile(tile.getTile()));
-						chipsetList.repaint();
+						cursorSelection.setSelectedTile(tile==null?null:tile.getTile(),
+							tile==null?-1:mapStyle.getChipsetList().getIndexOfTile(tile.getTile()));
+						mapStyle.getChipsetList().repaint();
 					}
 				}
 			}
@@ -177,7 +180,7 @@ public class MapEditorPainter extends JPanel{
 	}
 	public void updateNeedsSaving(){
 		boolean needsSaving = mapEditor.needsSaving();
-		WraithEngine.INSTANCE.setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
+		mapStyle.getFrame().setTitle("WraithEngine "+(needsSaving?'*':"")+WraithEngine.projectName);
 		toolbar.setNeedsSaving(needsSaving);
 	}
 	private void generateIsoCubeBorder(){

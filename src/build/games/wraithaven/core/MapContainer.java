@@ -7,9 +7,12 @@
  */
 package build.games.wraithaven.core;
 
-import javax.swing.JPanel;
-
 /**
  * @author TheDudeFromCI
  */
-public abstract class AbstractChipsetList extends JPanel{}
+public interface MapContainer{
+	public void selectMap(MapInterface map);
+	public MapInterface getSelectedMap();
+	public MapInterface loadMap(String uuid);
+	public MapInterface generateMap(String uuid, String name, int width, int height);
+}

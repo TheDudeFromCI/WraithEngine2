@@ -7,11 +7,25 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.core.AbstractChipsetList;
-import build.games.wraithaven.core.AbstractMapEditor;
-import build.games.wraithaven.core.MapInterface;
 import build.games.wraithaven.core.MapStyle;
+import build.games.wraithaven.core.ProjectList;
+import build.games.wraithaven.core.WorldList;
+import static build.games.wraithaven.core.WraithEngine.outputFolder;
+import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
+import build.games.wraithaven.util.Algorithms;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JSplitPane;
 
 /**
  * @author TheDudeFromCI
@@ -19,40 +33,94 @@ import java.io.File;
 public class IsoMapStyle implements MapStyle{
 	private final ChipsetList chipsetList;
 	private final MapEditor mapEditor;
+	private final WorldList worldList;
+	private JFrame frame;
 	public IsoMapStyle(){
 		chipsetList = new ChipsetList();
-		mapEditor = new MapEditor(chipsetList);
+		mapEditor = new MapEditor(this);
+		worldList = new WorldList(mapEditor);
+		frame = new JFrame();
 	}
-	@Override
-	public AbstractChipsetList getChipsetList(){
+	public JFrame getFrame(){
+		return frame;
+	}
+	public ChipsetList getChipsetList(){
 		return chipsetList;
 	}
-	@Override
-	public AbstractMapEditor getMapEditor(){
-		return mapEditor;
+	public WorldList getWorldList(){
+		return worldList;
 	}
 	@Override
-	public void openChipsetPreview(File file){
-		new ChipsetImporter(chipsetList, file);
+	public void buildWindow(){
+		frame.setTitle("World Builder");
+		frame.setResizable(true);
+		frame.setSize(800, 600);
+		frame.setMinimumSize(new Dimension(640, 480));
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e){
+				if(confirmExit()){
+					System.exit(0);
+				}
+			}
+		});
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, chipsetList, worldList);
+		frame.getContentPane().add(splitPane, BorderLayout.WEST);
+		splitPane.setDividerSize(2);
+		splitPane.setDividerLocation(400);
+		frame.getContentPane().add(mapEditor, BorderLayout.CENTER);
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		JMenu mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+		JMenuItem switchProject = new JMenuItem("Switch Project");
+		switchProject.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				frame.dispose();
+				outputFolder = workspaceFolder;
+				new ProjectList();
+			}
+		});
+		mnFile.add(switchProject);
+		JMenuItem mntmImportNewChipset = new JMenuItem("Import New Chipset");
+		mntmImportNewChipset.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent event){
+				File file = Algorithms.userChooseImage("Import New Chipset", "Import");
+				if(file==null){
+					return;
+				}
+				new ChipsetImporter(chipsetList, file);
+			}
+		});
+		mnFile.add(mntmImportNewChipset);
+		mnFile.addSeparator();
+		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				if(confirmExit()){
+					System.exit(0);
+				}
+			}
+		});
+		mnFile.add(mntmExit);
+		frame.setVisible(true);
 	}
-	@Override
-	public MapInterface loadMap(String uuid){
-		return new Map(chipsetList, uuid);
-	}
-	@Override
-	public MapInterface generateNewMap(String uuid, String name, int width, int height){
-		return new Map(chipsetList, uuid, name, width, height);
-	}
-	@Override
-	public void selectMap(MapInterface map){
-		mapEditor.selectMap((Map)map);
-	}
-	@Override
-	public MapInterface getSelectedMap(){
-		return mapEditor.getSelectedMap();
-	}
-	@Override
-	public boolean useChipsetScrollbar(){
-		return false;
+	private boolean confirmExit(){
+		if(!mapEditor.needsSaving()){
+			return true;
+		}
+		int response =
+			JOptionPane.showConfirmDialog(null, "You have unsaved progress! Do you wish to save before exiting? All unsaved progress will be lost.",
+				"Confirm Exit", JOptionPane.YES_NO_CANCEL_OPTION);
+		if(response==JOptionPane.YES_OPTION){
+			mapEditor.save();
+			return true;
+		}
+		return response==JOptionPane.NO_OPTION;
 	}
 }

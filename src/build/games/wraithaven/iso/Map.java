@@ -8,7 +8,6 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.MapInterface;
-import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 public class Map implements MapInterface{
 	private final String uuid;
 	private final ArrayList<Map> childMaps = new ArrayList(1);
-	private final ChipsetList chipsetList;
+	private final IsoMapStyle iso;
 	private TileInstance[] tiles;
 	private ArrayList<Entity> entities;
 	private int width;
@@ -29,13 +28,13 @@ public class Map implements MapInterface{
 	private boolean loaded;
 	private boolean needsSaving;
 	private String parent;
-	public Map(ChipsetList chipsetList, String uuid){
-		this.chipsetList = chipsetList;
+	public Map(IsoMapStyle iso, String uuid){
+		this.iso = iso;
 		this.uuid = uuid;
 		loadProperties();
 	}
-	public Map(ChipsetList chipsetList, String uuid, String name, int width, int height){
-		this.chipsetList = chipsetList;
+	public Map(IsoMapStyle iso, String uuid, String name, int width, int height){
+		this.iso = iso;
 		this.uuid = uuid;
 		this.name = name;
 		this.width = width;
@@ -124,6 +123,7 @@ public class Map implements MapInterface{
 		File file = Algorithms.getFile("Worlds", "Tiles", uuid+".dat");
 		if(!file.exists()){
 			tiles = new TileInstance[width*height];
+			entities = new ArrayList(8);
 			return;
 		}
 		BinaryFile bin = new BinaryFile(file);
@@ -133,7 +133,7 @@ public class Map implements MapInterface{
 			tiles = new TileInstance[width*height];
 			Tile[] tileReferences = new Tile[bin.getInt()];
 			for(int i = 0; i<tileReferences.length; i++){
-				tileReferences[i] = chipsetList.getTile(bin.getString());
+				tileReferences[i] = iso.getChipsetList().getTile(bin.getString());
 			}
 			for(int i = 0; i<tiles.length; i++){
 				int id = bin.getInt();
@@ -194,7 +194,7 @@ public class Map implements MapInterface{
 		name = bin.getString();
 		int childMapCount = bin.getInt();
 		for(int i = 0; i<childMapCount; i++){
-			childMaps.add(new Map(chipsetList, bin.getString()));
+			childMaps.add(new Map(iso, bin.getString()));
 		}
 		if(bin.getBoolean()){
 			parent = bin.getString();
@@ -254,7 +254,7 @@ public class Map implements MapInterface{
 		if(parent==null){
 			return null;
 		}
-		return WraithEngine.INSTANCE.getWorldList().getMap(parent);
+		return iso.getWorldList().getMap(parent);
 	}
 	@Override
 	public void setParent(MapInterface parent){

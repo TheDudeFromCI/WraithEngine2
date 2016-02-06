@@ -129,4 +129,7 @@ public class EntityList extends JPanel{
 		}
 		g.dispose();
 	}
+	public ArrayList<EntityType> getAllTypes(){
+		return entityTypes;
+	}
 }

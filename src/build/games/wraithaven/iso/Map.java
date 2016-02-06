@@ -21,7 +21,6 @@ public class Map implements MapInterface{
 	private final ArrayList<Map> childMaps = new ArrayList(1);
 	private final IsoMapStyle iso;
 	private TileInstance[] tiles;
-	private ArrayList<Entity> entities;
 	private int width;
 	private int height;
 	private String name;
@@ -75,39 +74,8 @@ public class Map implements MapInterface{
 				}
 			}
 		}
-		{
-			// Entities
-			ArrayList<EntityType> entityReferences = new ArrayList(4);
-			for(Entity e : entities){
-				if(!entityReferences.contains(e.getEntityType())){
-					entityReferences.add(e.getEntityType());
-				}
-			}
-			bin.allocateBytes(8+entities.size()*12);
-			bin.addInt(entityReferences.size());
-			for(EntityType type : entityReferences){
-				bin.addStringAllocated(type.getUUID());
-			}
-			bin.addInt(entities.size());
-			for(Entity e : entities){
-				bin.addInt(entityReferences.indexOf(e.getEntityType()));
-				bin.addInt(e.getX());
-				bin.addInt(e.getZ());
-			}
-		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Worlds", "Tiles", uuid+".dat"));
-	}
-	public ArrayList<Entity> getAllEntities(){
-		return entities;
-	}
-	public void addEntity(Entity e){
-		entities.add(e);
-		needsSaving = true;
-	}
-	public void removeEntity(Entity e){
-		entities.remove(e);
-		needsSaving = true;
 	}
 	public TileInstance getTile(int x, int z){
 		return tiles[z*width+x];
@@ -123,7 +91,6 @@ public class Map implements MapInterface{
 		File file = Algorithms.getFile("Worlds", "Tiles", uuid+".dat");
 		if(!file.exists()){
 			tiles = new TileInstance[width*height];
-			entities = new ArrayList(8);
 			return;
 		}
 		BinaryFile bin = new BinaryFile(file);
@@ -144,22 +111,7 @@ public class Map implements MapInterface{
 				tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
 			}
 		}
-		{
-			// Entities
-			EntityType[] types = new EntityType[bin.getInt()];
-			for(int i = 0; i<types.length; i++){
-				types[i] = new EntityType(bin.getString());
-			}
-			int entityCount = bin.getInt();
-			entities = new ArrayList(entityCount);
-			int type, x, z;
-			for(int i = 0; i<entityCount; i++){
-				type = bin.getInt();
-				x = bin.getInt();
-				z = bin.getInt();
-				entities.add(new Entity(types[type], x, z));
-			}
-		}
+		tiles[0].setEntity(iso.getChipsetList().getEntityList().getAllTypes().get(0));
 	}
 	public void dispose(){
 		if(!loaded){
@@ -167,7 +119,6 @@ public class Map implements MapInterface{
 		}
 		loaded = false;
 		tiles = null;
-		entities = null;
 		needsSaving = false;
 	}
 	private void saveProperties(){

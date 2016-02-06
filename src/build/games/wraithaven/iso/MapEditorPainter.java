@@ -303,15 +303,12 @@ public class MapEditorPainter extends JPanel{
 							g.translate(-u-tileWidth, -v-tileWidth);
 							g.setComposite(com);
 						}
+						if(tiles[i].getEntity()!=null){
+							g.drawImage(imageStorage.getImage(tiles[i].getEntity()), u+(int)(tiles[i].getEntity().getOffsetX()*tileSize),
+								v+(int)(tiles[i].getEntity().getOffsetY()*tileSize), tileSize, tileSize*2, null);
+						}
 					}
 				}
-			}
-			for(Entity e : map.getAllEntities()){
-				i = e.getZ()*w+e.getZ();
-				a = tiles[i]==null?0:tiles[i].getHeight();
-				u = (e.getX()-e.getZ())*tileWidth+scrollX-tileWidth;
-				v = (e.getX()+e.getZ())*tileHeight+scrollY-a*tileSize/8;
-				g.drawImage(imageStorage.getImage(e.getEntityType()), u+e.getEntityType().getOffsetX(), v+e.getEntityType().getOffsetY(), null);
 			}
 			g.setColor(Color.blue);
 			g.translate(scrollX, scrollY);

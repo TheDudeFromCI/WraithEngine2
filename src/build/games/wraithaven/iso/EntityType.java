@@ -18,10 +18,10 @@ public class EntityType{
 	public String getUUID(){
 		return uuid;
 	}
-	public int getOffsetX(){
+	public float getOffsetX(){
 		return 0;
 	}
-	public int getOffsetY(){
-		return 0;
+	public float getOffsetY(){
+		return -1.5f;
 	}
 }

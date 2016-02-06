@@ -13,6 +13,7 @@ package build.games.wraithaven.iso;
 public class TileInstance{
 	private final Tile tile;
 	private int height;
+	private EntityType entity;
 	public TileInstance(Tile tile){
 		this.tile = tile;
 	}
@@ -28,5 +29,11 @@ public class TileInstance{
 	}
 	public void setHeight(int height){
 		this.height = height;
+	}
+	public EntityType getEntity(){
+		return entity;
+	}
+	public void setEntity(EntityType entity){
+		this.entity = entity;
 	}
 }

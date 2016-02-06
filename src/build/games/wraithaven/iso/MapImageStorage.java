@@ -36,7 +36,7 @@ public class MapImageStorage{
 			return entityImages.get(entity);
 		}
 		try{
-			BufferedImage image = ImageIO.read(Algorithms.getFile("Entities", entity.getUUID()+".png"));
+			BufferedImage image = ImageIO.read(Algorithms.getFile("Entities", "Fulls", entity.getUUID()+".png"));
 			entityImages.put(entity, image);
 			return image;
 		}catch(Exception exception){

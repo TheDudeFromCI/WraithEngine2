@@ -350,8 +350,10 @@ public class WorldScreen extends JPanel{
 					float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
 					g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
 					g.translate(cursor.getX()*pixelSize+scrollX, cursor.getY()*pixelSize+scrollY);
-					g.drawPolygon(selectionBox);
-					repaint();
+					if(selectionBox!=null){
+						g.drawPolygon(selectionBox);
+						repaint();
+					}
 				}
 			}
 		}

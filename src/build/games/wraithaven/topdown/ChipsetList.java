@@ -103,7 +103,16 @@ public class ChipsetList extends JPanel{
 								int endX = e.getX();
 								int endY = e.getY();
 								if(endY>=height+c.getImage().getHeight()){
-									endY = height+c.getImage().getHeight();
+									endY = height+c.getImage().getHeight()-1;
+								}
+								if(endY<height){
+									endY = height;
+								}
+								if(endX<0){
+									endX = 0;
+								}
+								if(endX>=getWidth()){
+									endX = getWidth()-1;
 								}
 								int selX2 = endX/Chipset.TILE_OUT_SIZE;
 								int selY2 = (endY-height)/Chipset.TILE_OUT_SIZE;

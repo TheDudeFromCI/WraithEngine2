@@ -63,7 +63,7 @@ public class MapEditorPainter extends JPanel{
 					repaint();
 				}
 				if(drawing){
-					mouseClicked(event.getX(), event.getY(), 1);
+					mouseClicked(event.getX(), event.getY(), 1, event.isShiftDown());
 				}
 				mouseMoved(event);
 			}
@@ -95,24 +95,40 @@ public class MapEditorPainter extends JPanel{
 			}
 			@Override
 			public void mouseClicked(MouseEvent event){
-				mouseClicked(event.getX(), event.getY(), event.getButton());
+				mouseClicked(event.getX(), event.getY(), event.getButton(), event.isShiftDown());
 			}
-			public void mouseClicked(int x, int y, int button){
+			public void mouseClicked(int x, int y, int button, boolean shift){
 				if(map==null){
 					return;
 				}
 				if(button==MouseEvent.BUTTON1){
 					if(cursorSelection.isOverMap()){
-						map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
-						updateNeedsSaving();
-						repaint();
+						if(cursorSelection.isTileMode()){
+							map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
+							updateNeedsSaving();
+							repaint();
+						}else if(cursorSelection.isEntityMode()){
+							TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
+							if(tile!=null){
+								tile.setEntity(cursorSelection.getSelectedEntity());
+								map.setNeedsSaving();
+								updateNeedsSaving();
+								repaint();
+							}
+						}
 					}
 				}else if(button==MouseEvent.BUTTON2){
 					if(cursorSelection.isOverMap()){
 						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-						cursorSelection.setSelectedTile(tile==null?null:tile.getTile(),
-							tile==null?-1:mapStyle.getChipsetList().getIndexOfTile(tile.getTile()));
-						mapStyle.getChipsetList().repaint();
+						if(shift){
+							cursorSelection.setSelectedEntity(tile.getEntity(),
+								mapStyle.getChipsetList().getEntityList().getAllTypes().indexOf(tile.getEntity()));
+							mapStyle.getChipsetList().repaint();
+						}else if(cursorSelection.isEntityMode()){
+							cursorSelection.setSelectedTile(tile==null?null:tile.getTile(),
+								tile==null?-1:mapStyle.getChipsetList().getIndexOfTile(tile.getTile()));
+							mapStyle.getChipsetList().repaint();
+						}
 					}
 				}
 			}

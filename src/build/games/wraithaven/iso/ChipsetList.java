@@ -20,7 +20,7 @@ public class ChipsetList extends JPanel{
 	private final EntityList entityList;
 	public ChipsetList(){
 		painter = new ChipsetListPainter();
-		entityList = new EntityList();
+		entityList = new EntityList(painter.getCursorSelection());
 		JTabbedPane tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
 		add(tabbedPane, BorderLayout.CENTER);

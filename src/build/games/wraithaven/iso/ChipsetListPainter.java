@@ -125,7 +125,7 @@ public class ChipsetListPainter extends JPanel{
 				y += PREVIEW_TILE_SCALE;
 			}
 		}
-		if(cursorSelection.isActive()){
+		if(cursorSelection.isTileActive()){
 			g.setStroke(new BasicStroke(3));
 			g.translate(cursorSelection.getSelectedTileIndex()%PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE,
 				cursorSelection.getSelectedTileIndex()/PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE);

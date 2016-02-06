@@ -20,9 +20,18 @@ public class CursorSelection{
 	private int mapWidth;
 	private int mapHeight;
 	private boolean onEditor;
+	private EntityType selectedEntity;
+	private int selectedEntityIndex;
+	private int mode;
 	public void setScreenLocation(int x, int y){
 		screenX = x;
 		screenY = y;
+	}
+	public boolean isTileMode(){
+		return mode==1;
+	}
+	public boolean isEntityMode(){
+		return mode==2;
 	}
 	public void show(){
 		onEditor = true;
@@ -42,15 +51,32 @@ public class CursorSelection{
 	public Tile getSelectedTile(){
 		return selectedTile;
 	}
+	public EntityType getSelectedEntity(){
+		return selectedEntity;
+	}
+	public void setSelectedEntity(EntityType entity, int index){
+		selectedEntity = entity;
+		selectedEntityIndex = index;
+		selectedTile = null;
+		mode = 2;
+	}
 	public void setSelectedTile(Tile tile, int index){
 		selectedTile = tile;
 		selectedTileIndex = index;
+		selectedEntity = null;
+		mode = 1;
 	}
 	public int getSelectedTileIndex(){
 		return selectedTileIndex;
 	}
-	public boolean isActive(){
+	public int getSelectedEntityIndex(){
+		return selectedEntityIndex;
+	}
+	public boolean isTileActive(){
 		return selectedTile!=null;
+	}
+	public boolean isEntityActive(){
+		return selectedEntity!=null;
 	}
 	public int getTileX(){
 		return tileX;

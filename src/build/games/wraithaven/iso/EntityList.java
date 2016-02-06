@@ -9,10 +9,12 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,11 +27,28 @@ import javax.swing.JPanel;
  * @author TheDudeFromCI
  */
 public class EntityList extends JPanel{
+	private static Polygon generateCursor(){
+		int[] x = new int[4];
+		int[] y = new int[4];
+		x[0] = 0;
+		y[0] = 0;
+		x[1] = PREVIEW_ICON_SIZE;
+		y[1] = 0;
+		x[2] = PREVIEW_ICON_SIZE;
+		y[2] = PREVIEW_ICON_SIZE;
+		x[3] = 0;
+		y[3] = PREVIEW_ICON_SIZE;
+		return new Polygon(x, y, 4);
+	}
 	private static final int PREVIEW_WIDTH = 4;
 	private static final int PREVIEW_ICON_SIZE = 64;
 	private final ArrayList<EntityType> entityTypes = new ArrayList(16);
 	private final HashMap<EntityType,BufferedImage> previews = new HashMap(16);
-	public EntityList(){
+	private final CursorSelection cursorSelection;
+	private final Polygon cursor;
+	public EntityList(CursorSelection cursorSelection){
+		this.cursorSelection = cursorSelection;
+		cursor = generateCursor();
 		load();
 		updatePrefferedSize();
 	}
@@ -126,6 +145,13 @@ public class EntityList extends JPanel{
 				x = 0;
 				y += PREVIEW_ICON_SIZE;
 			}
+		}
+		if(cursorSelection.isEntityActive()){
+			g.setStroke(new BasicStroke(3));
+			g.translate(cursorSelection.getSelectedTileIndex()%PREVIEW_WIDTH*PREVIEW_ICON_SIZE,
+				cursorSelection.getSelectedTileIndex()/PREVIEW_WIDTH*PREVIEW_ICON_SIZE);
+			g.setColor(Color.white);
+			g.drawPolygon(cursor);
 		}
 		g.dispose();
 	}

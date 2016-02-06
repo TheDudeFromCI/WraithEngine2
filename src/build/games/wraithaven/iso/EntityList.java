@@ -9,6 +9,7 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -51,6 +53,22 @@ public class EntityList extends JPanel{
 		cursor = generateCursor();
 		load();
 		updatePrefferedSize();
+		InputAdapter ia = new InputAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent event){
+				int x = event.getX()/PREVIEW_ICON_SIZE;
+				int y = event.getY()/PREVIEW_ICON_SIZE;
+				int index = y*PREVIEW_WIDTH+x;
+				if(index>=entityTypes.size()){
+					cursorSelection.setSelectedEntity(null, -1);
+					repaint();
+					return;
+				}
+				cursorSelection.setSelectedEntity(entityTypes.get(index), index);
+				repaint();
+			}
+		};
+		addMouseListener(ia);
 	}
 	private void updatePrefferedSize(){
 		setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil(entityTypes.size()/(double)PREVIEW_WIDTH), 150)));

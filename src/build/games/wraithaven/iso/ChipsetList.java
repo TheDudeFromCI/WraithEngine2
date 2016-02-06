@@ -42,4 +42,7 @@ public class ChipsetList extends JPanel{
 	public void addTile(Tile tile){
 		painter.addTile(tile);
 	}
+	public EntityList getEntityList(){
+		return entityList;
+	}
 }

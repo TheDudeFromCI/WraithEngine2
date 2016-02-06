@@ -44,8 +44,17 @@ public class EntityList extends JPanel{
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
 		int count = bin.getInt();
+		EntityType e;
+		BufferedImage img;
 		for(int i = 0; i<count; i++){
-			entityTypes.add(new EntityType(bin.getString()));
+			e = new EntityType(bin.getString());
+			entityTypes.add(e);
+			try{
+				img = ImageIO.read(Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
+				previews.put(e, img);
+			}catch(Exception exception){
+				exception.printStackTrace();
+			}
 		}
 	}
 	public EntityType getType(String uuid){
@@ -92,6 +101,7 @@ public class EntityList extends JPanel{
 		g.dispose();
 		previews.put(e, buf);
 		try{
+			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", "Fulls", e.getUUID()+".png"));
 			ImageIO.write(buf, "png", Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
 		}catch(Exception exception){
 			exception.printStackTrace();

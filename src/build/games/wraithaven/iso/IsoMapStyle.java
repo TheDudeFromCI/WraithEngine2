@@ -34,7 +34,7 @@ public class IsoMapStyle implements MapStyle{
 	private final ChipsetList chipsetList;
 	private final MapEditor mapEditor;
 	private final WorldList worldList;
-	private JFrame frame;
+	private final JFrame frame;
 	public IsoMapStyle(){
 		chipsetList = new ChipsetList();
 		mapEditor = new MapEditor(this);
@@ -52,62 +52,103 @@ public class IsoMapStyle implements MapStyle{
 	}
 	@Override
 	public void buildWindow(){
-		frame.setTitle("World Builder");
-		frame.setResizable(true);
-		frame.setSize(800, 600);
-		frame.setMinimumSize(new Dimension(640, 480));
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter(){
-			@Override
-			public void windowClosing(WindowEvent e){
-				if(confirmExit()){
-					System.exit(0);
+		{
+			// Initalize
+			frame.setTitle("World Builder");
+			frame.setResizable(true);
+			frame.setSize(800, 600);
+			frame.setMinimumSize(new Dimension(640, 480));
+			frame.setLocationRelativeTo(null);
+			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			frame.addWindowListener(new WindowAdapter(){
+				@Override
+				public void windowClosing(WindowEvent e){
+					if(confirmExit()){
+						System.exit(0);
+					}
+				}
+			});
+		}
+		{
+			// Add components
+			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, chipsetList, worldList);
+			frame.getContentPane().add(splitPane, BorderLayout.WEST);
+			splitPane.setDividerSize(2);
+			splitPane.setDividerLocation(400);
+			frame.getContentPane().add(mapEditor, BorderLayout.CENTER);
+			{
+				// Menu
+				JMenuBar menuBar = new JMenuBar();
+				frame.setJMenuBar(menuBar);
+				{
+					// File
+					JMenu mnFile = new JMenu("File");
+					menuBar.add(mnFile);
+					{
+						// Switch Project
+						JMenuItem switchProject = new JMenuItem("Switch Project");
+						switchProject.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								frame.dispose();
+								outputFolder = workspaceFolder;
+								new ProjectList();
+							}
+						});
+						mnFile.add(switchProject);
+					}
+					{
+						// Import New Tile
+						JMenuItem mntmImportNewChipset = new JMenuItem("Import New Tile");
+						mntmImportNewChipset.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent event){
+								File file = Algorithms.userChooseImage("Import New Tile", "Import");
+								if(file==null){
+									return;
+								}
+								new ChipsetImporter(chipsetList, file);
+							}
+						});
+						mnFile.add(mntmImportNewChipset);
+					}
+					{
+						// Import New Entity
+						JMenuItem item = new JMenuItem("Import New Entity");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								File file = Algorithms.userChooseImage("Import New Entity", "Import");
+								if(file==null){
+									return;
+								}
+								EntityImporter importer = new EntityImporter(file);
+								int response = JOptionPane.showConfirmDialog(null, importer, "Import New Entity", JOptionPane.OK_CANCEL_OPTION);
+								if(response!=JOptionPane.OK_OPTION){
+									return;
+								}
+								chipsetList.getEntityList().addEntityType(importer.build(), importer.getEntityImage());
+							}
+						});
+						mnFile.add(item);
+					}
+					{
+						// Exit
+						mnFile.addSeparator();
+						JMenuItem mntmExit = new JMenuItem("Exit");
+						mntmExit.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								if(confirmExit()){
+									System.exit(0);
+								}
+							}
+						});
+						mnFile.add(mntmExit);
+					}
 				}
 			}
-		});
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, chipsetList, worldList);
-		frame.getContentPane().add(splitPane, BorderLayout.WEST);
-		splitPane.setDividerSize(2);
-		splitPane.setDividerLocation(400);
-		frame.getContentPane().add(mapEditor, BorderLayout.CENTER);
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		JMenu mnFile = new JMenu("File");
-		menuBar.add(mnFile);
-		JMenuItem switchProject = new JMenuItem("Switch Project");
-		switchProject.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-				frame.dispose();
-				outputFolder = workspaceFolder;
-				new ProjectList();
-			}
-		});
-		mnFile.add(switchProject);
-		JMenuItem mntmImportNewChipset = new JMenuItem("Import New Chipset");
-		mntmImportNewChipset.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent event){
-				File file = Algorithms.userChooseImage("Import New Chipset", "Import");
-				if(file==null){
-					return;
-				}
-				new ChipsetImporter(chipsetList, file);
-			}
-		});
-		mnFile.add(mntmImportNewChipset);
-		mnFile.addSeparator();
-		JMenuItem mntmExit = new JMenuItem("Exit");
-		mntmExit.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-				if(confirmExit()){
-					System.exit(0);
-				}
-			}
-		});
-		mnFile.add(mntmExit);
+		}
 		frame.setVisible(true);
 	}
 	private boolean confirmExit(){

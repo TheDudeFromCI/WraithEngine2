@@ -51,7 +51,7 @@ public class Map implements MapInterface{
 			return;
 		}
 		needsSaving = false;
-		BinaryFile bin = new BinaryFile(tiles.length*8+4);
+		BinaryFile bin = new BinaryFile(tiles.length*9+4);
 		{
 			// Tiles
 			ArrayList<Tile> tileReferences = new ArrayList(16);
@@ -68,9 +68,16 @@ public class Map implements MapInterface{
 				if(t==null){
 					bin.addInt(-1);
 					bin.addInt(0);
+					bin.addBoolean(false);
 				}else{
 					bin.addInt(tileReferences.indexOf(t.getTile()));
 					bin.addInt(t.getHeight());
+					if(t.getEntity()==null){
+						bin.addBoolean(false);
+					}else{
+						bin.addBoolean(true);
+						bin.addStringAllocated(t.getEntity().getUUID());
+					}
 				}
 			}
 		}
@@ -105,13 +112,15 @@ public class Map implements MapInterface{
 			for(int i = 0; i<tiles.length; i++){
 				int id = bin.getInt();
 				if(id==-1){
-					bin.skip(4);
+					bin.skip(5);
 					continue;
 				}
 				tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
+				if(bin.getBoolean()){
+					tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(bin.getString()));
+				}
 			}
 		}
-		tiles[0].setEntity(iso.getChipsetList().getEntityList().getAllTypes().get(0));
 	}
 	public void dispose(){
 		if(!loaded){

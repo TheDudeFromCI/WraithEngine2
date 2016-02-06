@@ -49,7 +49,7 @@ public class Tile{
 	public Tile(String uuid){
 		this.uuid = uuid;
 		try{
-			previewImage = ImageIO.read(Algorithms.getFile("Chipsets", uuid+"preview.png"));
+			previewImage = ImageIO.read(Algorithms.getFile("Chipsets", "Previews", uuid+".png"));
 		}catch(Exception exception){
 			throw new RuntimeException(exception.getMessage());
 		}
@@ -58,8 +58,8 @@ public class Tile{
 		this.uuid = uuid;
 		previewImage = scaleImage(image);
 		try{
-			ImageIO.write(image, "png", Algorithms.getFile("Chipsets", uuid+".png"));
-			ImageIO.write(previewImage, "png", Algorithms.getFile("Chipsets", uuid+"preview.png"));
+			ImageIO.write(image, "png", Algorithms.getFile("Chipsets", "Fulls", uuid+".png"));
+			ImageIO.write(previewImage, "png", Algorithms.getFile("Chipsets", "Previews", uuid+".png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}

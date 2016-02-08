@@ -41,7 +41,7 @@ public class WorldScreen extends JPanel{
 	private Polygon selectionBox;
 	private int selectionBoxWidth;
 	private int selectionBoxHeight;
-	private Tool tool = Tool.BASIC;
+	private Tool tool;
 	public WorldScreen(TopDownMapStyle mapStyle){
 		this.mapStyle = mapStyle;
 		try{
@@ -297,12 +297,14 @@ public class WorldScreen extends JPanel{
 		addMouseWheelListener(inputAdapter);
 		addKeyListener(inputAdapter);
 		setFocusable(true);
+		setTool(Tool.BASIC);
 	}
 	public Tool getTool(){
 		return tool;
 	}
 	public void setTool(Tool tool){
 		this.tool = tool;
+		setCursor(tool.getCursor());
 	}
 	public void save(){
 		if(loadedMap!=null){
@@ -377,10 +379,8 @@ public class WorldScreen extends JPanel{
 					float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
 					g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
 					g.translate(cursor.getX()*pixelSize+scrollX, cursor.getY()*pixelSize+scrollY);
-					if(selectionBox!=null){
-						g.drawPolygon(selectionBox);
-						repaint();
-					}
+					g.drawPolygon(selectionBox);
+					repaint();
 				}
 			}
 		}

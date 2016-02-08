@@ -17,6 +17,8 @@ import java.util.ArrayList;
  * @author TheDudeFromCI
  */
 public class Map implements MapInterface{
+	private static final short FILE_VERSION_PROPERTIES = 0;
+	private static final short FILE_VERSION_TILES = 0;
 	private final String uuid;
 	private final ArrayList<Map> childMaps = new ArrayList(1);
 	private final IsoMapStyle iso;
@@ -51,7 +53,8 @@ public class Map implements MapInterface{
 			return;
 		}
 		needsSaving = false;
-		BinaryFile bin = new BinaryFile(tiles.length*9+4);
+		BinaryFile bin = new BinaryFile(tiles.length*9+4+2);
+		bin.addShort(FILE_VERSION_TILES);
 		{
 			// Tiles
 			ArrayList<Tile> tileReferences = new ArrayList(16);
@@ -102,24 +105,29 @@ public class Map implements MapInterface{
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(true);
-		{
-			// Tiles
-			tiles = new TileInstance[width*height];
-			Tile[] tileReferences = new Tile[bin.getInt()];
-			for(int i = 0; i<tileReferences.length; i++){
-				tileReferences[i] = iso.getChipsetList().getTile(bin.getString());
-			}
-			for(int i = 0; i<tiles.length; i++){
-				int id = bin.getInt();
-				if(id==-1){
-					bin.skip(5);
-					continue;
+		short version = bin.getShort();
+		switch(version){
+			case 0:
+				// Tiles
+				tiles = new TileInstance[width*height];
+				Tile[] tileReferences = new Tile[bin.getInt()];
+				for(int i = 0; i<tileReferences.length; i++){
+					tileReferences[i] = iso.getChipsetList().getTile(bin.getString());
 				}
-				tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
-				if(bin.getBoolean()){
-					tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(bin.getString()));
+				for(int i = 0; i<tiles.length; i++){
+					int id = bin.getInt();
+					if(id==-1){
+						bin.skip(5);
+						continue;
+					}
+					tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
+					if(bin.getBoolean()){
+						tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(bin.getString()));
+					}
 				}
-			}
+				break;
+			default:
+				throw new RuntimeException();
 		}
 	}
 	public void dispose(){
@@ -131,7 +139,8 @@ public class Map implements MapInterface{
 		needsSaving = false;
 	}
 	private void saveProperties(){
-		BinaryFile bin = new BinaryFile(4+8+1);
+		BinaryFile bin = new BinaryFile(4+8+1+2);
+		bin.addShort(FILE_VERSION_PROPERTIES);
 		bin.addInt(width);
 		bin.addInt(height);
 		bin.addStringAllocated(name);
@@ -149,15 +158,22 @@ public class Map implements MapInterface{
 	private void loadProperties(){
 		BinaryFile bin = new BinaryFile(Algorithms.getFile("Worlds", uuid+".dat"));
 		bin.decompress(false);
-		width = bin.getInt();
-		height = bin.getInt();
-		name = bin.getString();
-		int childMapCount = bin.getInt();
-		for(int i = 0; i<childMapCount; i++){
-			childMaps.add(new Map(iso, bin.getString()));
-		}
-		if(bin.getBoolean()){
-			parent = bin.getString();
+		short version = bin.getShort();
+		switch(version){
+			case 0:
+				width = bin.getInt();
+				height = bin.getInt();
+				name = bin.getString();
+				int childMapCount = bin.getInt();
+				for(int i = 0; i<childMapCount; i++){
+					childMaps.add(new Map(iso, bin.getString()));
+				}
+				if(bin.getBoolean()){
+					parent = bin.getString();
+				}
+				break;
+			default:
+				throw new RuntimeException();
 		}
 	}
 	public void setTile(int x, int z, Tile tile){

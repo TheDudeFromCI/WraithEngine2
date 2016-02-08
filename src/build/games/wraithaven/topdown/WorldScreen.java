@@ -41,6 +41,7 @@ public class WorldScreen extends JPanel{
 	private Polygon selectionBox;
 	private int selectionBoxWidth;
 	private int selectionBoxHeight;
+	private Tool tool = Tool.BASIC;
 	public WorldScreen(TopDownMapStyle mapStyle){
 		this.mapStyle = mapStyle;
 		try{
@@ -276,6 +277,12 @@ public class WorldScreen extends JPanel{
 		addMouseWheelListener(inputAdapter);
 		addKeyListener(inputAdapter);
 		setFocusable(true);
+	}
+	public Tool getTool(){
+		return tool;
+	}
+	public void setTool(Tool tool){
+		this.tool = tool;
 	}
 	public void save(){
 		if(loadedMap!=null){

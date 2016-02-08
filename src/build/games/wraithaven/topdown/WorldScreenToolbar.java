@@ -122,6 +122,16 @@ public class WorldScreenToolbar extends JPanel{
 			});
 			add(hideOtherLayers);
 		}
+		{
+			JButton fillTool = createIcon("Paint Bucket.png", "Paint Bucket Down.png", null);
+			fillTool.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					mapEditor.getWorldScreen().setTool(Tool.FILL);
+				}
+			});
+			add(fillTool);
+		}
 	}
 	public void setNeedsSaving(boolean needsSaving){
 		saveButton.setEnabled(needsSaving);

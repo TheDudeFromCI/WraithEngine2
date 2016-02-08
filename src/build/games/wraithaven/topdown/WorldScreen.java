@@ -97,8 +97,7 @@ public class WorldScreen extends JPanel{
 					mouseMoved(x, y);
 					repaint();
 				}else{
-					if(button!=MouseEvent.BUTTON1&&button!=MouseEvent.BUTTON2) // If not left click, or middle click, do nothing.
-					{
+					if(button!=MouseEvent.BUTTON1&&button!=MouseEvent.BUTTON2){ // If not left click, or middle click, do nothing.
 						return;
 					}
 					// Set Tile
@@ -151,32 +150,53 @@ public class WorldScreen extends JPanel{
 									}
 								}.execute();
 							}else{
-								if(selectedTile.isActive()){
-									int tileX = (x-mapX)/pixelSize;
-									int tileY = (y-mapY)/pixelSize;
-									int tileZ = mapStyle.getMapEditor().getToolbar().getEditingLayer();
-									int w = selectedTile.getWidth();
-									int h = selectedTile.getHeight();
-									int[] indices = selectedTile.getIndex();
-									int a, b, u, v;
-									for(a = 0; a<w; a++){
-										for(b = 0; b<h; b++){
-											u = a+tileX;
-											v = b+tileY;
-											if(u>=20){
-												continue;
+								switch(tool){
+									case BASIC:
+										if(selectedTile.isActive()){
+											int tileX = (x-mapX)/pixelSize;
+											int tileY = (y-mapY)/pixelSize;
+											int tileZ = mapStyle.getMapEditor().getToolbar().getEditingLayer();
+											int w = selectedTile.getWidth();
+											int h = selectedTile.getHeight();
+											int[] indices = selectedTile.getIndex();
+											int a, b, u, v;
+											for(a = 0; a<w; a++){
+												for(b = 0; b<h; b++){
+													u = a+tileX;
+													v = b+tileY;
+													if(u>=20){
+														continue;
+													}
+													if(v>=15){
+														continue;
+													}
+													map.setTile(u, v, tileZ, selectedTile.getChipset().getTile(indices[b*w+a]));
+												}
 											}
-											if(v>=15){
-												continue;
-											}
-											map.setTile(u, v, tileZ, selectedTile.getChipset().getTile(indices[b*w+a]));
+										}else{
+											map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapStyle.getMapEditor().getToolbar().getEditingLayer(),
+												null);
 										}
-									}
-								}else{
-									map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapStyle.getMapEditor().getToolbar().getEditingLayer(), null);
+										updateNeedsSaving();
+										repaint();
+										break;
+									case FILL:
+										MapSectionFillable fillable =
+											new MapSectionFillable(loadedMap, map, mapStyle.getMapEditor().getToolbar().getEditingLayer());
+										int tileX = (x-mapX)/pixelSize;
+										int tileY = (y-mapY)/pixelSize;
+										Tile tile;
+										if(selectedTile.isActive()){
+											tile = selectedTile.getChipset().getTile(selectedTile.getIndex()[0]);
+										}else{
+											tile = null;
+										}
+										fillable.fill(tileX, tileY, tile);
+										setTool(Tool.BASIC);
+										break;
+									default:
+										throw new RuntimeException();
 								}
-								updateNeedsSaving();
-								repaint();
 							}
 							return;
 						}

@@ -29,6 +29,9 @@ public class MapLayer{
 	public int getLayer(){
 		return layer;
 	}
+	public Tile[] getAllTiles(){
+		return tiles;
+	}
 	public Tile getTile(int x, int y){
 		return tiles[y*MAP_TILES_WIDTH+x];
 	}
@@ -53,7 +56,7 @@ public class MapLayer{
 		}
 		redraw();
 	}
-	private void redraw(){
+	public void redraw(){
 		image =
 			new BufferedImage(WraithEngine.projectBitSize*MAP_TILES_WIDTH, WraithEngine.projectBitSize*MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();

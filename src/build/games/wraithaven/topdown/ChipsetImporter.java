@@ -14,7 +14,6 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
@@ -27,7 +26,7 @@ public class ChipsetImporter{
 	private Tile[] tiles;
 	public ChipsetImporter(File file){
 		this.file = file;
-		uuid = UUID.randomUUID().toString();
+		uuid = Algorithms.randomUUID();
 		name = file.getName().substring(0, file.getName().length()-4);
 		unwrap();
 	}

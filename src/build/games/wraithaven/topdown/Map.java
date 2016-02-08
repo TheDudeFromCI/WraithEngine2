@@ -22,19 +22,34 @@ public class Map implements MapInterface{
 	private final ArrayList<Map> childMaps = new ArrayList(0);
 	private final String uuid;
 	private final TopDownMapStyle mapStyle;
+	private final int width;
+	private final int height;
 	private String name;
 	private boolean mapsLoaded;
 	private String parent;
 	public Map(TopDownMapStyle mapStyle, String uuid){
 		this.mapStyle = mapStyle;
 		this.uuid = uuid;
+		width = 20;
+		height = 15;
 		loadProperties();
 	}
-	public Map(TopDownMapStyle mapStyle, String uuid, String name){
+	public Map(TopDownMapStyle mapStyle, String uuid, String name, int width, int height){
 		this.mapStyle = mapStyle;
 		this.uuid = uuid;
 		this.name = name;
+		this.width = width;
+		this.height = height;
 		saveProperties();
+	}
+	public int getWidth(){
+		return width;
+	}
+	public int getHeight(){
+		return height;
+	}
+	public boolean isLoaded(){
+		return mapsLoaded;
 	}
 	@Override
 	public MapInterface getChild(int index){
@@ -48,6 +63,9 @@ public class Map implements MapInterface{
 	public void removeChild(Map map){
 		childMaps.remove(map);
 		saveProperties();
+	}
+	public ArrayList<Map> getChildMaps(){
+		return childMaps;
 	}
 	@Override
 	public int getChildCount(){

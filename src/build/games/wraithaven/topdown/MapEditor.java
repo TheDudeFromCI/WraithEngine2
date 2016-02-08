@@ -56,6 +56,6 @@ public class MapEditor extends JPanel implements MapContainer{
 	}
 	@Override
 	public MapInterface generateMap(String uuid, String name, int width, int height){
-		return new Map(mapStyle, uuid, name);
+		return new Map(mapStyle, uuid, name, width, height);
 	}
 }

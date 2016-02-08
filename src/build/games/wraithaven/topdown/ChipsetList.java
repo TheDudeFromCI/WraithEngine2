@@ -20,10 +20,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 @SuppressWarnings("serial")
 public class ChipsetList extends JPanel{
@@ -37,7 +42,7 @@ public class ChipsetList extends JPanel{
 	private Polygon selectionBox;
 	private int selectionBoxWidth;
 	private int selectionBoxHeight;
-	public ChipsetList(){
+	public ChipsetList(TopDownMapStyle mapStyle){
 		setMinimumSize(new Dimension(Chipset.TILE_OUT_SIZE*Chipset.PREVIEW_TILES_WIDTH, 300));
 		updateSize();
 		load();
@@ -78,17 +83,57 @@ public class ChipsetList extends JPanel{
 			}
 			@Override
 			public void mouseClicked(MouseEvent e){
-				ChipsetListComponent c = getComponentTitleAt(e.getY());
-				if(c==null){
-					checkForTileSelection(e.getX(), e.getY());
-					return;
+				int button = e.getButton();
+				if(button==MouseEvent.BUTTON1){
+					ChipsetListComponent c = getComponentTitleAt(e.getY());
+					if(c==null){
+						checkForTileSelection(e.getX(), e.getY());
+						return;
+					}
+					c.setExpanded(!c.isExpanded());
+					if(selection.getChipset()==c.getChipset()){
+						selection.reset();
+					}
+					updateSize();
+					repaint();
+				}else if(button==MouseEvent.BUTTON3){
+					ChipsetListComponent c = getComponentTitleAt(e.getY());
+					if(c!=null){
+						JPopupMenu menu = new JPopupMenu();
+						{
+							// Expand
+							JMenuItem item = new JMenuItem(c.isExpanded()?"Contract":"Expand");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									c.setExpanded(!c.isExpanded());
+									repaint();
+								}
+							});
+							menu.add(item);
+						}
+						{
+							// Delete
+							JMenuItem item = new JMenuItem("Delete");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									int response = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete this chipset?",
+										"Confirm Delete", JOptionPane.YES_NO_OPTION);
+									if(response!=JOptionPane.YES_OPTION){
+										return;
+									}
+									c.delete(mapStyle.getWorldList());
+									chipsets.remove(c);
+									save();
+									repaint();
+								}
+							});
+							menu.add(item);
+						}
+						menu.show(ChipsetList.this, e.getX(), e.getY());
+					}
 				}
-				c.setExpanded(!c.isExpanded());
-				if(selection.getChipset()==c.getChipset()){
-					selection.reset();
-				}
-				updateSize();
-				repaint();
 			}
 			@Override
 			public void mouseDragged(MouseEvent e){

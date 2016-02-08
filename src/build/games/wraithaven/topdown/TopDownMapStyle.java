@@ -38,7 +38,7 @@ public class TopDownMapStyle implements MapStyle{
 	private final WorldList worldList;
 	private final JFrame frame;
 	public TopDownMapStyle(){
-		chipsetList = new ChipsetList();
+		chipsetList = new ChipsetList(this);
 		mapEditor = new MapEditor(this);
 		worldList = new WorldList(mapEditor);
 		frame = new JFrame();

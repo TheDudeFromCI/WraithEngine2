@@ -142,6 +142,9 @@ public class WorldList extends JPanel{
 		add(scrollPane);
 		updateTreeModel();
 	}
+	public ArrayList<MapInterface> getParentMaps(){
+		return mainMaps;
+	}
 	private void expandAllNodes(JTree tree, int startingIndex, int rowCount){
 		for(int i = startingIndex; i<rowCount; ++i){
 			tree.expandRow(i);

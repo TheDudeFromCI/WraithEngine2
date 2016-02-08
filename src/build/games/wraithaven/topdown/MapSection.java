@@ -34,6 +34,9 @@ public class MapSection{
 		load(chipsetList);
 		redraw();
 	}
+	public ArrayList<MapLayer> getAllLayers(){
+		return layers;
+	}
 	public BufferedImage getImage(){
 		return image;
 	}

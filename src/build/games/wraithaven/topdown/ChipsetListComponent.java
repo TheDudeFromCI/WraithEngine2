@@ -7,6 +7,8 @@
  */
 package build.games.wraithaven.topdown;
 
+import build.games.wraithaven.core.MapInterface;
+import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -32,6 +34,39 @@ public class ChipsetListComponent{
 	}
 	public int getSize(){
 		return chipset.getSize();
+	}
+	private void delete(Map map){
+		for(Map m : map.getChildMaps()){
+			delete(m);
+		}
+		int x, y;
+		Tile tile;
+		boolean loaded = map.isLoaded();
+		if(!loaded){
+			map.loadMaps();
+		}
+		for(MapSection sec : map.getMapSections()){
+			for(MapLayer layer : sec.getAllLayers()){
+				for(x = 0; x<map.getWidth(); x++){
+					for(y = 0; y<map.getHeight(); y++){
+						tile = layer.getTile(x, y);
+						if(tile!=null&&tile.getChipset()==chipset){
+							sec.setTile(x, y, layer.getLayer(), null);
+						}
+					}
+				}
+			}
+		}
+		map.save();
+		if(!loaded){
+			map.dispose();
+		}
+	}
+	public void delete(WorldList worldList){
+		for(MapInterface map : worldList.getParentMaps()){
+			delete((Map)map);
+		}
+		Algorithms.deleteFile(Algorithms.getFile("Chipsets", chipset.getUUID()));
 	}
 	public void setExpanded(boolean expanded){
 		this.expanded = expanded;

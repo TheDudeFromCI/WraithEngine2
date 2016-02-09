@@ -21,7 +21,8 @@ import javax.imageio.ImageIO;
 public enum Tool{
 	BASIC("Pencil Cursor.png", 2, false),
 	FILL("Paint Bucket.png", 1, false),
-	RECTANGLE("Rectangle.png", 1, true);
+	RECTANGLE("Rectangle.png", 1, true),
+	CIRCLE("Circle.png", 1, true);
 	private static final int TOP_LEFT = 0;
 	private static final int CENTER = 1;
 	private static final int BOTTOM_LEFT = 2;

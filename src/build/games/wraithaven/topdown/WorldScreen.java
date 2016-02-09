@@ -156,6 +156,7 @@ public class WorldScreen extends JPanel{
 								}.execute();
 							}else{
 								switch(tool){
+									case CIRCLE:
 									case RECTANGLE:
 										if(selectedTile.isActive()){
 											int tileX = (x-mapX)/pixelSize;
@@ -317,25 +318,30 @@ public class WorldScreen extends JPanel{
 			public void mouseReleased(MouseEvent event){
 				if(loadedMap!=null){
 					if(drawing&&tool.isDragBased()){
+						MapSectionFillable mapSectionFillable = new MapSectionFillable(loadedMap, loadedMap.getSection(drawMapX, drawMapY),
+							mapStyle.getMapEditor().getToolbar().getEditingLayer());
+						int x = event.getX();
+						int y = event.getY();
+						int mapX = drawMapX*mapSectionWidth+scrollX;
+						int mapY = drawMapY*mapSectionHeight+scrollY;
+						Tile tile;
+						if(selectedTile.isActive()){
+							tile = selectedTile.getChipset().getTile(selectedTile.getIndex()[0]);
+						}else{
+							tile = null;
+						}
 						switch(tool){
+							case CIRCLE:
+								mapSectionFillable.circle(drawStartTileX, drawStartTileY, (x-mapX)/pixelSize, (y-mapY)/pixelSize, tile);
+								break;
 							case RECTANGLE:
-								MapSectionFillable mapSectionFillable = new MapSectionFillable(loadedMap, loadedMap.getSection(drawMapX, drawMapY),
-									mapStyle.getMapEditor().getToolbar().getEditingLayer());
-								int x = event.getX();
-								int y = event.getY();
-								int mapX = drawMapX*mapSectionWidth+scrollX;
-								int mapY = drawMapY*mapSectionHeight+scrollY;
-								Tile tile;
-								if(selectedTile.isActive()){
-									tile = selectedTile.getChipset().getTile(selectedTile.getIndex()[0]);
-								}else{
-									tile = null;
-								}
 								mapSectionFillable.rectangle(drawStartTileX, drawStartTileY, (x-mapX)/pixelSize, (y-mapY)/pixelSize, tile);
 								break;
 							default:
 								throw new RuntimeException();
 						}
+						updateNeedsSaving();
+						repaint();
 					}
 				}
 				dragging = false;

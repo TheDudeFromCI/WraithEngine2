@@ -182,6 +182,12 @@ public class WorldScreenToolbar extends JPanel{
 				buttonGroup.add(button);
 				panel.add(button);
 			}
+			{
+				// Circle
+				JToggleButton button = createTool("Circle.png", Tool.CIRCLE);
+				buttonGroup.add(button);
+				panel.add(button);
+			}
 			add(panel);
 		}
 	}

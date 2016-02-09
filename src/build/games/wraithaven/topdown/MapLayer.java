@@ -13,15 +13,17 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 public class MapLayer{
-	public static final int MAP_TILES_WIDTH = 20;
-	public static final int MAP_TILES_HEIGHT = 15;
 	private final Tile[] tiles;
 	private final int layer;
+	private final int width;
+	private final int height;
 	private int tileCount;
 	private BufferedImage image;
-	public MapLayer(int layer){
+	public MapLayer(int layer, int width, int height){
 		this.layer = layer;
-		tiles = new Tile[MAP_TILES_WIDTH*MAP_TILES_HEIGHT];
+		this.width = width;
+		this.height = height;
+		tiles = new Tile[width*height];
 	}
 	public BufferedImage getImage(){
 		return image;
@@ -33,7 +35,7 @@ public class MapLayer{
 		return tiles;
 	}
 	public Tile getTile(int x, int y){
-		return tiles[y*MAP_TILES_WIDTH+x];
+		return tiles[y*width+x];
 	}
 	public boolean isEmpty(){
 		return tileCount==0;
@@ -57,14 +59,13 @@ public class MapLayer{
 		redraw();
 	}
 	public void redraw(){
-		image =
-			new BufferedImage(WraithEngine.projectBitSize*MAP_TILES_WIDTH, WraithEngine.projectBitSize*MAP_TILES_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		image = new BufferedImage(WraithEngine.projectBitSize*width, WraithEngine.projectBitSize*height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = image.createGraphics();
 		int x, y;
 		int index;
-		for(x = 0; x<MAP_TILES_WIDTH; x++){
-			for(y = 0; y<MAP_TILES_HEIGHT; y++){
-				index = y*MAP_TILES_WIDTH+x;
+		for(x = 0; x<width; x++){
+			for(y = 0; y<height; y++){
+				index = y*width+x;
 				if(tiles[index]==null){
 					continue;
 				}
@@ -91,7 +92,7 @@ public class MapLayer{
 		}
 	}
 	public void setTile(int x, int y, Tile tile){
-		int index = y*MAP_TILES_WIDTH+x;
+		int index = y*width+x;
 		if(tiles[index]==null^tile==null){
 			if(tile==null){
 				tileCount--;

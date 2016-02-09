@@ -35,8 +35,8 @@ public class WorldScreen extends JPanel{
 	private int scrollX;
 	private int scrollY;
 	private int pixelSize = 32;
-	private int mapSectionWidth = pixelSize*MapLayer.MAP_TILES_WIDTH;
-	private int mapSectionHeight = pixelSize*MapLayer.MAP_TILES_HEIGHT;
+	private int mapSectionWidth;
+	private int mapSectionHeight;
 	private Map loadedMap;
 	private Polygon selectionBox;
 	private int selectionBoxWidth;
@@ -85,15 +85,16 @@ public class WorldScreen extends JPanel{
 						return;
 					}
 					// New map
-					int mapX = (int)Math.floor(cursor.getX()/(float)MapLayer.MAP_TILES_WIDTH);
-					int mapY = (int)Math.floor(cursor.getY()/(float)MapLayer.MAP_TILES_HEIGHT);
+					int mapX = (int)Math.floor(cursor.getX()/(float)loadedMap.getWidth());
+					int mapY = (int)Math.floor(cursor.getY()/(float)loadedMap.getHeight());
 					// Check to make sure the map doesn't already exist, just in case.
 					for(MapSection map : loadedMap.getMapSections()){
 						if(map.getMapX()==mapX&&map.getMapY()==mapY){
 							return; // Does exist, this is probably a repeated event or something.
 						}
 					}
-					loadedMap.addMapSection(new MapSection(mapStyle.getChipsetList(), mapStyle.getMapEditor().getToolbar(), loadedMap, mapX, mapY));
+					loadedMap.addMapSection(new MapSection(mapStyle.getChipsetList(), mapStyle.getMapEditor().getToolbar(), loadedMap, mapX, mapY,
+						loadedMap.getWidth(), loadedMap.getHeight()));
 					mouseMoved(x, y);
 					repaint();
 				}else{
@@ -278,14 +279,17 @@ public class WorldScreen extends JPanel{
 			}
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent event){
+				if(loadedMap==null){
+					return;
+				}
 				if(dragging||drawing){
 					return;
 				}
 				int change = -event.getWheelRotation();
 				int pixelSizeBefore = pixelSize;
 				pixelSize = Math.max(Math.min(pixelSize+change, 64), 8);
-				mapSectionWidth = pixelSize*MapLayer.MAP_TILES_WIDTH;
-				mapSectionHeight = pixelSize*MapLayer.MAP_TILES_HEIGHT;
+				mapSectionWidth = pixelSize*loadedMap.getWidth();
+				mapSectionHeight = pixelSize*loadedMap.getHeight();
 				float per = pixelSize/(float)pixelSizeBefore;
 				scrollX = -Math.round(event.getX()*(per-1f)+per*-scrollX);
 				scrollY = -Math.round(event.getY()*(per-1f)+per*-scrollY);
@@ -329,6 +333,8 @@ public class WorldScreen extends JPanel{
 		loadedMap = map;
 		if(map!=null){
 			map.loadMaps();
+			mapSectionWidth = pixelSize*map.getWidth();
+			mapSectionHeight = pixelSize*map.getHeight();
 		}
 		repaint();
 		updateNeedsSaving(); // Mostly, this is just to disable the star. This should never say 'unsaved'.
@@ -371,9 +377,8 @@ public class WorldScreen extends JPanel{
 			}
 			if(cursor.isSeen()){
 				if(cursor.isOverVoid()){
-					g.drawImage(newMapImage, (int)Math.floor(cursor.getX()/(float)MapLayer.MAP_TILES_WIDTH)*mapSectionWidth+scrollX,
-						(int)Math.floor(cursor.getY()/(float)MapLayer.MAP_TILES_HEIGHT)*mapSectionHeight+scrollY, mapSectionWidth, mapSectionHeight,
-						null);
+					g.drawImage(newMapImage, (int)Math.floor(cursor.getX()/(float)loadedMap.getWidth())*mapSectionWidth+scrollX,
+						(int)Math.floor(cursor.getY()/(float)loadedMap.getHeight())*mapSectionHeight+scrollY, mapSectionWidth, mapSectionHeight, null);
 				}else{
 					generateSelectionBox(selectedTile.getWidth()*pixelSize, selectedTile.getHeight()*pixelSize);
 					g.setStroke(new BasicStroke(3));

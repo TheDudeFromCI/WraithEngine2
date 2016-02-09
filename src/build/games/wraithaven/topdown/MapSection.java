@@ -23,14 +23,17 @@ public class MapSection{
 	private final int mapX;
 	private final int mapY;
 	private final Map map;
+	private final int width;
+	private final int height;
 	private boolean needsSaving;
-	public MapSection(ChipsetList chipsetList, WorldScreenToolbar worldScreenToolbar, Map map, int mapX, int mapY){
+	public MapSection(ChipsetList chipsetList, WorldScreenToolbar worldScreenToolbar, Map map, int mapX, int mapY, int width, int height){
 		this.map = map;
 		this.mapX = mapX;
 		this.mapY = mapY;
 		this.worldScreenToolbar = worldScreenToolbar;
-		image = new BufferedImage(WraithEngine.projectBitSize*MapLayer.MAP_TILES_WIDTH, WraithEngine.projectBitSize*MapLayer.MAP_TILES_HEIGHT,
-			BufferedImage.TYPE_INT_ARGB);
+		this.width = width;
+		this.height = height;
+		image = new BufferedImage(WraithEngine.projectBitSize*width, WraithEngine.projectBitSize*height, BufferedImage.TYPE_INT_ARGB);
 		load(chipsetList);
 		redraw();
 	}
@@ -63,7 +66,7 @@ public class MapSection{
 		bin.decompress(false);
 		int layerCount = bin.getInt();
 		for(int i = 0; i<layerCount; i++){
-			MapLayer l = new MapLayer(bin.getInt());
+			MapLayer l = new MapLayer(bin.getInt(), width, height);
 			l.load(bin, chipsetList);
 			layers.add(l);
 		}
@@ -122,7 +125,7 @@ public class MapSection{
 			return;
 		}
 		if(layer==null){
-			layer = new MapLayer(z);
+			layer = new MapLayer(z, width, height);
 			layers.add(layer);
 		}
 		layer.setTile(x, y, tile);

@@ -10,15 +10,22 @@ package build.games.wraithaven.topdown;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JToggleButton;
 import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -27,17 +34,43 @@ import javax.swing.event.ChangeListener;
  * @author TheDudeFromCI
  */
 public class WorldScreenToolbar extends JPanel{
-	private static JButton createIcon(String asset, String pressed, String disabled){
+	private static AbstractButton createIcon(String asset, String pressed, String disabled, boolean tool){
 		try{
-			JButton button = new JButton(new ImageIcon(Algorithms.getAsset(asset).getAbsolutePath()));
-			button.setBorder(BorderFactory.createEmptyBorder());
-			button.setContentAreaFilled(false);
+			Image img = ImageIO.read(Algorithms.getAsset(asset));
+			if(tool){
+				img = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+			}
+			AbstractButton button;
+			if(tool){
+				button = new JToggleButton();
+			}else{
+				button = new JButton();
+			}
+			button.setIcon(new ImageIcon(img));
+			if(!tool){
+				button.setBorder(BorderFactory.createEmptyBorder());
+				button.setContentAreaFilled(false);
+			}
 			button.setFocusPainted(false);
 			if(pressed!=null){
-				button.setPressedIcon(new ImageIcon(Algorithms.getAsset(pressed).getAbsolutePath()));
+				img = ImageIO.read(Algorithms.getAsset(asset));
+				if(tool){
+					img = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+				}
+				button.setPressedIcon(new ImageIcon(img));
+			}else{
+				BufferedImage buf = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g = buf.createGraphics();
+				g.drawImage(img, 0, 1, null);
+				g.dispose();
+				button.setPressedIcon(new ImageIcon(buf));
 			}
 			if(disabled!=null){
-				button.setDisabledIcon(new ImageIcon(Algorithms.getAsset(disabled).getAbsolutePath()));
+				img = ImageIO.read(Algorithms.getAsset(asset));
+				if(tool){
+					img = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
+				}
+				button.setDisabledIcon(new ImageIcon(img));
 			}
 			return button;
 		}catch(Exception exception){
@@ -48,13 +81,15 @@ public class WorldScreenToolbar extends JPanel{
 	private final JButton saveButton;
 	private final JSpinner editingLayer;
 	private final JCheckBox hideOtherLayers;
+	private final MapEditor mapEditor;
 	private int currentLayer;
 	private boolean hideLayers;
 	public WorldScreenToolbar(MapEditor mapEditor){
+		this.mapEditor = mapEditor;
 		setPreferredSize(new Dimension(32, 32));
 		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		{
-			saveButton = createIcon("Save Icon.png", "Save Icon Down.png", "Save Icon Disabled.png");
+			saveButton = (JButton)createIcon("Save Icon.png", "Save Icon Down.png", "Save Icon Disabled.png", false);
 			saveButton.setEnabled(false);
 			saveButton.setToolTipText("Click to save.");
 			saveButton.addActionListener(new ActionListener(){
@@ -123,14 +158,25 @@ public class WorldScreenToolbar extends JPanel{
 			add(hideOtherLayers);
 		}
 		{
-			JButton fillTool = createIcon("Paint Bucket.png", "Paint Bucket Down.png", null);
-			fillTool.addActionListener(new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent e){
-					mapEditor.getWorldScreen().setTool(Tool.FILL);
-				}
-			});
-			add(fillTool);
+			// Tools
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+			panel.setBorder(BorderFactory.createLoweredBevelBorder());
+			ButtonGroup buttonGroup = new ButtonGroup();
+			{
+				// Basic
+				JToggleButton button = createTool("Basic Tool.png", Tool.BASIC);
+				buttonGroup.add(button);
+				panel.add(button);
+				button.setSelected(true);
+			}
+			{
+				// Fill
+				JToggleButton button = createTool("Paint Bucket.png", Tool.FILL);
+				buttonGroup.add(button);
+				panel.add(button);
+			}
+			add(panel);
 		}
 	}
 	public void setNeedsSaving(boolean needsSaving){
@@ -142,4 +188,14 @@ public class WorldScreenToolbar extends JPanel{
 	public boolean hideOtherLayers(){
 		return hideLayers;
 	}
-};
+	private JToggleButton createTool(String asset, Tool tool){
+		AbstractButton button = createIcon(asset, null, null, true);
+		button.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				mapEditor.getWorldScreen().setTool(tool);
+			}
+		});
+		return (JToggleButton)button;
+	}
+}

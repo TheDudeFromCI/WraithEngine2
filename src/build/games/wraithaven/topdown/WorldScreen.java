@@ -194,7 +194,6 @@ public class WorldScreen extends JPanel{
 										fillable.fill(tileX, tileY, tile);
 										updateNeedsSaving();
 										repaint();
-										setTool(Tool.BASIC);
 										break;
 									default:
 										throw new RuntimeException();

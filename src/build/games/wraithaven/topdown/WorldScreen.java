@@ -39,6 +39,7 @@ public class WorldScreen extends JPanel{
 	private int mapSectionHeight;
 	private Map loadedMap;
 	private Polygon selectionBox;
+	private Polygon dragToolBounds;
 	private int selectionBoxWidth;
 	private int selectionBoxHeight;
 	private Tool tool;
@@ -63,6 +64,10 @@ public class WorldScreen extends JPanel{
 			private int drawStartTileY;
 			private int drawMapX;
 			private int drawMapY;
+			private int drawBoundsX;
+			private int drawBoundsY;
+			private int drawBoundsX2;
+			private int drawBoundsY2;
 			@Override
 			public void keyPressed(KeyEvent event){
 				int code = event.getKeyCode();
@@ -255,7 +260,14 @@ public class WorldScreen extends JPanel{
 				if(loadedMap==null){
 					return;
 				}
-				cursor.moveTo((int)Math.floor((x-scrollX)/(float)pixelSize), (int)Math.floor((y-scrollY)/(float)pixelSize));
+				if(drawing&&tool.isDragBased()){
+					drawBoundsX2 = (int)Math.floor((x-scrollX)/(float)pixelSize)*pixelSize+scrollX+pixelSize-1;
+					drawBoundsY2 = (int)Math.floor((y-scrollY)/(float)pixelSize)*pixelSize+scrollY+pixelSize-1;
+					updateDragBounds();
+				}
+				int tileScreenX = (int)Math.floor((x-scrollX)/(float)pixelSize);
+				int tileScreenY = (int)Math.floor((y-scrollY)/(float)pixelSize);
+				cursor.moveTo(tileScreenX, tileScreenY);
 				boolean overVoid = true;
 				int mapX, mapY;
 				for(MapSection map : loadedMap.getMapSections()){
@@ -304,6 +316,11 @@ public class WorldScreen extends JPanel{
 								drawMapX = map.getMapX();
 								drawMapY = map.getMapY();
 								drawing = true;
+								drawBoundsX = mapX+drawStartTileX*pixelSize;
+								drawBoundsY = mapY+drawStartTileY*pixelSize;
+								drawBoundsX2 = drawBoundsX+pixelSize-1;
+								drawBoundsY2 = drawBoundsY+pixelSize-1;
+								updateDragBounds();
 								break;
 							}
 						}
@@ -313,6 +330,24 @@ public class WorldScreen extends JPanel{
 				}else{
 					drawing = false;
 				}
+			}
+			private void updateDragBounds(){
+				int[] x = new int[4];
+				int[] y = new int[4];
+				int x1 = Math.min(drawBoundsX, drawBoundsX2);
+				int y1 = Math.min(drawBoundsY, drawBoundsY2);
+				int x2 = Math.max(drawBoundsX, drawBoundsX2);
+				int y2 = Math.max(drawBoundsY, drawBoundsY2);
+				x[0] = x1;
+				y[0] = y1;
+				x[1] = x2;
+				y[1] = y1;
+				x[2] = x2;
+				y[2] = y2;
+				x[3] = x1;
+				y[3] = y2;
+				dragToolBounds = new Polygon(x, y, 4);
+				repaint();
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
@@ -340,6 +375,7 @@ public class WorldScreen extends JPanel{
 							default:
 								throw new RuntimeException();
 						}
+						dragToolBounds = null;
 						updateNeedsSaving();
 						repaint();
 					}
@@ -445,19 +481,28 @@ public class WorldScreen extends JPanel{
 					g.drawRect(x, y, mapSectionWidth, mapSectionHeight);
 				}
 			}
-			if(cursor.isSeen()){
-				if(cursor.isOverVoid()){
-					g.drawImage(newMapImage, (int)Math.floor(cursor.getX()/(float)loadedMap.getWidth())*mapSectionWidth+scrollX,
-						(int)Math.floor(cursor.getY()/(float)loadedMap.getHeight())*mapSectionHeight+scrollY, mapSectionWidth, mapSectionHeight, null);
-				}else{
-					generateSelectionBox(selectedTile.getWidth()*pixelSize, selectedTile.getHeight()*pixelSize);
-					g.setStroke(new BasicStroke(3));
-					float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
-					g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
-					g.translate(cursor.getX()*pixelSize+scrollX, cursor.getY()*pixelSize+scrollY);
-					g.drawPolygon(selectionBox);
-					repaint();
+			if(dragToolBounds==null){
+				if(cursor.isSeen()){
+					if(cursor.isOverVoid()){
+						g.drawImage(newMapImage, (int)Math.floor(cursor.getX()/(float)loadedMap.getWidth())*mapSectionWidth+scrollX,
+							(int)Math.floor(cursor.getY()/(float)loadedMap.getHeight())*mapSectionHeight+scrollY, mapSectionWidth, mapSectionHeight,
+							null);
+					}else{
+						generateSelectionBox(selectedTile.getWidth()*pixelSize, selectedTile.getHeight()*pixelSize);
+						g.setStroke(new BasicStroke(3));
+						float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
+						g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
+						g.translate(cursor.getX()*pixelSize+scrollX, cursor.getY()*pixelSize+scrollY);
+						g.drawPolygon(selectionBox);
+						repaint();
+					}
 				}
+			}else{
+				g.setStroke(new BasicStroke(3));
+				float offset = (float)Math.sin(System.currentTimeMillis()/100.0)*3f;
+				g.setPaint(new GradientPaint(offset, offset, Color.white, offset+5, offset+5, Color.black, true));
+				g.drawPolygon(dragToolBounds);
+				repaint();
 			}
 		}
 		g.dispose();

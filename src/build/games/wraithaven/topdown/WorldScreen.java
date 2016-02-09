@@ -59,6 +59,10 @@ public class WorldScreen extends JPanel{
 			private int mouseXStart;
 			private int mouseYStart;
 			private int clickCount;
+			private int drawStartTileX;
+			private int drawStartTileY;
+			private int drawMapX;
+			private int drawMapY;
 			@Override
 			public void keyPressed(KeyEvent event){
 				int code = event.getKeyCode();
@@ -152,6 +156,19 @@ public class WorldScreen extends JPanel{
 								}.execute();
 							}else{
 								switch(tool){
+									case RECTANGLE:
+										if(selectedTile.isActive()){
+											int tileX = (x-mapX)/pixelSize;
+											int tileY = (y-mapY)/pixelSize;
+											int tileZ = mapStyle.getMapEditor().getToolbar().getEditingLayer();
+											map.setTile(tileX, tileY, tileZ, selectedTile.getChipset().getTile(selectedTile.getIndex()[0]));
+										}else{
+											map.setTile((x-mapX)/pixelSize, (y-mapY)/pixelSize, mapStyle.getMapEditor().getToolbar().getEditingLayer(),
+												null);
+										}
+										updateNeedsSaving();
+										repaint();
+										break;
 									case BASIC:
 										if(selectedTile.isActive()){
 											int tileX = (x-mapX)/pixelSize;
@@ -165,10 +182,10 @@ public class WorldScreen extends JPanel{
 												for(b = 0; b<h; b++){
 													u = a+tileX;
 													v = b+tileY;
-													if(u>=20){
+													if(u>=loadedMap.getWidth()){
 														continue;
 													}
-													if(v>=15){
+													if(v>=loadedMap.getHeight()){
 														continue;
 													}
 													map.setTile(u, v, tileZ, selectedTile.getChipset().getTile(indices[b*w+a]));
@@ -216,7 +233,9 @@ public class WorldScreen extends JPanel{
 					scrollY = event.getY()-mouseYStart+scrollYStart;
 					repaint();
 				}else if(drawing){
-					mouseClicked(event.getX(), event.getY(), 1, event.isShiftDown());
+					if(!tool.isDragBased()){
+						mouseClicked(event.getX(), event.getY(), 1, event.isShiftDown());
+					}
 				}
 				mouseMoved(event); // To update the cursor.
 			}
@@ -255,25 +274,70 @@ public class WorldScreen extends JPanel{
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
+				if(loadedMap==null){
+					return;
+				}
 				int button = event.getButton();
+				int x = event.getX();
+				int y = event.getY();
 				if(button==MouseEvent.BUTTON3){
 					dragging = true;
 					scrollXStart = scrollX;
 					scrollYStart = scrollY;
-					mouseXStart = event.getX();
-					mouseYStart = event.getY();
+					mouseXStart = x;
+					mouseYStart = y;
 				}else{
 					dragging = false;
 				}
 				if(button==MouseEvent.BUTTON1){
 					clickCount = 0;
-					drawing = true;
+					if(tool.isDragBased()){
+						drawing = false;
+						int mapX, mapY;
+						for(MapSection map : loadedMap.getMapSections()){
+							mapX = map.getMapX()*mapSectionWidth+scrollX;
+							mapY = map.getMapY()*mapSectionHeight+scrollY;
+							if(x>=mapX&&y>=mapY&&x<mapX+mapSectionWidth&&y<mapY+mapSectionHeight){
+								drawStartTileX = (x-mapX)/pixelSize;
+								drawStartTileY = (y-mapY)/pixelSize;
+								drawMapX = map.getMapX();
+								drawMapY = map.getMapY();
+								drawing = true;
+								break;
+							}
+						}
+					}else{
+						drawing = true;
+					}
 				}else{
 					drawing = false;
 				}
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
+				if(loadedMap!=null){
+					if(drawing&&tool.isDragBased()){
+						switch(tool){
+							case RECTANGLE:
+								MapSectionFillable mapSectionFillable = new MapSectionFillable(loadedMap, loadedMap.getSection(drawMapX, drawMapY),
+									mapStyle.getMapEditor().getToolbar().getEditingLayer());
+								int x = event.getX();
+								int y = event.getY();
+								int mapX = drawMapX*mapSectionWidth+scrollX;
+								int mapY = drawMapY*mapSectionHeight+scrollY;
+								Tile tile;
+								if(selectedTile.isActive()){
+									tile = selectedTile.getChipset().getTile(selectedTile.getIndex()[0]);
+								}else{
+									tile = null;
+								}
+								mapSectionFillable.rectangle(drawStartTileX, drawStartTileY, (x-mapX)/pixelSize, (y-mapY)/pixelSize, tile);
+								break;
+							default:
+								throw new RuntimeException();
+						}
+					}
+				}
 				dragging = false;
 				drawing = false;
 			}

@@ -50,6 +50,17 @@ public class Map implements MapInterface{
 	public boolean isLoaded(){
 		return mapsLoaded;
 	}
+	public MapSection getSection(int x, int y){
+		if(!mapsLoaded){
+			throw new RuntimeException();
+		}
+		for(MapSection m : mapSections){
+			if(m.getMapX()==x&&m.getMapY()==y){
+				return m;
+			}
+		}
+		return null;
+	}
 	@Override
 	public MapInterface getChild(int index){
 		return childMaps.get(index);

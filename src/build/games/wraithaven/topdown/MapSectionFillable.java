@@ -9,6 +9,7 @@ package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.tools.FillTool;
 import build.games.wraithaven.core.tools.Fillable;
+import build.games.wraithaven.core.tools.RectangleTool;
 
 /**
  * @author TheDudeFromCI
@@ -46,5 +47,11 @@ public class MapSectionFillable implements Fillable{
 		FillTool tool = new FillTool(this);
 		tool.setSelection(selected);
 		tool.fill(x, y);
+	}
+	public void rectangle(int x1, int y1, int x2, int y2, Object selected){
+		RectangleTool tool = new RectangleTool(this);
+		tool.setSelection(selected);
+		tool.setStartPos(x1, y1);
+		tool.setEndPos(x2, y2);
 	}
 }

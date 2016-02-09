@@ -19,8 +19,9 @@ import javax.imageio.ImageIO;
  * @author TheDudeFromCI
  */
 public enum Tool{
-	BASIC("Pencil Cursor.png", 2),
-	FILL("Paint Bucket.png", 1);
+	BASIC("Pencil Cursor.png", 2, false),
+	FILL("Paint Bucket.png", 1, false),
+	RECTANGLE("Rectangle.png", 1, true);
 	private static final int TOP_LEFT = 0;
 	private static final int CENTER = 1;
 	private static final int BOTTOM_LEFT = 2;
@@ -41,7 +42,9 @@ public enum Tool{
 		}
 	}
 	private final Cursor cursor;
-	private Tool(String c, int pos){
+	private boolean dragBased;
+	private Tool(String c, int pos, boolean dragBased){
+		this.dragBased = dragBased;
 		BufferedImage image = null;
 		try{
 			image = ImageIO.read(Algorithms.getAsset(c));
@@ -52,5 +55,8 @@ public enum Tool{
 	}
 	public Cursor getCursor(){
 		return cursor;
+	}
+	public boolean isDragBased(){
+		return dragBased;
 	}
 }

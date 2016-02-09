@@ -53,7 +53,7 @@ public class WorldScreenToolbar extends JPanel{
 			}
 			button.setFocusPainted(false);
 			if(pressed!=null){
-				img = ImageIO.read(Algorithms.getAsset(asset));
+				img = ImageIO.read(Algorithms.getAsset(pressed));
 				if(tool){
 					img = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
 				}
@@ -66,7 +66,7 @@ public class WorldScreenToolbar extends JPanel{
 				button.setPressedIcon(new ImageIcon(buf));
 			}
 			if(disabled!=null){
-				img = ImageIO.read(Algorithms.getAsset(asset));
+				img = ImageIO.read(Algorithms.getAsset(disabled));
 				if(tool){
 					img = img.getScaledInstance(24, 24, Image.SCALE_SMOOTH);
 				}

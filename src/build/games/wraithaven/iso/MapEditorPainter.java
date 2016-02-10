@@ -40,6 +40,7 @@ public class MapEditorPainter extends JPanel{
 	private Polygon selectionSquare;
 	private Polygon mapBorder;
 	private Polygon isoCubeBorder;
+	private Polygon dragSelectionSquare;
 	private Tool tool;
 	public MapEditorPainter(IsoMapStyle mapStyle, Toolbar toolbar, MapEditor mapEditor){
 		this.mapStyle = mapStyle;
@@ -62,8 +63,6 @@ public class MapEditorPainter extends JPanel{
 			private int drawStartTileY;
 			private int drawBoundsX;
 			private int drawBoundsY;
-			private int drawBoundsX2;
-			private int drawBoundsY2;
 			@Override
 			public void mouseDragged(MouseEvent event){
 				if(dragging){
@@ -100,6 +99,11 @@ public class MapEditorPainter extends JPanel{
 				int tileY = (int)Math.floor((y/(float)tileHeight-(x/(float)tileWidth))/2);
 				cursorSelection.setScreenLocation((tileX-tileY)*tileWidth+scrollX, (tileX+tileY)*tileHeight+scrollY);
 				cursorSelection.setTileLocation(tileX, tileY);
+				if(drawing&&tool.isDragBased()){
+					drawBoundsX = cursorSelection.getTileX();
+					drawBoundsY = cursorSelection.getTileY();
+					updateDragSelection();
+				}
 				repaint();
 			}
 			@Override
@@ -177,10 +181,10 @@ public class MapEditorPainter extends JPanel{
 							drawStartTileX = cursorSelection.getTileX();
 							drawStartTileY = cursorSelection.getTileY();
 							drawing = true;
-							drawBoundsX = 0;
-							drawBoundsY = 0;
-							drawBoundsX2 = 0;
-							drawBoundsY2 = 0;
+							drawBoundsX = drawStartTileX;
+							drawBoundsY = drawStartTileX;
+							updateDragSelection();
+							repaint();
 						}
 					}else{
 						drawing = true;
@@ -191,6 +195,7 @@ public class MapEditorPainter extends JPanel{
 			public void mouseReleased(MouseEvent event){
 				if(map!=null){
 					if(drawing&&tool.isDragBased()&&cursorSelection.isOverMap()){
+						dragSelectionSquare = null;
 						IsoMapFillable fillable = new IsoMapFillable(map);
 						switch(tool){
 							case RECTANGLE:
@@ -244,6 +249,25 @@ public class MapEditorPainter extends JPanel{
 					mouseMoved(event);
 					repaint();
 				}
+			}
+			private void updateDragSelection(){
+				int[] x = new int[4];
+				int[] y = new int[4];
+				int x1 = Math.min(drawStartTileX, drawBoundsX);
+				int y1 = Math.min(drawStartTileY, drawBoundsY);
+				int x2 = Math.max(drawStartTileX, drawBoundsX);
+				int y2 = Math.max(drawStartTileY, drawBoundsY);
+				int r = tileSize/2;
+				int f = tileSize/4;
+				x[0] = (x1-y1)*tileWidth+scrollX;
+				y[0] = (x1+y1)*tileHeight+scrollY;
+				x[1] = (x2-y1)*tileWidth+scrollX+r;
+				y[1] = (x2+y1)*tileHeight+scrollY+f;
+				x[2] = (x2-y2)*tileWidth+scrollX;
+				y[2] = (x2+y2)*tileHeight+scrollY+r;
+				x[3] = (x1-y2)*tileWidth+scrollX-r;
+				y[3] = (x1+y2)*tileHeight+scrollY+f;
+				dragSelectionSquare = new Polygon(x, y, 4);
 			}
 		};
 		addMouseListener(ml);
@@ -397,9 +421,13 @@ public class MapEditorPainter extends JPanel{
 			if(cursorSelection.isOnEditor()){
 				g.setStroke(new BasicStroke(2));
 				g.setColor(cursorSelection.isOverMap()?Color.white:Color.red);
-				g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
-				g.drawPolygon(selectionSquare);
-				g.translate(-cursorSelection.getScreenX(), -cursorSelection.getScreenY());
+				if(dragSelectionSquare==null){
+					g.translate(cursorSelection.getScreenX(), cursorSelection.getScreenY());
+					g.drawPolygon(selectionSquare);
+					g.translate(-cursorSelection.getScreenX(), -cursorSelection.getScreenY());
+				}else{
+					g.drawPolygon(dragSelectionSquare);
+				}
 			}
 		}
 		g.dispose();

@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
  */
 public enum Tool{
 	BASIC("Pencil Cursor.png", 2, false),
-	FILL("Paint Bucket.png", 1, false),
+	FILL("Paint Bucket.png", 0.03125f, 0.90625f, false),
 	RECTANGLE("Rectangle.png", 1, true),
 	CIRCLE("Circle.png", 1, true);
 	private static final int TOP_LEFT = 0;
@@ -42,6 +42,10 @@ public enum Tool{
 				throw new RuntimeException();
 		}
 	}
+	private static Point getPoint(BufferedImage image, float xPos, float yPos){
+		Dimension maxSize = Toolkit.getDefaultToolkit().getBestCursorSize(image.getWidth(), image.getHeight());
+		return new Point((int)(maxSize.width*xPos), (int)(maxSize.height*yPos));
+	}
 	private final Cursor cursor;
 	private boolean dragBased;
 	private Tool(String c, int pos, boolean dragBased){
@@ -53,6 +57,16 @@ public enum Tool{
 			exception.printStackTrace();
 		}
 		cursor = Toolkit.getDefaultToolkit().createCustomCursor(image, getPoint(image, pos), c);
+	}
+	private Tool(String c, float xPos, float yPos, boolean dragBased){
+		this.dragBased = dragBased;
+		BufferedImage image = null;
+		try{
+			image = ImageIO.read(Algorithms.getAsset(c));
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
+		cursor = Toolkit.getDefaultToolkit().createCustomCursor(image, getPoint(image, xPos, yPos), c);
 	}
 	public Cursor getCursor(){
 		return cursor;

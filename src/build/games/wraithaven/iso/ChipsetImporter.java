@@ -20,8 +20,6 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -200,15 +198,16 @@ public class ChipsetImporter{
 		return out;
 	}
 	private static BufferedImage blur(BufferedImage image){
-		final int blurAmount = 5;
-		float[] elements = new float[blurAmount*blurAmount];
-		float seg = 1f/elements.length;
-		for(int i = 0; i<elements.length; i++){
-			elements[i] = seg;
-		}
-		Kernel kernel = new Kernel(blurAmount, blurAmount, elements);
-		ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
-		return cop.filter(image, null);
+		return image;
+		// final int blurAmount = 5;
+		// float[] elements = new float[blurAmount*blurAmount];
+		// float seg = 1f/elements.length;
+		// for(int i = 0; i<elements.length; i++){
+		// elements[i] = seg;
+		// }
+		// Kernel kernel = new Kernel(blurAmount, blurAmount, elements);
+		// ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+		// return cop.filter(image, null);
 	}
 	private static BufferedImage skew(BufferedImage input, double angle, double angle2){
 		double x = (angle<0)?-angle*input.getHeight():0;

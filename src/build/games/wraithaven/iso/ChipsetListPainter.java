@@ -38,7 +38,7 @@ public class ChipsetListPainter extends JPanel{
 		y[3] = PREVIEW_TILE_SCALE;
 		return new Polygon(x, y, 4);
 	}
-	public static final int PREVIEW_TILES_WIDTH = 6;
+	public static final int PREVIEW_TILES_WIDTH = 8;
 	public static final int PREVIEW_TILE_SCALE = 32;
 	private final ArrayList<Tile> tiles = new ArrayList(64);
 	private final CursorSelection cursorSelection;
@@ -53,8 +53,8 @@ public class ChipsetListPainter extends JPanel{
 			public void mouseClicked(MouseEvent event){
 				int x = event.getX()/PREVIEW_TILE_SCALE;
 				int y = event.getY()/PREVIEW_TILE_SCALE;
-				int index = y*PREVIEW_TILES_WIDTH+x;
-				if(index>=tiles.size()){
+				int index = y*PREVIEW_TILES_WIDTH+x-1;
+				if(index<0||index>=tiles.size()){
 					cursorSelection.setSelectedTile(null, -1);
 					repaint();
 					return;
@@ -115,7 +115,7 @@ public class ChipsetListPainter extends JPanel{
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, getWidth(), getHeight());
 		final int maxWidth = PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE;
-		int x = 0;
+		int x = PREVIEW_TILE_SCALE;
 		int y = 0;
 		for(Tile tile : tiles){
 			g.drawImage(tile.getPreviewImage(), x, y, null);
@@ -125,17 +125,15 @@ public class ChipsetListPainter extends JPanel{
 				y += PREVIEW_TILE_SCALE;
 			}
 		}
-		if(cursorSelection.isTileActive()){
-			g.setStroke(new BasicStroke(3));
-			g.translate(cursorSelection.getSelectedTileIndex()%PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE,
-				cursorSelection.getSelectedTileIndex()/PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE);
-			g.setColor(Color.white);
-			g.drawPolygon(cursor);
-		}
+		g.setStroke(new BasicStroke(3));
+		int index = cursorSelection.isTileActive()?cursorSelection.getSelectedTileIndex()+1:0;
+		g.translate(index%PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, index/PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE);
+		g.setColor(Color.white);
+		g.drawPolygon(cursor);
 		g.dispose();
 	}
 	private void updatePrefferedSize(){
 		setPreferredSize(
-			new Dimension(PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, Math.max((int)Math.ceil(tiles.size()/(double)PREVIEW_TILES_WIDTH), 150)));
+			new Dimension(PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, Math.max((int)Math.ceil((tiles.size()+1)/(double)PREVIEW_TILES_WIDTH), 150)));
 	}
 }

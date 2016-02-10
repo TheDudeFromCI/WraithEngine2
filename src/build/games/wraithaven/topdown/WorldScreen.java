@@ -24,7 +24,6 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingWorker;
 
 @SuppressWarnings("serial")
 public class WorldScreen extends JPanel{
@@ -137,28 +136,16 @@ public class WorldScreen extends JPanel{
 								}
 								mapStyle.getChipsetList().repaint();
 							}else if(shift){
-								final MapSection m = map;
-								new SwingWorker<Boolean,Boolean>(){
-									@Override
-									protected Boolean doInBackground() throws Exception{
-										int response = JOptionPane.showConfirmDialog(null,
-											"Are you sure you want to delete this map section? This cannot be undone!", "Confirm Delete",
-											JOptionPane.YES_NO_OPTION);
-										return response==JOptionPane.YES_OPTION;
-									}
-									@Override
-									protected void done(){
-										try{
-											if(get()){
-												m.delete();
-												loadedMap.removeMapSection(m);
-												repaint();
-											}
-										}catch(Exception exception){
-											exception.printStackTrace();
-										}
-									}
-								}.execute();
+								int response =
+									JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this map section? This cannot be undone!",
+										"Confirm Delete", JOptionPane.YES_NO_OPTION);
+								if(response==JOptionPane.YES_OPTION){
+									map.delete();
+									loadedMap.removeMapSection(map);
+									mouseMoved(x, y);
+									repaint();
+								}
+								return;
 							}else{
 								switch(tool){
 									case CIRCLE:

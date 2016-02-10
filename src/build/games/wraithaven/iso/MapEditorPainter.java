@@ -58,6 +58,12 @@ public class MapEditorPainter extends JPanel{
 			private int scrollYStart;
 			private int mouseXStart;
 			private int mouseYStart;
+			private int drawStartTileX;
+			private int drawStartTileY;
+			private int drawBoundsX;
+			private int drawBoundsY;
+			private int drawBoundsX2;
+			private int drawBoundsY2;
 			@Override
 			public void mouseDragged(MouseEvent event){
 				if(dragging){
@@ -107,18 +113,22 @@ public class MapEditorPainter extends JPanel{
 				if(button==MouseEvent.BUTTON1){
 					if(cursorSelection.isOverMap()){
 						if(cursorSelection.isTileMode()){
-							switch(tool){
-								case BASIC:
-									map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
-									updateNeedsSaving();
-									repaint();
-									break;
-								case FILL:
-									IsoMapFillable fillable = new IsoMapFillable(map);
-									fillable.fill(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
-									updateNeedsSaving();
-									repaint();
-									break;
+							if(!tool.isDragBased()){
+								switch(tool){
+									case BASIC:
+										map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
+										updateNeedsSaving();
+										repaint();
+										break;
+									case FILL:
+										IsoMapFillable fillable = new IsoMapFillable(map);
+										fillable.fill(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
+										updateNeedsSaving();
+										repaint();
+										break;
+									default:
+										throw new RuntimeException();
+								}
 							}
 						}else if(cursorSelection.isEntityMode()){
 							TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
@@ -147,6 +157,9 @@ public class MapEditorPainter extends JPanel{
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
+				if(map==null){
+					return;
+				}
 				int button = event.getButton();
 				if(button==MouseEvent.BUTTON3){
 					dragging = true;
@@ -157,10 +170,44 @@ public class MapEditorPainter extends JPanel{
 				}else{
 					dragging = false;
 				}
-				drawing = button==MouseEvent.BUTTON1;
+				drawing = false;
+				if(button==MouseEvent.BUTTON1){
+					if(tool.isDragBased()){
+						if(cursorSelection.isOverMap()){
+							drawStartTileX = cursorSelection.getTileX();
+							drawStartTileY = cursorSelection.getTileY();
+							drawing = true;
+							drawBoundsX = 0;
+							drawBoundsY = 0;
+							drawBoundsX2 = 0;
+							drawBoundsY2 = 0;
+						}
+					}else{
+						drawing = true;
+					}
+				}
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
+				if(map!=null){
+					if(drawing&&tool.isDragBased()&&cursorSelection.isOverMap()){
+						IsoMapFillable fillable = new IsoMapFillable(map);
+						switch(tool){
+							case RECTANGLE:
+								fillable.rectangle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(),
+									cursorSelection.getSelectedTile());
+								break;
+							case CIRCLE:
+								fillable.circle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(),
+									cursorSelection.getSelectedTile());
+								break;
+							default:
+								throw new RuntimeException();
+						}
+						updateNeedsSaving();
+						repaint();
+					}
+				}
 				dragging = false;
 				drawing = false;
 			}

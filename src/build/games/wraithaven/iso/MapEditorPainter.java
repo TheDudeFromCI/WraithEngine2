@@ -45,7 +45,7 @@ public class MapEditorPainter extends JPanel{
 		this.mapStyle = mapStyle;
 		this.toolbar = toolbar;
 		this.mapEditor = mapEditor;
-		tool = Tool.BASIC;
+		setTool(Tool.BASIC);
 		tileSize = WraithEngine.projectBitSize;
 		tileWidth = tileSize/2;
 		tileHeight = tileSize/4;
@@ -107,9 +107,19 @@ public class MapEditorPainter extends JPanel{
 				if(button==MouseEvent.BUTTON1){
 					if(cursorSelection.isOverMap()){
 						if(cursorSelection.isTileMode()){
-							map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
-							updateNeedsSaving();
-							repaint();
+							switch(tool){
+								case BASIC:
+									map.setTile(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
+									updateNeedsSaving();
+									repaint();
+									break;
+								case FILL:
+									IsoMapFillable fillable = new IsoMapFillable(map);
+									fillable.fill(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedTile());
+									updateNeedsSaving();
+									repaint();
+									break;
+							}
 						}else if(cursorSelection.isEntityMode()){
 							TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
 							if(tile!=null){

@@ -74,9 +74,9 @@ public class Toolbar extends JPanel{
 		}
 	}
 	private final JButton saveButton;
-	private final MapEditorPainter painter;
+	private final MapEditor mapEditor;
 	public Toolbar(MapEditor mapEditor){
-		painter = mapEditor.getPainter();
+		this.mapEditor = mapEditor;
 		setPreferredSize(new Dimension(32, 32));
 		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		{
@@ -133,7 +133,9 @@ public class Toolbar extends JPanel{
 		AbstractButton button = createIcon(asset, null, null, true);
 		button.addActionListener(new ActionListener(){
 			@Override
-			public void actionPerformed(ActionEvent e){}
+			public void actionPerformed(ActionEvent e){
+				mapEditor.getPainter().setTool(tool);
+			}
 		});
 		return (JToggleButton)button;
 	}

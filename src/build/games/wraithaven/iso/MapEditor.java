@@ -60,4 +60,7 @@ public class MapEditor extends JPanel implements MapContainer{
 	public MapInterface generateMap(String uuid, String name, int width, int height){
 		return new Map(iso, uuid, name, width, height);
 	}
+	public MapEditorPainter getPainter(){
+		return painter;
+	}
 }

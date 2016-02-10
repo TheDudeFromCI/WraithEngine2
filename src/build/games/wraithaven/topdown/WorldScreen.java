@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.topdown;
 
+import build.games.wraithaven.core.tools.Tool;
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.InputAdapter;

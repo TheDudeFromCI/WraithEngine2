@@ -8,6 +8,7 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.WraithEngine;
+import build.games.wraithaven.core.tools.Tool;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -39,10 +40,12 @@ public class MapEditorPainter extends JPanel{
 	private Polygon selectionSquare;
 	private Polygon mapBorder;
 	private Polygon isoCubeBorder;
+	private Tool tool;
 	public MapEditorPainter(IsoMapStyle mapStyle, Toolbar toolbar, MapEditor mapEditor){
 		this.mapStyle = mapStyle;
 		this.toolbar = toolbar;
 		this.mapEditor = mapEditor;
+		tool = Tool.BASIC;
 		tileSize = WraithEngine.projectBitSize;
 		tileWidth = tileSize/2;
 		tileHeight = tileSize/4;
@@ -193,6 +196,10 @@ public class MapEditorPainter extends JPanel{
 		setFocusable(true);
 		generateSelectionSquare();
 		generateIsoCubeBorder();
+	}
+	public void setTool(Tool tool){
+		this.tool = tool;
+		setCursor(tool.getCursor());
 	}
 	public void updateNeedsSaving(){
 		boolean needsSaving = mapEditor.needsSaving();

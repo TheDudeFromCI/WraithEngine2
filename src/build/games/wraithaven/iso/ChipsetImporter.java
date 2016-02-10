@@ -20,6 +20,8 @@ import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -151,26 +153,29 @@ public class ChipsetImporter{
 		tilePreview.setIcon(new ImageIcon(finalImage));
 	}
 	private static BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
+		left = sharpen(left);
+		right = sharpen(right);
+		top = sharpen(top);
 		BufferedImage topPanel = rotate(top);
 		BufferedImage leftPanel = skew(left, 0, 0.5);
 		BufferedImage rightPanel = skew(right, 0, -0.5);
 		darken(leftPanel, 0.9f);
 		darken(rightPanel, 0.75f);
-		return shrink(blur(combine(leftPanel, rightPanel, topPanel)));
+		return scale(combine(leftPanel, rightPanel, topPanel), WraithEngine.projectBitSize);
 	}
-	private static BufferedImage shrink(BufferedImage image){
+	private static BufferedImage scale(BufferedImage image, int size){
 		BufferedImage buf = image;
 		int s = image.getWidth();
 		do{
-			if(s>WraithEngine.projectBitSize){
+			if(s>size){
 				s /= 2;
-				if(s<WraithEngine.projectBitSize){
-					s = WraithEngine.projectBitSize;
+				if(s<size){
+					s = size;
 				}
 			}else{
 				s *= 2;
-				if(s>WraithEngine.projectBitSize){
-					s = WraithEngine.projectBitSize;
+				if(s>size){
+					s = size;
 				}
 			}
 			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
@@ -181,7 +186,7 @@ public class ChipsetImporter{
 			g.drawImage(buf, 0, 0, s, s, null);
 			g.dispose();
 			buf = out;
-		}while(s!=WraithEngine.projectBitSize); // This loop enhances quality, while resizing!
+		}while(s!=size); // This loop enhances quality, while resizing!
 		return buf;
 	}
 	private static BufferedImage combine(BufferedImage left, BufferedImage right, BufferedImage top){
@@ -197,17 +202,16 @@ public class ChipsetImporter{
 		g.dispose();
 		return out;
 	}
-	private static BufferedImage blur(BufferedImage image){
-		return image;
-		// final int blurAmount = 5;
-		// float[] elements = new float[blurAmount*blurAmount];
-		// float seg = 1f/elements.length;
-		// for(int i = 0; i<elements.length; i++){
-		// elements[i] = seg;
-		// }
-		// Kernel kernel = new Kernel(blurAmount, blurAmount, elements);
-		// ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
-		// return cop.filter(image, null);
+	private static BufferedImage sharpen(BufferedImage image){
+		image = scale(image, WraithEngine.projectBitSize*8);
+		float[] elements = new float[9];
+		for(int i = 0; i<elements.length; i++){
+			elements[i] = -1;
+		}
+		elements[4] = 9;
+		Kernel kernel = new Kernel(3, 3, elements);
+		ConvolveOp cop = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+		return cop.filter(image, null);
 	}
 	private static BufferedImage skew(BufferedImage input, double angle, double angle2){
 		double x = (angle<0)?-angle*input.getHeight():0;

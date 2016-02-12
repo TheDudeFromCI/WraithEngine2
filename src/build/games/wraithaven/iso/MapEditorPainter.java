@@ -408,8 +408,8 @@ public class MapEditorPainter extends JPanel{
 							g.setComposite(com);
 						}
 						if(tiles[i].getEntity()!=null){
-							g.drawImage(imageStorage.getImage(tiles[i].getEntity()), u+(int)(tiles[i].getEntity().getOffsetX()*tileSize),
-								v+(int)(tiles[i].getEntity().getOffsetY()*tileSize), tileSize, tileSize*2, null);
+							g.drawImage(imageStorage.getImage(tiles[i].getEntity()), u, v+(1-tiles[i].getEntity().getHeight())*tileSize, tileSize,
+								tileSize*tiles[i].getEntity().getHeight(), null);
 						}
 					}
 				}

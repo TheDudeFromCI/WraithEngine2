@@ -88,13 +88,11 @@ public class EntityList extends JPanel{
 				EntityType e;
 				BufferedImage img;
 				String uuid;
-				int width;
 				int height;
 				for(int i = 0; i<count; i++){
 					uuid = bin.getString();
-					width = bin.getInt();
 					height = bin.getInt();
-					e = new EntityType(uuid, width, height);
+					e = new EntityType(uuid, height);
 					entityTypes.add(e);
 					try{
 						img = ImageIO.read(Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
@@ -117,12 +115,11 @@ public class EntityList extends JPanel{
 		return null;
 	}
 	private void save(){
-		BinaryFile bin = new BinaryFile(4+2+entityTypes.size()*8);
+		BinaryFile bin = new BinaryFile(4+2+entityTypes.size()*4);
 		bin.addShort(FILE_VERSION);
 		bin.addInt(entityTypes.size());
 		for(EntityType e : entityTypes){
 			bin.addStringAllocated(e.getUUID());
-			bin.addInt(e.getWidth());
 			bin.addInt(e.getHeight());
 		}
 		bin.compress(false);

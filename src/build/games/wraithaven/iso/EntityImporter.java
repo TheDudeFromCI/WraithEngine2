@@ -29,7 +29,6 @@ import javax.swing.SpinnerNumberModel;
 public class EntityImporter extends JPanel{
 	private final String uuid;
 	private final BufferedImage image;
-	private final JSpinner width;
 	private final JSpinner height;
 	public EntityImporter(File file){
 		try{
@@ -63,24 +62,13 @@ public class EntityImporter extends JPanel{
 			JPanel sideBar = new JPanel();
 			sideBar.setLayout(new VerticalFlowLayout(0, 5));
 			{
-				// Width
-				JPanel panel = new JPanel();
-				panel.setLayout(new BorderLayout());
-				JLabel label = new JLabel("Width (X)");
-				panel.add(label, BorderLayout.WEST);
-				width = new JSpinner();
-				width.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
-				panel.add(width, BorderLayout.CENTER);
-				sideBar.add(panel);
-			}
-			{
 				// Height
 				JPanel panel = new JPanel();
 				panel.setLayout(new BorderLayout());
-				JLabel label = new JLabel("Height (Y)");
+				JLabel label = new JLabel("Height");
 				panel.add(label, BorderLayout.WEST);
 				height = new JSpinner();
-				height.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+				height.setModel(new SpinnerNumberModel(1, 1, 5, 1));
 				panel.add(height, BorderLayout.CENTER);
 				sideBar.add(panel);
 			}
@@ -89,15 +77,9 @@ public class EntityImporter extends JPanel{
 		add(imagePreview, BorderLayout.CENTER);
 	}
 	public EntityType build(){
-		return new EntityType(uuid, getEntityWidth(), getEntityHeight());
+		return new EntityType(uuid, (int)height.getValue());
 	}
 	public BufferedImage getEntityImage(){
 		return image;
-	}
-	public int getEntityWidth(){
-		return (int)width.getValue();
-	}
-	public int getEntityHeight(){
-		return (int)height.getValue();
 	}
 }

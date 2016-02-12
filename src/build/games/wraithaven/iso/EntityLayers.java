@@ -61,6 +61,7 @@ public class EntityLayers extends JPanel{
 				for(Layer layer : layers){
 					if(y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
 						layer.setVisible(!layer.isVisible());
+						save();
 						repaint();
 						return;
 					}

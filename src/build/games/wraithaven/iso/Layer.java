@@ -14,19 +14,23 @@ import build.games.wraithaven.util.BinaryFile;
  */
 public class Layer{
 	private String name;
-	private boolean visible = true;
+	private boolean visible;
 	private boolean needsSaving;
 	public Layer(String name){
 		this.name = name;
+		visible = true;
 		needsSaving = true;
 	}
 	public Layer(BinaryFile bin){
 		name = bin.getString();
+		visible = bin.getBoolean();
 		needsSaving = false;
 	}
 	public void save(BinaryFile bin){
 		needsSaving = false;
 		bin.addStringAllocated(name);
+		bin.allocateBytes(1);
+		bin.addBoolean(visible);
 	}
 	public String getName(){
 		return name;
@@ -46,5 +50,6 @@ public class Layer{
 	}
 	public void setVisible(boolean visible){
 		this.visible = visible;
+		needsSaving = true;
 	}
 }

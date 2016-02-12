@@ -9,6 +9,7 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -16,6 +17,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -45,6 +47,26 @@ public class EntityLayers extends JPanel{
 			exception.printStackTrace();
 		}
 		updatePreferedSize();
+		InputAdapter ia = new InputAdapter(){
+			@Override
+			public void mouseClicked(MouseEvent event){
+				int x = event.getX();
+				if(!(x>=EYE_POS&&x<EYE_POS+EYE_ICON_IMAGE_SIZE)){
+					return;
+				}
+				int y = event.getY();
+				int h = 0;
+				for(Layer layer : layers){
+					if(y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
+						layer.setVisible(!layer.isVisible());
+						repaint();
+						return;
+					}
+					h += LAYER_HEIGHT;
+				}
+			}
+		};
+		addMouseListener(ia);
 		{
 			// Debug
 			layers.add(new Layer("Background Layer"));

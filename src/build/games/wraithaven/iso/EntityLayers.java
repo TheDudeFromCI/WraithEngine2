@@ -79,9 +79,9 @@ public class EntityLayers extends JPanel{
 			repaint();
 			return;
 		}
-		File file = Algorithms.getFile("Worlds", uuid, "Layers.dat");
+		File file = Algorithms.getFile("Worlds", "Layers", uuid+".dat");
 		if(!file.exists()){
-			layers.add(new Layer("Background Layer"));
+			layers.add(new Layer("Layer 1"));
 			save();
 			updatePreferedSize();
 			repaint();
@@ -129,13 +129,16 @@ public class EntityLayers extends JPanel{
 		if(!force&&!needsSaving()){
 			return;
 		}
+		if(uuid==null){
+			return;
+		}
 		BinaryFile bin = new BinaryFile(4);
 		bin.addInt(layers.size());
 		for(Layer layer : layers){
 			layer.save(bin);
 		}
 		bin.compress(false);
-		bin.compile(Algorithms.getFile("Worlds", uuid, "Layers.dat"));
+		bin.compile(Algorithms.getFile("Worlds", "Layers", uuid+".dat"));
 	}
 	private void updatePreferedSize(){
 		setPreferredSize(new Dimension(LAYER_WIDTH, Math.max(layers.size()*LAYER_HEIGHT, 10)));

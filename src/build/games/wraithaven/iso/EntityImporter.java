@@ -8,6 +8,7 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,7 +18,10 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 /**
  * @author TheDudeFromCI
@@ -25,6 +29,8 @@ import javax.swing.JPanel;
 public class EntityImporter extends JPanel{
 	private final String uuid;
 	private final BufferedImage image;
+	private final JSpinner width;
+	private final JSpinner height;
 	public EntityImporter(File file){
 		try{
 			image = ImageIO.read(file);
@@ -32,7 +38,7 @@ public class EntityImporter extends JPanel{
 			throw new RuntimeException(exception.getMessage());
 		}
 		uuid = Algorithms.randomUUID();
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout(5, 0));
 		JPanel imagePreview = new JPanel(){
 			private final Dimension size;
 			{
@@ -52,6 +58,34 @@ public class EntityImporter extends JPanel{
 				return size;
 			}
 		};
+		{
+			// Side bar information.
+			JPanel sideBar = new JPanel();
+			sideBar.setLayout(new VerticalFlowLayout(0, 5));
+			{
+				// Width
+				JPanel panel = new JPanel();
+				panel.setLayout(new BorderLayout());
+				JLabel label = new JLabel("Width (X)");
+				panel.add(label, BorderLayout.WEST);
+				width = new JSpinner();
+				width.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+				panel.add(width, BorderLayout.CENTER);
+				sideBar.add(panel);
+			}
+			{
+				// Height
+				JPanel panel = new JPanel();
+				panel.setLayout(new BorderLayout());
+				JLabel label = new JLabel("Height (Y)");
+				panel.add(label, BorderLayout.WEST);
+				height = new JSpinner();
+				height.setModel(new SpinnerNumberModel(1, 1, Integer.MAX_VALUE, 1));
+				panel.add(height, BorderLayout.CENTER);
+				sideBar.add(panel);
+			}
+			add(sideBar, BorderLayout.EAST);
+		}
 		add(imagePreview, BorderLayout.CENTER);
 	}
 	public EntityType build(){
@@ -59,5 +93,11 @@ public class EntityImporter extends JPanel{
 	}
 	public BufferedImage getEntityImage(){
 		return image;
+	}
+	public int getWidth(){
+		return (int)width.getValue();
+	}
+	public int getHeight(){
+		return (int)height.getValue();
 	}
 }

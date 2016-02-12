@@ -44,6 +44,7 @@ public class EntityList extends JPanel{
 	}
 	private static final int PREVIEW_WIDTH = 4;
 	private static final int PREVIEW_ICON_SIZE = 64;
+	private static final short FILE_VERSION = 0;
 	private final ArrayList<EntityType> entityTypes = new ArrayList(16);
 	private final HashMap<EntityType,BufferedImage> previews = new HashMap(16);
 	private final CursorSelection cursorSelection;
@@ -80,18 +81,31 @@ public class EntityList extends JPanel{
 		}
 		BinaryFile bin = new BinaryFile(file);
 		bin.decompress(false);
-		int count = bin.getInt();
-		EntityType e;
-		BufferedImage img;
-		for(int i = 0; i<count; i++){
-			e = new EntityType(bin.getString());
-			entityTypes.add(e);
-			try{
-				img = ImageIO.read(Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
-				previews.put(e, img);
-			}catch(Exception exception){
-				exception.printStackTrace();
-			}
+		short version = bin.getShort();
+		switch(version){
+			case 0:
+				int count = bin.getInt();
+				EntityType e;
+				BufferedImage img;
+				String uuid;
+				int width;
+				int height;
+				for(int i = 0; i<count; i++){
+					uuid = bin.getString();
+					width = bin.getInt();
+					height = bin.getInt();
+					e = new EntityType(uuid, width, height);
+					entityTypes.add(e);
+					try{
+						img = ImageIO.read(Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
+						previews.put(e, img);
+					}catch(Exception exception){
+						exception.printStackTrace();
+					}
+				}
+				break;
+			default:
+				throw new RuntimeException();
 		}
 	}
 	public EntityType getType(String uuid){
@@ -103,10 +117,13 @@ public class EntityList extends JPanel{
 		return null;
 	}
 	private void save(){
-		BinaryFile bin = new BinaryFile(4);
+		BinaryFile bin = new BinaryFile(4+2+entityTypes.size()*8);
+		bin.addShort(FILE_VERSION);
 		bin.addInt(entityTypes.size());
 		for(EntityType e : entityTypes){
 			bin.addStringAllocated(e.getUUID());
+			bin.addInt(e.getWidth());
+			bin.addInt(e.getHeight());
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Entities", "Previews", "List.dat"));
@@ -166,8 +183,8 @@ public class EntityList extends JPanel{
 		}
 		if(cursorSelection.isEntityActive()){
 			g.setStroke(new BasicStroke(3));
-			g.translate(cursorSelection.getSelectedTileIndex()%PREVIEW_WIDTH*PREVIEW_ICON_SIZE,
-				cursorSelection.getSelectedTileIndex()/PREVIEW_WIDTH*PREVIEW_ICON_SIZE);
+			g.translate(cursorSelection.getSelectedEntityIndex()%PREVIEW_WIDTH*PREVIEW_ICON_SIZE,
+				cursorSelection.getSelectedEntityIndex()/PREVIEW_WIDTH*PREVIEW_ICON_SIZE);
 			g.setColor(Color.white);
 			g.drawPolygon(cursor);
 		}

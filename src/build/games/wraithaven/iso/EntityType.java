@@ -12,16 +12,30 @@ package build.games.wraithaven.iso;
  */
 public class EntityType{
 	private final String uuid;
-	public EntityType(String uuid){
+	private final int width;
+	private final int height;
+	private final float offX;
+	private final float offY;
+	public EntityType(String uuid, int width, int height){
 		this.uuid = uuid;
+		this.width = width;
+		this.height = height;
+		offX = width/-2f+0.5f;
+		offY = -1f;
 	}
 	public String getUUID(){
 		return uuid;
 	}
 	public float getOffsetX(){
-		return 0;
+		return offX;
 	}
 	public float getOffsetY(){
-		return -1.5f;
+		return offY;
+	}
+	public int getWidth(){
+		return width;
+	}
+	public int getHeight(){
+		return height;
 	}
 }

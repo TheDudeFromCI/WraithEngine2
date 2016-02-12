@@ -95,4 +95,7 @@ public class ChipsetList extends JPanel{
 	public EntityList getEntityList(){
 		return entityList;
 	}
+	public EntityLayers getEntityLayers(){
+		return entityLayers;
+	}
 }

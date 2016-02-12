@@ -366,6 +366,7 @@ public class MapEditorPainter extends JPanel{
 		}
 		updateNeedsSaving();
 		repaint();
+		mapStyle.getChipsetList().getEntityLayers().loadMap(map==null?null:map.getUUID());
 	}
 	private boolean isOnScreen(int x, int y, int w, int h){
 		return x<w&&x+tileSize>=0&&y<h&&y+tileSize>=0;

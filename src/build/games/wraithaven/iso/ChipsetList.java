@@ -39,8 +39,8 @@ public class ChipsetList extends JPanel{
 	private final EntityLayers entityLayers;
 	private final JButton addLayerIcon;
 	private final JButton trashLayerIcon;
-	public ChipsetList(){
-		entityLayers = new EntityLayers(this);
+	public ChipsetList(IsoMapStyle mapStyle){
+		entityLayers = new EntityLayers(mapStyle);
 		painter = new ChipsetListPainter();
 		entityList = new EntityList(painter.getCursorSelection());
 		JTabbedPane tabbedPane = new JTabbedPane();

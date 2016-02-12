@@ -42,15 +42,15 @@ public class EntityLayers extends JPanel{
 	private static final int EYE_POS = (EYE_ICON_SIZE-EYE_ICON_IMAGE_SIZE)/2;
 	private final ArrayList<Layer> layers = new ArrayList(8);
 	private final Font font = new Font("Tahoma", Font.PLAIN, 15);
-	private final ChipsetList chipsetList;
+	private final IsoMapStyle mapStyle;
 	private BufferedImage eyeOpen;
 	private BufferedImage eyeClosed;
 	private String uuid;
 	private Layer selectedLayer;
 	private TextEditor textEditor;
 	private Timer timer;
-	public EntityLayers(ChipsetList chipsetList){
-		this.chipsetList = chipsetList;
+	public EntityLayers(IsoMapStyle mapStyle){
+		this.mapStyle = mapStyle;
 		try{
 			eyeOpen = ImageIO.read(Algorithms.getAsset("Eye Open.png"));
 			eyeClosed = ImageIO.read(Algorithms.getAsset("Eye Closed.png"));
@@ -96,6 +96,7 @@ public class EntityLayers extends JPanel{
 						}
 					}else if(x>=EYE_POS&&x<EYE_POS+EYE_ICON_IMAGE_SIZE&&y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
 						layer.setVisible(!layer.isVisible());
+						mapStyle.getMapEditor().getPainter().repaint();
 						save();
 						repaint();
 						return;
@@ -141,7 +142,7 @@ public class EntityLayers extends JPanel{
 	}
 	public void loadMap(String uuid){
 		this.uuid = uuid;
-		chipsetList.updateLayerIcons();
+		mapStyle.getChipsetList().updateLayerIcons();
 		layers.clear();
 		if(uuid==null){
 			selectedLayer = null;

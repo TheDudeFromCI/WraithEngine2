@@ -36,13 +36,16 @@ public class IsoMapStyle implements MapStyle{
 	private final WorldList worldList;
 	private final JFrame frame;
 	public IsoMapStyle(){
-		chipsetList = new ChipsetList();
+		chipsetList = new ChipsetList(this);
 		mapEditor = new MapEditor(this);
 		worldList = new WorldList(mapEditor);
 		frame = new JFrame();
 	}
 	public JFrame getFrame(){
 		return frame;
+	}
+	public MapEditor getMapEditor(){
+		return mapEditor;
 	}
 	public ChipsetList getChipsetList(){
 		return chipsetList;

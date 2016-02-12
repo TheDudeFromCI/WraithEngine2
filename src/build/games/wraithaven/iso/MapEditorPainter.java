@@ -413,6 +413,9 @@ public class MapEditorPainter extends JPanel{
 						}
 						entities = tiles[i].getAllEntities();
 						for(Layer layer : entities.keySet()){
+							if(!layer.isVisible()){
+								continue;
+							}
 							entity = entities.get(layer);
 							g.drawImage(imageStorage.getImage(entity), u, v+(1-entity.getHeight())*tileSize, tileSize, tileSize*entity.getHeight(),
 								null);

@@ -40,6 +40,7 @@ public class EntityLayers extends JPanel{
 	private BufferedImage eyeOpen;
 	private BufferedImage eyeClosed;
 	private String uuid;
+	private Layer selectedLayer;
 	public EntityLayers(ChipsetList chipsetList){
 		this.chipsetList = chipsetList;
 		try{
@@ -53,15 +54,16 @@ public class EntityLayers extends JPanel{
 			@Override
 			public void mouseClicked(MouseEvent event){
 				int x = event.getX();
-				if(!(x>=EYE_POS&&x<EYE_POS+EYE_ICON_IMAGE_SIZE)){
-					return;
-				}
 				int y = event.getY();
 				int h = 0;
 				for(Layer layer : layers){
-					if(y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
+					if(x>=EYE_POS&&x<EYE_POS+EYE_ICON_IMAGE_SIZE&&y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
 						layer.setVisible(!layer.isVisible());
 						save();
+						repaint();
+						return;
+					}else if(y>=h&&y<h+LAYER_HEIGHT){
+						selectedLayer = layer;
 						repaint();
 						return;
 					}
@@ -76,12 +78,14 @@ public class EntityLayers extends JPanel{
 		chipsetList.updateLayerIcons();
 		layers.clear();
 		if(uuid==null){
+			selectedLayer = null;
 			repaint();
 			return;
 		}
 		File file = Algorithms.getFile("Worlds", "Layers", uuid+".dat");
 		if(!file.exists()){
-			layers.add(new Layer("Layer 1"));
+			selectedLayer = new Layer("Layer 1");
+			layers.add(selectedLayer);
 			save();
 			updatePreferedSize();
 			repaint();
@@ -92,6 +96,11 @@ public class EntityLayers extends JPanel{
 		int layerCount = bin.getInt();
 		for(int i = 0; i<layerCount; i++){
 			layers.add(new Layer(bin));
+		}
+		if(layers.isEmpty()){
+			selectedLayer = null;
+		}else{
+			selectedLayer = layers.get(0);
 		}
 		updatePreferedSize();
 		repaint();
@@ -112,12 +121,22 @@ public class EntityLayers extends JPanel{
 	}
 	public void addLayer(Layer layer){
 		layers.add(layer);
+		if(selectedLayer==null){
+			selectedLayer = layer;
+		}
 		save(true);
 		updatePreferedSize();
 		repaint();
 	}
 	public void removeLayer(Layer layer){
 		layers.remove(layer);
+		if(selectedLayer==layer){
+			if(layers.isEmpty()){
+				selectedLayer = null;
+			}else{
+				selectedLayer = layers.get(0);
+			}
+		}
 		save(true);
 		updatePreferedSize();
 		save();
@@ -156,7 +175,7 @@ public class EntityLayers extends JPanel{
 		Rectangle2D r;
 		int y = 0;
 		for(Layer layer : layers){
-			g.setColor(Color.white);
+			g.setColor(layer==selectedLayer?Color.blue:Color.white);
 			g.fillRect(0, y, width, LAYER_HEIGHT);
 			g.setColor(Color.black);
 			g.drawRect(0, y, width, LAYER_HEIGHT);

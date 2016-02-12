@@ -10,6 +10,7 @@ package build.games.wraithaven.iso;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
+import build.games.wraithaven.util.TextEditor;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,6 +18,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -24,6 +27,9 @@ import java.io.File;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.Timer;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  * @author TheDudeFromCI
@@ -41,6 +47,8 @@ public class EntityLayers extends JPanel{
 	private BufferedImage eyeClosed;
 	private String uuid;
 	private Layer selectedLayer;
+	private TextEditor textEditor;
+	private Timer timer;
 	public EntityLayers(ChipsetList chipsetList){
 		this.chipsetList = chipsetList;
 		try{
@@ -53,11 +61,40 @@ public class EntityLayers extends JPanel{
 		InputAdapter ia = new InputAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent event){
+				if(textEditor!=null){
+					textEditor.end();
+				}
+				int button = event.getButton();
+				if(button!=MouseEvent.BUTTON1){
+					return;
+				}
+				int clickCount = event.getClickCount();
 				int x = event.getX();
 				int y = event.getY();
 				int h = 0;
+				int[] bounds;
 				for(Layer layer : layers){
-					if(x>=EYE_POS&&x<EYE_POS+EYE_ICON_IMAGE_SIZE&&y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
+					if(clickCount>=2){
+						bounds = layer.getNameBounds();
+						if(x>=bounds[0]&&y>=bounds[1]&&x<bounds[0]+bounds[2]&&y<bounds[1]+bounds[3]){
+							textEditor = new TextEditor(layer.getName());
+							addKeyListener(textEditor.getInputAdapter());
+							requestFocus();
+							textEditor.setRepaintComponent(EntityLayers.this);
+							textEditor.setOnEnterScript(new Runnable(){
+								@Override
+								public void run(){
+									removeKeyListener(textEditor.getInputAdapter());
+									selectedLayer.setName(textEditor.getText());
+									textEditor = null;
+									repaint();
+									save();
+								}
+							});
+							repaint();
+							return;
+						}
+					}else if(x>=EYE_POS&&x<EYE_POS+EYE_ICON_IMAGE_SIZE&&y>=h+EYE_POS&&y<h+EYE_POS+EYE_ICON_IMAGE_SIZE){
 						layer.setVisible(!layer.isVisible());
 						save();
 						repaint();
@@ -71,7 +108,36 @@ public class EntityLayers extends JPanel{
 				}
 			}
 		};
+		addAncestorListener(new AncestorListener(){
+			@Override
+			public void ancestorAdded(AncestorEvent event){
+				if(timer!=null){
+					timer.stop();
+					timer = null;
+				}
+				timer = new Timer(500, new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						if(textEditor!=null){
+							textEditor.setCursorShown(!textEditor.isCursorShown());
+						}
+					}
+				});
+				timer.setRepeats(true);
+				timer.start();
+			}
+			@Override
+			public void ancestorRemoved(AncestorEvent event){
+				if(timer!=null){
+					timer.stop();
+					timer = null;
+				}
+			}
+			@Override
+			public void ancestorMoved(AncestorEvent event){}
+		});
 		addMouseListener(ia);
+		setFocusable(true);
 	}
 	public void loadMap(String uuid){
 		this.uuid = uuid;
@@ -174,13 +240,25 @@ public class EntityLayers extends JPanel{
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D r;
 		int y = 0;
+		int u, v;
 		for(Layer layer : layers){
 			g.setColor(layer==selectedLayer?Color.blue:Color.white);
 			g.fillRect(0, y, width, LAYER_HEIGHT);
 			g.setColor(Color.black);
 			g.drawRect(0, y, width, LAYER_HEIGHT);
-			r = fm.getStringBounds(layer.getName(), g);
-			g.drawString(layer.getName(), EYE_ICON_SIZE+5, (LAYER_HEIGHT-(float)r.getHeight())/2f+fm.getAscent()+y);
+			r = fm.getStringBounds(textEditor!=null&&selectedLayer==layer?textEditor.getText():layer.getName(), g);
+			u = EYE_ICON_SIZE+5;
+			v = (int)((LAYER_HEIGHT-(float)r.getHeight())/2f+fm.getAscent()+y);
+			layer.setNameBounds(u, v-fm.getAscent(), (int)r.getWidth(), (int)r.getHeight());
+			if(textEditor!=null&&selectedLayer==layer){
+				g.setColor(Color.white);
+				g.fillRect(u-3, v-fm.getAscent(), (int)r.getWidth()+6, (int)r.getHeight());
+				g.setColor(Color.black);
+				g.drawRect(u-3, v-fm.getAscent(), (int)r.getWidth()+6, (int)r.getHeight());
+				textEditor.draw(g1, u, v);
+			}else{
+				g.drawString(layer.getName(), u, v);
+			}
 			g.drawImage(layer.isVisible()?eyeOpen:eyeClosed, EYE_POS, y+EYE_POS, null);
 			g.drawRect(EYE_POS, EYE_POS+y, EYE_ICON_IMAGE_SIZE, EYE_ICON_IMAGE_SIZE);
 			y += LAYER_HEIGHT;

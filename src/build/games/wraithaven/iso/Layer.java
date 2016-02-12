@@ -15,6 +15,7 @@ import build.games.wraithaven.util.BinaryFile;
  */
 public class Layer{
 	private final String uuid;
+	private final int[] nameBounds = new int[4];
 	private String name;
 	private boolean visible;
 	private boolean needsSaving;
@@ -59,5 +60,14 @@ public class Layer{
 	}
 	public String getUUID(){
 		return uuid;
+	}
+	public int[] getNameBounds(){
+		return nameBounds;
+	}
+	public void setNameBounds(int x, int y, int w, int h){
+		nameBounds[0] = x;
+		nameBounds[1] = y;
+		nameBounds[2] = w;
+		nameBounds[3] = h;
 	}
 }

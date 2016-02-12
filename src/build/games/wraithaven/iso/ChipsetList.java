@@ -7,7 +7,14 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -16,11 +23,24 @@ import javax.swing.JTabbedPane;
  * @author TheDudeFromCI
  */
 public class ChipsetList extends JPanel{
+	private static JButton makeIcon(String asset, String over, String down, String disabled){
+		JButton button = new JButton();
+		button.setIcon(new ImageIcon(Algorithms.getAsset(asset).getAbsolutePath()));
+		button.setRolloverIcon(new ImageIcon(Algorithms.getAsset(over).getAbsolutePath()));
+		button.setPressedIcon(new ImageIcon(Algorithms.getAsset(down).getAbsolutePath()));
+		button.setDisabledIcon(new ImageIcon(Algorithms.getAsset(disabled).getAbsolutePath()));
+		button.setFocusPainted(false);
+		button.setBorder(BorderFactory.createEmptyBorder());
+		button.setContentAreaFilled(false);
+		return button;
+	}
 	private final ChipsetListPainter painter;
 	private final EntityList entityList;
 	private final EntityLayers entityLayers;
+	private final JButton addLayerIcon;
+	private final JButton trashLayerIcon;
 	public ChipsetList(){
-		entityLayers = new EntityLayers();
+		entityLayers = new EntityLayers(this);
 		painter = new ChipsetListPainter();
 		entityList = new EntityList(painter.getCursorSelection());
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -30,8 +50,35 @@ public class ChipsetList extends JPanel{
 			// Tabs
 			tabbedPane.addTab("Tiles", new JScrollPane(painter));
 			tabbedPane.addTab("Entities", new JScrollPane(entityList));
-			tabbedPane.addTab("Layers", new JScrollPane(entityLayers));
+			{
+				// Layer Tab
+				JPanel panel = new JPanel();
+				panel.setLayout(new BorderLayout());
+				JPanel bot = new JPanel();
+				bot.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+				{
+					addLayerIcon = makeIcon("Plus Symbol.png", "Plus Symbol Over.png", "Plus Symbol Down.png", "Plus Symbol Disabled.png");
+					addLayerIcon.setEnabled(false);
+					trashLayerIcon = makeIcon("Trash Can.png", "Trash Can Over.png", "Trash Can Down.png", "Trash Can Disabled.png");
+					trashLayerIcon.setEnabled(false);
+					bot.add(addLayerIcon);
+					bot.add(trashLayerIcon);
+					addLayerIcon.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							entityLayers.addLayer(new Layer("Layer "+(entityLayers.getLayerCount()+1)));
+						}
+					});
+				}
+				panel.add(bot, BorderLayout.SOUTH);
+				panel.add(new JScrollPane(entityLayers), BorderLayout.CENTER);
+				tabbedPane.addTab("Layers", panel);
+			}
 		}
+	}
+	public void updateLayerIcons(){
+		addLayerIcon.setEnabled(entityLayers.isLoaded());
+		trashLayerIcon.setEnabled(entityLayers.isLoaded());
 	}
 	public Tile getTile(String uuid){
 		return painter.getTile(uuid);

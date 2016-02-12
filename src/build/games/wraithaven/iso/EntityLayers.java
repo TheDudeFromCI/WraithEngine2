@@ -36,10 +36,12 @@ public class EntityLayers extends JPanel{
 	private static final int EYE_POS = (EYE_ICON_SIZE-EYE_ICON_IMAGE_SIZE)/2;
 	private final ArrayList<Layer> layers = new ArrayList(8);
 	private final Font font = new Font("Tahoma", Font.PLAIN, 15);
+	private final ChipsetList chipsetList;
 	private BufferedImage eyeOpen;
 	private BufferedImage eyeClosed;
 	private String uuid;
-	public EntityLayers(){
+	public EntityLayers(ChipsetList chipsetList){
+		this.chipsetList = chipsetList;
 		try{
 			eyeOpen = ImageIO.read(Algorithms.getAsset("Eye Open.png"));
 			eyeClosed = ImageIO.read(Algorithms.getAsset("Eye Closed.png"));
@@ -67,14 +69,10 @@ public class EntityLayers extends JPanel{
 			}
 		};
 		addMouseListener(ia);
-		{
-			// Debug
-			layers.add(new Layer("Background Layer"));
-			layers.add(new Layer("Background Layer 2"));
-		}
 	}
 	public void loadMap(String uuid){
 		this.uuid = uuid;
+		chipsetList.updateLayerIcons();
 		layers.clear();
 		if(uuid==null){
 			repaint();
@@ -96,6 +94,12 @@ public class EntityLayers extends JPanel{
 		}
 		updatePreferedSize();
 		repaint();
+	}
+	public int getLayerCount(){
+		return layers.size();
+	}
+	public boolean isLoaded(){
+		return uuid!=null;
 	}
 	private boolean needsSaving(){
 		for(Layer layer : layers){

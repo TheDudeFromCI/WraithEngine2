@@ -218,8 +218,8 @@ public class BinaryFile{
 		return i;
 	}
 	public long getLong(){
-		long i = binary[pos]&0xFF|(binary[pos+1]&0xFF)<<8|(binary[pos+2]&0xFF)<<16|(binary[pos+3]&0xFF)<<24;
-		i = i|(binary[pos+4]&0xFF)<<32|(binary[pos+5]&0xFF)<<40|(binary[pos+6]&0xFF)<<48|(binary[pos+7]&0xFF)<<56;
+		long i = binary[pos]&0xFFL|(binary[pos+1]&0xFFL)<<8|(binary[pos+2]&0xFFL)<<16|(binary[pos+3]&0xFFL)<<24;
+		i = i|(binary[pos+4]&0xFFL)<<32|(binary[pos+5]&0xFFL)<<40|(binary[pos+6]&0xFFL)<<48|(binary[pos+7]&0xFFL)<<56;
 		pos += 8;
 		return i;
 	}

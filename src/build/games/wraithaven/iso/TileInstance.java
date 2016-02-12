@@ -7,13 +7,15 @@
  */
 package build.games.wraithaven.iso;
 
+import java.util.HashMap;
+
 /**
  * @author TheDudeFromCI
  */
 public class TileInstance{
 	private final Tile tile;
+	private final HashMap<Layer,EntityType> entities = new HashMap(1);
 	private int height;
-	private EntityType entity;
 	public TileInstance(Tile tile){
 		this.tile = tile;
 	}
@@ -30,10 +32,20 @@ public class TileInstance{
 	public void setHeight(int height){
 		this.height = height;
 	}
-	public EntityType getEntity(){
-		return entity;
+	public EntityType getEntity(Layer selectedLayer){
+		if(entities.containsKey(selectedLayer)){
+			return entities.get(selectedLayer);
+		}
+		return null;
 	}
-	public void setEntity(EntityType entity){
-		this.entity = entity;
+	public void setEntity(EntityType entity, Layer selectedLayer){
+		if(entity==null){
+			entities.remove(selectedLayer);
+		}else{
+			entities.put(selectedLayer, entity);
+		}
+	}
+	public HashMap<Layer,EntityType> getAllEntities(){
+		return entities;
 	}
 }

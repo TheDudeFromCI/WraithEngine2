@@ -187,4 +187,15 @@ public class EntityLayers extends JPanel{
 		}
 		g.dispose();
 	}
+	public Layer getSelectedLayer(){
+		return selectedLayer;
+	}
+	public Layer getType(String uuid){
+		for(Layer layer : layers){
+			if(layer.getUUID().equals(uuid)){
+				return layer;
+			}
+		}
+		return null;
+	}
 }

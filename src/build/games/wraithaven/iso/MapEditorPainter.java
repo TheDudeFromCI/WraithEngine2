@@ -19,6 +19,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.HashMap;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -137,7 +138,7 @@ public class MapEditorPainter extends JPanel{
 						}else if(cursorSelection.isEntityMode()){
 							TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
 							if(tile!=null){
-								tile.setEntity(cursorSelection.getSelectedEntity());
+								tile.setEntity(cursorSelection.getSelectedEntity(), mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
 								map.setNeedsSaving();
 								updateNeedsSaving();
 								repaint();
@@ -148,8 +149,8 @@ public class MapEditorPainter extends JPanel{
 					if(cursorSelection.isOverMap()){
 						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
 						if(shift){
-							cursorSelection.setSelectedEntity(tile.getEntity(),
-								mapStyle.getChipsetList().getEntityList().getAllTypes().indexOf(tile.getEntity()));
+							EntityType entity = tile.getEntity(mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+							cursorSelection.setSelectedEntity(entity, mapStyle.getChipsetList().getEntityList().getAllTypes().indexOf(entity));
 							mapStyle.getChipsetList().repaint();
 						}else{
 							cursorSelection.setSelectedTile(tile==null?null:tile.getTile(),
@@ -343,6 +344,7 @@ public class MapEditorPainter extends JPanel{
 		mapBorder = new Polygon(x, y, 4);
 	}
 	public void selectMap(Map map){
+		mapStyle.getChipsetList().getEntityLayers().loadMap(map==null?null:map.getUUID());
 		if(this.map!=null){
 			if(mapEditor.needsSaving()){
 				int response = JOptionPane.showConfirmDialog(null, "Map not saved! Would you like to save before exiting?", "Confirm Save Map",
@@ -366,7 +368,6 @@ public class MapEditorPainter extends JPanel{
 		}
 		updateNeedsSaving();
 		repaint();
-		mapStyle.getChipsetList().getEntityLayers().loadMap(map==null?null:map.getUUID());
 	}
 	private boolean isOnScreen(int x, int y, int w, int h){
 		return x<w&&x+tileSize>=0&&y<h&&y+tileSize>=0;
@@ -384,6 +385,8 @@ public class MapEditorPainter extends JPanel{
 			int h = map.getHeight();
 			int a, b, i, x, y, u, v;
 			int maxA = w+h-1;
+			HashMap<Layer,EntityType> entities;
+			EntityType entity;
 			for(a = 0; a<maxA; a++){
 				for(b = 0; b<=a; b++){
 					x = b;
@@ -408,9 +411,11 @@ public class MapEditorPainter extends JPanel{
 							g.translate(-u-tileWidth, -v-tileWidth);
 							g.setComposite(com);
 						}
-						if(tiles[i].getEntity()!=null){
-							g.drawImage(imageStorage.getImage(tiles[i].getEntity()), u, v+(1-tiles[i].getEntity().getHeight())*tileSize, tileSize,
-								tileSize*tiles[i].getEntity().getHeight(), null);
+						entities = tiles[i].getAllEntities();
+						for(Layer layer : entities.keySet()){
+							entity = entities.get(layer);
+							g.drawImage(imageStorage.getImage(entity), u, v+(1-entity.getHeight())*tileSize, tileSize, tileSize*entity.getHeight(),
+								null);
 						}
 					}
 				}

@@ -7,27 +7,32 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 
 /**
  * @author TheDudeFromCI
  */
 public class Layer{
+	private final String uuid;
 	private String name;
 	private boolean visible;
 	private boolean needsSaving;
 	public Layer(String name){
+		uuid = Algorithms.randomUUID();
 		this.name = name;
 		visible = true;
 		needsSaving = true;
 	}
 	public Layer(BinaryFile bin){
+		uuid = bin.getString();
 		name = bin.getString();
 		visible = bin.getBoolean();
 		needsSaving = false;
 	}
 	public void save(BinaryFile bin){
 		needsSaving = false;
+		bin.addStringAllocated(uuid);
 		bin.addStringAllocated(name);
 		bin.allocateBytes(1);
 		bin.addBoolean(visible);
@@ -51,5 +56,8 @@ public class Layer{
 	public void setVisible(boolean visible){
 		this.visible = visible;
 		needsSaving = true;
+	}
+	public String getUUID(){
+		return uuid;
 	}
 }

@@ -12,13 +12,14 @@ import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author TheDudeFromCI
  */
 public class Map implements MapInterface{
 	private static final short FILE_VERSION_PROPERTIES = 0;
-	private static final short FILE_VERSION_TILES = 0;
+	private static final short FILE_VERSION_TILES = 1;
 	private final String uuid;
 	private final ArrayList<Map> childMaps = new ArrayList(1);
 	private final IsoMapStyle iso;
@@ -53,7 +54,7 @@ public class Map implements MapInterface{
 			return;
 		}
 		needsSaving = false;
-		BinaryFile bin = new BinaryFile(tiles.length*9+4+2);
+		BinaryFile bin = new BinaryFile(tiles.length*12+4+2);
 		bin.addShort(FILE_VERSION_TILES);
 		{
 			// Tiles
@@ -71,15 +72,15 @@ public class Map implements MapInterface{
 				if(t==null){
 					bin.addInt(-1);
 					bin.addInt(0);
-					bin.addBoolean(false);
+					bin.addInt(0);
 				}else{
 					bin.addInt(tileReferences.indexOf(t.getTile()));
 					bin.addInt(t.getHeight());
-					if(t.getEntity()==null){
-						bin.addBoolean(false);
-					}else{
-						bin.addBoolean(true);
-						bin.addStringAllocated(t.getEntity().getUUID());
+					HashMap<Layer,EntityType> entities = t.getAllEntities();
+					bin.addInt(entities.size());
+					for(Layer layer : entities.keySet()){
+						bin.addStringAllocated(layer.getUUID());
+						bin.addStringAllocated(entities.get(layer).getUUID());
 					}
 				}
 			}
@@ -107,8 +108,7 @@ public class Map implements MapInterface{
 		bin.decompress(true);
 		short version = bin.getShort();
 		switch(version){
-			case 0:
-				// Tiles
+			case 0:{
 				tiles = new TileInstance[width*height];
 				Tile[] tileReferences = new Tile[bin.getInt()];
 				for(int i = 0; i<tileReferences.length; i++){
@@ -122,9 +122,36 @@ public class Map implements MapInterface{
 					}
 					tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
 					if(bin.getBoolean()){
-						tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(bin.getString()));
+						String entity = bin.getString();
+						Layer layer = iso.getChipsetList().getEntityLayers().getSelectedLayer();
+						if(layer!=null){
+							tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(entity), layer);
+						}
 					}
 				}
+			}
+				break;
+			case 1:{
+				tiles = new TileInstance[width*height];
+				Tile[] tileReferences = new Tile[bin.getInt()];
+				for(int i = 0; i<tileReferences.length; i++){
+					tileReferences[i] = iso.getChipsetList().getTile(bin.getString());
+				}
+				for(int i = 0; i<tiles.length; i++){
+					int id = bin.getInt();
+					if(id==-1){
+						bin.skip(8);
+						continue;
+					}
+					tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
+					int entityCount = bin.getInt();
+					for(int j = 0; j<entityCount; j++){
+						String layer = bin.getString();
+						String entity = bin.getString();
+						tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(entity), iso.getChipsetList().getEntityLayers().getType(layer));
+					}
+				}
+			}
 				break;
 			default:
 				throw new RuntimeException();

@@ -22,16 +22,9 @@ public class CursorSelection{
 	private boolean onEditor;
 	private EntityType selectedEntity;
 	private int selectedEntityIndex;
-	private int mode;
 	public void setScreenLocation(int x, int y){
 		screenX = x;
 		screenY = y;
-	}
-	public boolean isTileMode(){
-		return mode==1;
-	}
-	public boolean isEntityMode(){
-		return mode==2;
 	}
 	public void show(){
 		onEditor = true;
@@ -58,13 +51,11 @@ public class CursorSelection{
 		selectedEntity = entity;
 		selectedEntityIndex = index;
 		selectedTile = null;
-		mode = 2;
 	}
 	public void setSelectedTile(Tile tile, int index){
 		selectedTile = tile;
 		selectedTileIndex = index;
 		selectedEntity = null;
-		mode = 1;
 	}
 	public int getSelectedTileIndex(){
 		return selectedTileIndex;

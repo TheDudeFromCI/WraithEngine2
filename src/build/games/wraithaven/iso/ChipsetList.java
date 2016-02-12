@@ -39,11 +39,12 @@ public class ChipsetList extends JPanel{
 	private final EntityLayers entityLayers;
 	private final JButton addLayerIcon;
 	private final JButton trashLayerIcon;
+	private final JTabbedPane tabbedPane;
 	public ChipsetList(IsoMapStyle mapStyle){
 		entityLayers = new EntityLayers(mapStyle);
 		painter = new ChipsetListPainter();
 		entityList = new EntityList(painter.getCursorSelection());
-		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
 		add(tabbedPane, BorderLayout.CENTER);
 		{
@@ -75,6 +76,9 @@ public class ChipsetList extends JPanel{
 				tabbedPane.addTab("Layers", panel);
 			}
 		}
+	}
+	public boolean isTileMode(){
+		return tabbedPane.getSelectedIndex()==0;
 	}
 	public void updateLayerIcons(){
 		addLayerIcon.setEnabled(entityLayers.isLoaded());

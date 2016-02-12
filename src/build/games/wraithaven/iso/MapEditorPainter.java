@@ -117,7 +117,7 @@ public class MapEditorPainter extends JPanel{
 				}
 				if(button==MouseEvent.BUTTON1){
 					if(cursorSelection.isOverMap()){
-						if(cursorSelection.isTileMode()){
+						if(mapStyle.getChipsetList().isTileMode()){
 							if(!tool.isDragBased()){
 								switch(tool){
 									case BASIC:
@@ -135,7 +135,7 @@ public class MapEditorPainter extends JPanel{
 										throw new RuntimeException();
 								}
 							}
-						}else if(cursorSelection.isEntityMode()){
+						}else{
 							TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
 							if(tile!=null){
 								tile.setEntity(cursorSelection.getSelectedEntity(), mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
@@ -148,13 +148,13 @@ public class MapEditorPainter extends JPanel{
 				}else if(button==MouseEvent.BUTTON2){
 					if(cursorSelection.isOverMap()){
 						TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-						if(shift){
-							EntityType entity = tile.getEntity(mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
-							cursorSelection.setSelectedEntity(entity, mapStyle.getChipsetList().getEntityList().getAllTypes().indexOf(entity));
-							mapStyle.getChipsetList().repaint();
-						}else{
+						if(mapStyle.getChipsetList().isTileMode()){
 							cursorSelection.setSelectedTile(tile==null?null:tile.getTile(),
 								tile==null?-1:mapStyle.getChipsetList().getIndexOfTile(tile.getTile()));
+							mapStyle.getChipsetList().repaint();
+						}else{
+							EntityType entity = tile.getEntity(mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+							cursorSelection.setSelectedEntity(entity, mapStyle.getChipsetList().getEntityList().getAllTypes().indexOf(entity));
 							mapStyle.getChipsetList().repaint();
 						}
 					}

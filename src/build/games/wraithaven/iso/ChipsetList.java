@@ -18,7 +18,9 @@ import javax.swing.JTabbedPane;
 public class ChipsetList extends JPanel{
 	private final ChipsetListPainter painter;
 	private final EntityList entityList;
+	private final EntityLayers entityLayers;
 	public ChipsetList(){
+		entityLayers = new EntityLayers();
 		painter = new ChipsetListPainter();
 		entityList = new EntityList(painter.getCursorSelection());
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -28,6 +30,7 @@ public class ChipsetList extends JPanel{
 			// Tabs
 			tabbedPane.addTab("Tiles", new JScrollPane(painter));
 			tabbedPane.addTab("Entities", new JScrollPane(entityList));
+			tabbedPane.addTab("Layers", new JScrollPane(entityLayers));
 		}
 	}
 	public Tile getTile(String uuid){

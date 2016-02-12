@@ -135,13 +135,27 @@ public class MapEditorPainter extends JPanel{
 										throw new RuntimeException();
 								}
 							}
-						}else{
-							TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-							if(tile!=null){
-								tile.setEntity(cursorSelection.getSelectedEntity(), mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
-								map.setNeedsSaving();
-								updateNeedsSaving();
-								repaint();
+						}else if(!tool.isDragBased()){
+							switch(tool){
+								case BASIC:
+									TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
+									if(tile!=null){
+										tile.setEntity(cursorSelection.getSelectedEntity(),
+											mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+										map.setNeedsSaving();
+										updateNeedsSaving();
+										repaint();
+									}
+									break;
+								case FILL:
+									IsoMapFillableEntities fillable =
+										new IsoMapFillableEntities(map, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+									fillable.fill(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedEntity());
+									updateNeedsSaving();
+									repaint();
+									break;
+								default:
+									throw new RuntimeException();
 							}
 						}
 					}
@@ -197,7 +211,12 @@ public class MapEditorPainter extends JPanel{
 				if(map!=null){
 					if(drawing&&tool.isDragBased()&&cursorSelection.isOverMap()){
 						dragSelectionSquare = null;
-						IsoMapFillable fillable = new IsoMapFillable(map);
+						MapFillable fillable;
+						if(mapStyle.getChipsetList().isTileMode()){
+							fillable = new IsoMapFillable(map);
+						}else{
+							fillable = new IsoMapFillableEntities(map, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+						}
 						switch(tool){
 							case RECTANGLE:
 								fillable.rectangle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(),

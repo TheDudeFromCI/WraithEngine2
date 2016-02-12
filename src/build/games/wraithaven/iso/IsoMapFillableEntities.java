@@ -15,10 +15,12 @@ import build.games.wraithaven.core.tools.RectangleTool;
 /**
  * @author TheDudeFromCI
  */
-public class IsoMapFillable implements Fillable, MapFillable{
+public class IsoMapFillableEntities implements Fillable, MapFillable{
 	private final Map map;
-	public IsoMapFillable(Map map){
+	private final Layer layer;
+	public IsoMapFillableEntities(Map map, Layer layer){
 		this.map = map;
+		this.layer = layer;
 	}
 	@Override
 	public int getWidth(){
@@ -31,11 +33,15 @@ public class IsoMapFillable implements Fillable, MapFillable{
 	@Override
 	public Object getTile(int x, int y){
 		TileInstance t = map.getTile(x, y);
-		return t==null?null:t.getTile();
+		return t==null?null:t.getEntity(layer);
 	}
 	@Override
 	public void setTile(int x, int y, Object tile){
-		map.setTile(x, y, (Tile)tile);
+		TileInstance t = map.getTile(x, y);
+		if(t!=null){
+			t.setEntity((EntityType)tile, layer);
+			map.setNeedsSaving();
+		}
 	}
 	@Override
 	public boolean tilesMatch(Object a, Object b){

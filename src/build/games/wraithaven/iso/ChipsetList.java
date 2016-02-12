@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 
 /**
@@ -50,9 +51,8 @@ public class ChipsetList extends JPanel{
 		{
 			// Tabs
 			tabbedPane.addTab("Tiles", new JScrollPane(painter));
-			tabbedPane.addTab("Entities", new JScrollPane(entityList));
 			{
-				// Layer Tab
+				// Entities Tab
 				JPanel panel = new JPanel();
 				panel.setLayout(new BorderLayout());
 				JPanel bot = new JPanel();
@@ -73,7 +73,8 @@ public class ChipsetList extends JPanel{
 				}
 				panel.add(bot, BorderLayout.SOUTH);
 				panel.add(new JScrollPane(entityLayers), BorderLayout.CENTER);
-				tabbedPane.addTab("Layers", panel);
+				JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, new JScrollPane(entityList), panel);
+				tabbedPane.addTab("Entities", split);
 			}
 		}
 	}

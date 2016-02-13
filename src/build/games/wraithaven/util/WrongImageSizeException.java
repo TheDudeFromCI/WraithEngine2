@@ -10,4 +10,11 @@ package build.games.wraithaven.util;
 /**
  * @author TheDudeFromCI
  */
-public class WrongImageSizeException extends RuntimeException{}
+public class WrongImageSizeException extends RuntimeException{
+	public WrongImageSizeException(){
+		super();
+	}
+	public WrongImageSizeException(String message){
+		super(message);
+	}
+}

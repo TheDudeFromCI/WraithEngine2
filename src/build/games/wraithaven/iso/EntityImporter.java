@@ -7,8 +7,10 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.VerticalFlowLayout;
+import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,10 +20,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 /**
  * @author TheDudeFromCI
@@ -29,13 +28,20 @@ import javax.swing.SpinnerNumberModel;
 public class EntityImporter extends JPanel{
 	private final String uuid;
 	private final BufferedImage image;
-	private final JSpinner height;
+	private final int height;
 	public EntityImporter(File file){
 		try{
 			image = ImageIO.read(file);
 		}catch(Exception exception){
 			throw new RuntimeException(exception.getMessage());
 		}
+		if(image.getWidth()!=WraithEngine.projectBitSize){
+			throw new WrongImageSizeException("Entity must be "+WraithEngine.projectBitSize+" pixels wide!");
+		}
+		if(image.getHeight()%WraithEngine.projectBitSize!=0){
+			throw new WrongImageSizeException("Entity must be a multiple of "+WraithEngine.projectBitSize+" pixels tall!");
+		}
+		height = image.getHeight()/WraithEngine.projectBitSize;
 		uuid = Algorithms.randomUUID();
 		setLayout(new BorderLayout(5, 0));
 		JPanel imagePreview = new JPanel(){
@@ -62,22 +68,14 @@ public class EntityImporter extends JPanel{
 			JPanel sideBar = new JPanel();
 			sideBar.setLayout(new VerticalFlowLayout(0, 5));
 			{
-				// Height
-				JPanel panel = new JPanel();
-				panel.setLayout(new BorderLayout());
-				JLabel label = new JLabel("Height");
-				panel.add(label, BorderLayout.WEST);
-				height = new JSpinner();
-				height.setModel(new SpinnerNumberModel(1, 1, 5, 1));
-				panel.add(height, BorderLayout.CENTER);
-				sideBar.add(panel);
+				// ... I don't know what can go here now...
 			}
 			add(sideBar, BorderLayout.EAST);
 		}
 		add(imagePreview, BorderLayout.CENTER);
 	}
 	public EntityType build(){
-		return new EntityType(uuid, (int)height.getValue());
+		return new EntityType(uuid, height);
 	}
 	public BufferedImage getEntityImage(){
 		return image;

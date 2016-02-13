@@ -13,6 +13,7 @@ import build.games.wraithaven.core.WorldList;
 import static build.games.wraithaven.core.WraithEngine.outputFolder;
 import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
 import build.games.wraithaven.util.Algorithms;
+import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -125,7 +126,13 @@ public class IsoMapStyle implements MapStyle{
 								if(file==null){
 									return;
 								}
-								EntityImporter importer = new EntityImporter(file);
+								EntityImporter importer;
+								try{
+									importer = new EntityImporter(file);
+								}catch(WrongImageSizeException exception){
+									JOptionPane.showMessageDialog(null, exception.getMessage(), "Error, Wrong Image Size", JOptionPane.ERROR_MESSAGE);
+									return;
+								}
 								int response = JOptionPane.showConfirmDialog(null, importer, "Import New Entity", JOptionPane.OK_CANCEL_OPTION);
 								if(response!=JOptionPane.OK_OPTION){
 									return;

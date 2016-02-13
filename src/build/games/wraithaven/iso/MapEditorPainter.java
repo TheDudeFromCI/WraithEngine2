@@ -197,7 +197,7 @@ public class MapEditorPainter extends JPanel{
 							drawStartTileY = cursorSelection.getTileY();
 							drawing = true;
 							drawBoundsX = drawStartTileX;
-							drawBoundsY = drawStartTileX;
+							drawBoundsY = drawStartTileY;
 							updateDragSelection();
 							repaint();
 						}

@@ -212,19 +212,20 @@ public class MapEditorPainter extends JPanel{
 					if(drawing&&tool.isDragBased()&&cursorSelection.isOverMap()){
 						dragSelectionSquare = null;
 						MapFillable fillable;
+						Object selected;
 						if(mapStyle.getChipsetList().isTileMode()){
 							fillable = new IsoMapFillable(map);
+							selected = cursorSelection.getSelectedTile();
 						}else{
 							fillable = new IsoMapFillableEntities(map, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+							selected = cursorSelection.getSelectedEntity();
 						}
 						switch(tool){
 							case RECTANGLE:
-								fillable.rectangle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(),
-									cursorSelection.getSelectedTile());
+								fillable.rectangle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(), selected);
 								break;
 							case CIRCLE:
-								fillable.circle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(),
-									cursorSelection.getSelectedTile());
+								fillable.circle(drawStartTileX, drawStartTileY, cursorSelection.getTileX(), cursorSelection.getTileY(), selected);
 								break;
 							default:
 								throw new RuntimeException();

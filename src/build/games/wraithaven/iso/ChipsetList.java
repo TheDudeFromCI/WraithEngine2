@@ -65,7 +65,13 @@ public class ChipsetList extends JPanel{
 			trashCategoryIcon.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent e){
-					categoryComboBoxModel.deleteCategory(categoryComboBoxModel.getSelected());
+					TileCategory sel = categoryComboBoxModel.getSelected();
+					int response = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete the '"+sel.getName()+"' category?",
+						"Confirm Delete", JOptionPane.YES_NO_OPTION);
+					if(response!=JOptionPane.YES_OPTION){
+						return;
+					}
+					categoryComboBoxModel.deleteCategory(sel);
 				}
 			});
 			panel.add(trashCategoryIcon, BorderLayout.EAST);

@@ -59,8 +59,8 @@ public class EntityList extends JPanel{
 			public void mouseClicked(MouseEvent event){
 				int x = event.getX()/PREVIEW_ICON_SIZE;
 				int y = event.getY()/PREVIEW_ICON_SIZE;
-				int index = y*PREVIEW_WIDTH+x;
-				if(index>=entityTypes.size()){
+				int index = y*PREVIEW_WIDTH+x-1;
+				if(index<0||index>=entityTypes.size()){
 					cursorSelection.setSelectedEntity(null, -1);
 					repaint();
 					return;
@@ -72,7 +72,7 @@ public class EntityList extends JPanel{
 		addMouseListener(ia);
 	}
 	private void updatePrefferedSize(){
-		setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil(entityTypes.size()/(double)PREVIEW_WIDTH), 150)));
+		setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil((entityTypes.size()+1)/(double)PREVIEW_WIDTH), 150)));
 	}
 	private void load(){
 		File file = Algorithms.getFile("Entities", "Previews", "List.dat");
@@ -168,7 +168,7 @@ public class EntityList extends JPanel{
 		int width = getWidth();
 		int height = getHeight();
 		g.fillRect(0, 0, width, height);
-		int x = 0;
+		int x = PREVIEW_ICON_SIZE;
 		int y = 0;
 		for(EntityType e : entityTypes){
 			g.drawImage(previews.get(e), x, y, null);
@@ -178,13 +178,11 @@ public class EntityList extends JPanel{
 				y += PREVIEW_ICON_SIZE;
 			}
 		}
-		if(cursorSelection.isEntityActive()){
-			g.setStroke(new BasicStroke(3));
-			g.translate(cursorSelection.getSelectedEntityIndex()%PREVIEW_WIDTH*PREVIEW_ICON_SIZE,
-				cursorSelection.getSelectedEntityIndex()/PREVIEW_WIDTH*PREVIEW_ICON_SIZE);
-			g.setColor(Color.white);
-			g.drawPolygon(cursor);
-		}
+		int index = cursorSelection.isEntityActive()?cursorSelection.getSelectedEntityIndex()+1:0;
+		g.setStroke(new BasicStroke(3));
+		g.translate(index%PREVIEW_WIDTH*PREVIEW_ICON_SIZE, index/PREVIEW_WIDTH*PREVIEW_ICON_SIZE);
+		g.setColor(Color.white);
+		g.drawPolygon(cursor);
 		g.dispose();
 	}
 	public ArrayList<EntityType> getAllTypes(){

@@ -13,8 +13,10 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,12 +44,22 @@ public class ChipsetList extends JPanel{
 	private final JButton addLayerIcon;
 	private final JButton trashLayerIcon;
 	private final JTabbedPane tabbedPane;
+	private final JComboBox categoryComboBox;
+	private final CategoryComboBoxModel categoryComboBoxModel;
 	public ChipsetList(IsoMapStyle mapStyle){
+		categoryComboBoxModel = new CategoryComboBoxModel(this);
 		entityLayers = new EntityLayers(mapStyle);
 		painter = new ChipsetListPainter();
 		entityList = new EntityList(painter.getCursorSelection());
 		tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
+		{
+			// Select tile category drop down.
+			categoryComboBox = new JComboBox();
+			categoryComboBox.setModel(categoryComboBoxModel);
+			categoryComboBox.setEditable(true);
+			add(categoryComboBox, BorderLayout.NORTH);
+		}
 		add(tabbedPane, BorderLayout.CENTER);
 		{
 			// Tabs
@@ -99,6 +111,10 @@ public class ChipsetList extends JPanel{
 			}
 		}
 	}
+	public void updateCategoryList(){
+		categoryComboBox.setModel(new DefaultComboBoxModel(new String[0]));
+		categoryComboBox.setModel(categoryComboBoxModel);
+	}
 	public boolean isTileMode(){
 		return tabbedPane.getSelectedIndex()==0;
 	}
@@ -123,5 +139,8 @@ public class ChipsetList extends JPanel{
 	}
 	public EntityLayers getEntityLayers(){
 		return entityLayers;
+	}
+	public TileCategory getSelectedCategory(){
+		return categoryComboBoxModel.getSelected();
 	}
 }

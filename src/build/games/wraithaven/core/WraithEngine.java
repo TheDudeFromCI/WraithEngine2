@@ -23,7 +23,7 @@ public class WraithEngine{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
-		final String workspaceName = "WraithEngine";
+		final String workspaceName = "WraithEngine Projects";
 		if(args.length>0){
 			workspaceFolder = args[0]+File.separatorChar+workspaceName;
 		}else{

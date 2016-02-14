@@ -21,7 +21,6 @@ public class TileCategory{
 	private ArrayList<Tile> tiles = new ArrayList(64);
 	private ArrayList<EntityType> entities = new ArrayList(64);
 	private String name;
-	private boolean defaultCategory;
 	private boolean loaded;
 	public TileCategory(String uuid){
 		this.uuid = uuid;
@@ -38,13 +37,6 @@ public class TileCategory{
 		this.name = name;
 		save();
 	}
-	public boolean isDefaultCategory(){
-		return defaultCategory;
-	}
-	public void setDefaultCategory(boolean def){
-		defaultCategory = def;
-		save();
-	}
 	private void partLoad(){
 		File file = Algorithms.getFile("Categories", uuid+".dat");
 		if(!file.exists()){
@@ -56,7 +48,6 @@ public class TileCategory{
 		switch(version){
 			case 0:
 				name = bin.getString();
-				defaultCategory = bin.getBoolean();
 				break;
 			default:
 				throw new RuntimeException();
@@ -82,7 +73,6 @@ public class TileCategory{
 		switch(version){
 			case 0:
 				name = bin.getString();
-				defaultCategory = bin.getBoolean();
 				int tileCount = bin.getInt();
 				for(int i = 0; i<tileCount; i++){
 					tiles.add(new Tile(bin.getString()));
@@ -113,10 +103,9 @@ public class TileCategory{
 		if(manuallyLoaded){
 			load();
 		}
-		BinaryFile bin = new BinaryFile(8+entities.size()*4+2+1);
+		BinaryFile bin = new BinaryFile(8+entities.size()*4+2);
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
-		bin.addBoolean(defaultCategory);
 		bin.addInt(tiles.size());
 		for(Tile tile : tiles){
 			bin.addStringAllocated(tile.getUUID());

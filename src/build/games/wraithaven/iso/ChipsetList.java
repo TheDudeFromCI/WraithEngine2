@@ -43,6 +43,7 @@ public class ChipsetList extends JPanel{
 	private final EntityLayers entityLayers;
 	private final JButton addLayerIcon;
 	private final JButton trashLayerIcon;
+	private final JButton trashCategoryIcon;
 	private final JTabbedPane tabbedPane;
 	private final JComboBox categoryComboBox;
 	private final CategoryComboBoxModel categoryComboBoxModel;
@@ -55,10 +56,21 @@ public class ChipsetList extends JPanel{
 		setLayout(new BorderLayout());
 		{
 			// Select tile category drop down.
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
 			categoryComboBox = new JComboBox();
 			categoryComboBox.setModel(categoryComboBoxModel);
 			categoryComboBox.setEditable(true);
-			add(categoryComboBox, BorderLayout.NORTH);
+			trashCategoryIcon = makeIcon("Trash Can.png", "Trash Can Over.png", "Trash Can Down.png", "Trash Can Disabled.png");
+			trashCategoryIcon.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					categoryComboBoxModel.deleteCategory(categoryComboBoxModel.getSelected());
+				}
+			});
+			panel.add(trashCategoryIcon, BorderLayout.EAST);
+			panel.add(categoryComboBox, BorderLayout.CENTER);
+			add(panel, BorderLayout.NORTH);
 		}
 		add(tabbedPane, BorderLayout.CENTER);
 		{

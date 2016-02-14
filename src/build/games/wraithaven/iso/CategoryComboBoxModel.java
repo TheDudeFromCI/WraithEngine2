@@ -28,7 +28,6 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 		if(list.getSize()==0){
 			TileCategory category = new TileCategory(Algorithms.randomUUID());
 			category.setName("Default");
-			category.setDefaultCategory(true);
 			list.addCategory(category);
 		}
 		selected = list.getCategoryAt(0);
@@ -56,7 +55,6 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 		}
 		if(selected!=anItem){
 			selected = (TileCategory)anItem;
-			System.out.println("Selected "+anItem);
 		}
 		if(n){
 			chipsetList.updateCategoryList();
@@ -84,5 +82,32 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 	}
 	public TileCategory getSelected(){
 		return selected;
+	}
+	public void deleteCategory(TileCategory cat){
+		int index = list.getIndexOf(cat);
+		list.removeCategory(cat);
+		if(index>=list.getSize()){
+			index = list.getSize()-1;
+		}
+		if(index==-1){
+			TileCategory category = new TileCategory(Algorithms.randomUUID());
+			String name = "Default";
+			if(cat.getName().startsWith("Default")){
+				if(cat.getName().equals(name)){
+					name = "Default 2";
+				}else{
+					try{
+						int id = Integer.valueOf(cat.getName().substring("Default ".length()));
+						name = "Default "+(id+1);
+					}catch(Exception exception){}
+				}
+			}
+			category.setName(name);
+			list.addCategory(category);
+			selected = category;
+		}else{
+			selected = list.getCategoryAt(index);
+		}
+		chipsetList.updateCategoryList();
 	}
 }

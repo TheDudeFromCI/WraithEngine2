@@ -63,4 +63,7 @@ public class TileCategoryList{
 	public TileCategory getCategoryAt(int index){
 		return categories.get(index);
 	}
+	public int getIndexOf(TileCategory cat){
+		return categories.indexOf(cat);
+	}
 }

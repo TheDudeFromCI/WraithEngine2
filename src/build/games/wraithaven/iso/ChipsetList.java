@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -68,6 +69,26 @@ public class ChipsetList extends JPanel{
 						@Override
 						public void actionPerformed(ActionEvent e){
 							entityLayers.addLayer(new Layer("Layer "+(entityLayers.getLayerCount()+1)));
+						}
+					});
+					trashLayerIcon.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this layer?", "Confirm Delete",
+								JOptionPane.YES_NO_OPTION);
+							if(response!=JOptionPane.YES_OPTION){
+								return;
+							}
+							Layer layer = entityLayers.getSelectedLayer();
+							entityLayers.removeLayer(layer);
+							if(entityLayers.getLayerCount()==0){
+								// We don't want the player to not have any layers.
+								// That may cause issues.
+								entityLayers.addLayer(new Layer("Layer 1"));
+							}
+							Map map = mapStyle.getMapEditor().getPainter().getMap();
+							map.deleteLayer(layer);
+							mapStyle.getMapEditor().getPainter().repaint();
 						}
 					});
 				}

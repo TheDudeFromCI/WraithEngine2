@@ -43,6 +43,18 @@ public class Map implements MapInterface{
 		this.height = height;
 		saveProperties();
 	}
+	public void deleteLayer(Layer layer){
+		if(!loaded){
+			throw new RuntimeException();
+		}
+		needsSaving = true;
+		for(TileInstance tile : tiles){
+			if(tile==null){
+				continue;
+			}
+			tile.setEntity(null, layer);
+		}
+	}
 	public boolean needsSaving(){
 		return needsSaving;
 	}

@@ -10,6 +10,7 @@ package build.games.wraithaven.iso;
 import build.games.wraithaven.util.Algorithms;
 import java.util.ArrayList;
 import javax.swing.ComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListDataListener;
 
 /**
@@ -20,6 +21,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 	private final TileCategoryList list;
 	private final ChipsetList chipsetList;
 	private TileCategory selected;
+	private String lastName;
 	public CategoryComboBoxModel(ChipsetList chipsetList){
 		this.chipsetList = chipsetList;
 		list = new TileCategoryList();
@@ -35,6 +37,17 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 	public void setSelectedItem(Object anItem){
 		boolean n = false;
 		if(anItem instanceof String){
+			if(lastName!=null&&lastName.equals(anItem)){
+				lastName = null;
+				return;
+			}
+			lastName = (String)anItem;
+			int response =
+				JOptionPane.showConfirmDialog(null, "Do you want to create the '"+anItem+"' category?", "Confirm Create", JOptionPane.YES_NO_OPTION);
+			if(response!=JOptionPane.YES_OPTION){
+				return;
+			}
+			lastName = null;
 			TileCategory cat = new TileCategory(Algorithms.randomUUID());
 			cat.setName((String)anItem);
 			list.addCategory(cat);

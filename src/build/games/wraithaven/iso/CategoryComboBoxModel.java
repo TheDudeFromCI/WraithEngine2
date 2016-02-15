@@ -30,7 +30,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 			category.setName("Default");
 			list.addCategory(category);
 		}
-		selected = list.getCategoryAt(0);
+		select(list.getCategoryAt(0));
 	}
 	@Override
 	public void setSelectedItem(Object anItem){
@@ -54,7 +54,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 			n = true;
 		}
 		if(selected!=anItem){
-			selected = (TileCategory)anItem;
+			select((TileCategory)anItem);
 		}
 		if(n){
 			chipsetList.updateCategoryList();
@@ -104,10 +104,17 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 			}
 			category.setName(name);
 			list.addCategory(category);
-			selected = category;
+			select(category);
 		}else{
-			selected = list.getCategoryAt(index);
+			select(list.getCategoryAt(index));
 		}
 		chipsetList.updateCategoryList();
+	}
+	private void select(TileCategory cat){
+		if(selected!=null){
+			selected.unload();
+		}
+		selected = cat;
+		selected.load();
 	}
 }

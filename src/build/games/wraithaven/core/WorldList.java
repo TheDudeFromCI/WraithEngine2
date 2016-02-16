@@ -265,4 +265,7 @@ public class WorldList extends JPanel{
 		}
 		return null;
 	}
+	public ArrayList<MapInterface> getMainMaps(){
+		return mainMaps;
+	}
 }

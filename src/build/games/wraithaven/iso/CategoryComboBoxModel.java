@@ -84,12 +84,17 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 		return selected;
 	}
 	public void deleteCategory(TileCategory cat){
+		// Delete all tile and entity references.
+		cat.delete();
+		// Remove from list.
 		int index = list.getIndexOf(cat);
 		list.removeCategory(cat);
+		// Select closest item in list.
 		if(index>=list.getSize()){
 			index = list.getSize()-1;
 		}
 		if(index==-1){
+			// User just deleted the last category. Let's make a new one.
 			TileCategory category = new TileCategory(mapStyle, Algorithms.randomUUID());
 			String name = "Default";
 			if(cat.getName().startsWith("Default")){
@@ -108,6 +113,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 		}else{
 			select(list.getCategoryAt(index));
 		}
+		// Update the drop down.
 		mapStyle.getChipsetList().updateCategoryList();
 	}
 	private void select(TileCategory cat){

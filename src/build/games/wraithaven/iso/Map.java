@@ -58,6 +58,9 @@ public class Map implements MapInterface{
 	public boolean needsSaving(){
 		return needsSaving;
 	}
+	public ArrayList<Map> getChildMaps(){
+		return childMaps;
+	}
 	public void save(){
 		if(!loaded){
 			throw new RuntimeException();
@@ -263,5 +266,8 @@ public class Map implements MapInterface{
 	public void removeChild(MapInterface map){
 		childMaps.remove(map);
 		saveProperties();
+	}
+	public boolean isLoaded(){
+		return loaded;
 	}
 }

@@ -135,4 +135,15 @@ public class TileCategory{
 	public int getIndexOf(EntityType entity){
 		return entities.indexOf(entity);
 	}
+	public void delete(){
+		for(Tile tile : tiles){
+			mapStyle.getMapEditor().removeTile(tile);
+		}
+		for(EntityType entity : entities){
+			mapStyle.getMapEditor().removeEntity(entity);
+		}
+		Algorithms.deleteFile(Algorithms.getFile("Categories", uuid+".dat"));
+		Algorithms.deleteFile(Algorithms.getFile("Entities", uuid));
+		Algorithms.deleteFile(Algorithms.getFile("Chipsets", uuid));
+	}
 }

@@ -66,4 +66,62 @@ public class MapEditor extends JPanel implements MapContainer{
 	public MapImageStorage getImageStorage(){
 		return painter.getMapImageStorage();
 	}
+	private void removeTile(Map map, Tile tile){
+		for(Map m : map.getChildMaps()){
+			removeTile(m, tile);
+		}
+		boolean loaded = map.isLoaded();
+		if(!loaded){
+			map.load();
+		}
+		TileInstance[] t = map.getAllTiles();
+		for(int i = 0; i<t.length; i++){
+			if(t[i]==null){
+				continue;
+			}
+			if(t[i].getTile()==tile){
+				t[i] = null;
+			}
+		}
+		map.setNeedsSaving();
+		if(!loaded){
+			map.save();
+			map.dispose();
+		}
+	}
+	public void removeTile(Tile tile){
+		for(MapInterface map : iso.getWorldList().getMainMaps()){
+			removeTile((Map)map, tile);
+		}
+		save();
+		painter.repaint();
+	}
+	private void removeEntity(Map map, EntityType entity){
+		for(Map m : map.getChildMaps()){
+			removeEntity(m, entity);
+		}
+		boolean loaded = map.isLoaded();
+		if(!loaded){
+			map.load();
+		}
+		TileInstance[] t = map.getAllTiles();
+		for(TileInstance t1 : t){
+			if(t1==null){
+				continue;
+			}
+			t1.removeEntity(entity);
+		}
+		map.setNeedsSaving();
+		if(!loaded){
+			map.save();
+			map.dispose();
+		}
+	}
+	public void removeEntity(EntityType entity){
+		for(MapInterface map : iso.getWorldList().getMainMaps()){
+			removeEntity((Map)map, entity);
+		}
+		save();
+		painter.repaint();
+	}
 }

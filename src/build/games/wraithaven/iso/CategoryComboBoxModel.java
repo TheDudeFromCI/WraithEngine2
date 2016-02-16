@@ -19,14 +19,14 @@ import javax.swing.event.ListDataListener;
 public class CategoryComboBoxModel implements ComboBoxModel{
 	private final ArrayList<ListDataListener> listeners = new ArrayList(1);
 	private final TileCategoryList list;
-	private final ChipsetList chipsetList;
+	private final IsoMapStyle mapStyle;
 	private TileCategory selected;
 	private String lastName;
-	public CategoryComboBoxModel(ChipsetList chipsetList){
-		this.chipsetList = chipsetList;
-		list = new TileCategoryList();
+	public CategoryComboBoxModel(IsoMapStyle mapStyle){
+		this.mapStyle = mapStyle;
+		list = new TileCategoryList(mapStyle);
 		if(list.getSize()==0){
-			TileCategory category = new TileCategory(Algorithms.randomUUID());
+			TileCategory category = new TileCategory(mapStyle, Algorithms.randomUUID());
 			category.setName("Default");
 			list.addCategory(category);
 		}
@@ -47,7 +47,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 				return;
 			}
 			lastName = null;
-			TileCategory cat = new TileCategory(Algorithms.randomUUID());
+			TileCategory cat = new TileCategory(mapStyle, Algorithms.randomUUID());
 			cat.setName((String)anItem);
 			list.addCategory(cat);
 			anItem = cat;
@@ -57,7 +57,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 			select((TileCategory)anItem);
 		}
 		if(n){
-			chipsetList.updateCategoryList();
+			mapStyle.getChipsetList().updateCategoryList();
 		}
 	}
 	@Override
@@ -90,7 +90,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 			index = list.getSize()-1;
 		}
 		if(index==-1){
-			TileCategory category = new TileCategory(Algorithms.randomUUID());
+			TileCategory category = new TileCategory(mapStyle, Algorithms.randomUUID());
 			String name = "Default";
 			if(cat.getName().startsWith("Default")){
 				if(cat.getName().equals(name)){
@@ -108,13 +108,13 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 		}else{
 			select(list.getCategoryAt(index));
 		}
-		chipsetList.updateCategoryList();
+		mapStyle.getChipsetList().updateCategoryList();
 	}
 	private void select(TileCategory cat){
-		if(selected!=null){
-			selected.unload();
-		}
 		selected = cat;
-		selected.load();
+		mapStyle.updateTileList();
+	}
+	public TileCategory getCategory(String uuid){
+		return list.getCategory(uuid);
 	}
 }

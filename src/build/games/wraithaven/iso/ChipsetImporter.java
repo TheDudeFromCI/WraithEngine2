@@ -54,8 +54,9 @@ public class ChipsetImporter{
 					@Override
 					public void actionPerformed(ActionEvent e){
 						frame.dispose();
-						Tile tile = new Tile(Algorithms.randomUUID(), finalImage);
-						chipsetList.addTile(tile);
+						TileCategory cat = chipsetList.getSelectedCategory();
+						Tile tile = new Tile(Algorithms.randomUUID(), finalImage, cat);
+						cat.addTile(tile);
 					}
 				});
 				panel.add(okButton);

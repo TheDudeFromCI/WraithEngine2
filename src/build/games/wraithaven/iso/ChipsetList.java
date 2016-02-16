@@ -48,9 +48,9 @@ public class ChipsetList extends JPanel{
 	private final JComboBox categoryComboBox;
 	private final CategoryComboBoxModel categoryComboBoxModel;
 	public ChipsetList(IsoMapStyle mapStyle){
-		categoryComboBoxModel = new CategoryComboBoxModel(this);
+		categoryComboBoxModel = new CategoryComboBoxModel(mapStyle);
 		entityLayers = new EntityLayers(mapStyle);
-		painter = new ChipsetListPainter();
+		painter = new ChipsetListPainter(mapStyle);
 		entityList = new EntityList(painter.getCursorSelection());
 		tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
@@ -140,17 +140,14 @@ public class ChipsetList extends JPanel{
 		addLayerIcon.setEnabled(entityLayers.isLoaded());
 		trashLayerIcon.setEnabled(entityLayers.isLoaded());
 	}
-	public Tile getTile(String uuid){
-		return painter.getTile(uuid);
+	public Tile getTile(String cat, String tile){
+		return categoryComboBoxModel.getCategory(cat).getTile(tile);
+	}
+	public int getIndexOfTile(Tile tile){
+		return tile.getCategory().getIndexOf(tile);
 	}
 	public CursorSelection getCursorSelection(){
 		return painter.getCursorSelection();
-	}
-	public int getIndexOfTile(Tile tile){
-		return painter.getIndexOfTile(tile);
-	}
-	public void addTile(Tile tile){
-		painter.addTile(tile);
 	}
 	public EntityList getEntityList(){
 		return entityList;
@@ -160,5 +157,8 @@ public class ChipsetList extends JPanel{
 	}
 	public TileCategory getSelectedCategory(){
 		return categoryComboBoxModel.getSelected();
+	}
+	public ChipsetListPainter getPainter(){
+		return painter;
 	}
 }

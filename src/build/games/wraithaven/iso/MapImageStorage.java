@@ -23,7 +23,7 @@ public class MapImageStorage{
 			return tileImages.get(tile);
 		}
 		try{
-			BufferedImage image = ImageIO.read(Algorithms.getFile("Chipsets", "Fulls", tile.getUUID()+".png"));
+			BufferedImage image = ImageIO.read(Algorithms.getFile("Chipsets", tile.getCategory().getUUID(), tile.getUUID()+".png"));
 			tileImages.put(tile, image);
 			return image;
 		}catch(Exception exception){

@@ -174,4 +174,12 @@ public class IsoMapStyle implements MapStyle{
 		}
 		return response==JOptionPane.NO_OPTION;
 	}
+	public void updateTileList(){
+		try{
+			chipsetList.getPainter().updateTiles();
+		}catch(Exception exception){
+			// Fails if not finished loading.
+			// Not a problem.
+		}
+	}
 }

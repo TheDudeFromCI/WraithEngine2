@@ -17,7 +17,9 @@ import java.util.ArrayList;
  */
 public class TileCategoryList{
 	private final ArrayList<TileCategory> categories = new ArrayList(32);
-	public TileCategoryList(){
+	private final IsoMapStyle mapStyle;
+	public TileCategoryList(IsoMapStyle mapStyle){
+		this.mapStyle = mapStyle;
 		load();
 	}
 	private void load(){
@@ -29,7 +31,7 @@ public class TileCategoryList{
 		bin.decompress(false);
 		int size = bin.getInt();
 		for(int i = 0; i<size; i++){
-			categories.add(new TileCategory(bin.getString()));
+			categories.add(new TileCategory(mapStyle, bin.getString()));
 		}
 	}
 	private void save(){

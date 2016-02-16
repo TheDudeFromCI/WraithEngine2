@@ -7,10 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
@@ -18,58 +15,25 @@ import javax.imageio.ImageIO;
  * @author TheDudeFromCI
  */
 public class Tile{
-	private static BufferedImage scaleImage(BufferedImage image){
-		BufferedImage buf = image;
-		int s = WraithEngine.projectBitSize;
-		do{
-			if(s>ChipsetListPainter.PREVIEW_TILE_SCALE){
-				s /= 2;
-				if(s<ChipsetListPainter.PREVIEW_TILE_SCALE){
-					s = ChipsetListPainter.PREVIEW_TILE_SCALE;
-				}
-			}else{
-				s *= 2;
-				if(s>ChipsetListPainter.PREVIEW_TILE_SCALE){
-					s = ChipsetListPainter.PREVIEW_TILE_SCALE;
-				}
-			}
-			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = out.createGraphics();
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-			g.drawImage(buf, 0, 0, s, s, null);
-			g.dispose();
-			buf = out;
-		}while(s!=ChipsetListPainter.PREVIEW_TILE_SCALE);
-		return buf;
-	}
 	private final String uuid;
-	private BufferedImage previewImage;
-	public Tile(String uuid){
+	private final TileCategory cat;
+	public Tile(String uuid, TileCategory cat){
 		this.uuid = uuid;
+		this.cat = cat;
 	}
-	public Tile(String uuid, BufferedImage image){
+	public Tile(String uuid, BufferedImage image, TileCategory cat){
 		this.uuid = uuid;
-		previewImage = scaleImage(image);
+		this.cat = cat;
 		try{
-			ImageIO.write(image, "png", Algorithms.getFile("Chipsets", "Fulls", uuid+".png"));
-			ImageIO.write(previewImage, "png", Algorithms.getFile("Chipsets", "Previews", uuid+".png"));
+			ImageIO.write(image, "png", Algorithms.getFile("Chipsets", cat.getUUID(), uuid+".png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
 	}
-	public BufferedImage getPreviewImage(){
-		if(previewImage==null){
-			try{
-				previewImage = ImageIO.read(Algorithms.getFile("Chipsets", "Previews", uuid+".png"));
-			}catch(Exception exception){
-				exception.printStackTrace();
-			}
-		}
-		return previewImage;
-	}
 	public String getUUID(){
 		return uuid;
+	}
+	public TileCategory getCategory(){
+		return cat;
 	}
 }

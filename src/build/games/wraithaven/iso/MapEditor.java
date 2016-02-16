@@ -63,4 +63,7 @@ public class MapEditor extends JPanel implements MapContainer{
 	public MapEditorPainter getPainter(){
 		return painter;
 	}
+	public MapImageStorage getImageStorage(){
+		return painter.getMapImageStorage();
+	}
 }

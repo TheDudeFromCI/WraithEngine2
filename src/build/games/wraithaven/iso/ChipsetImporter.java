@@ -26,6 +26,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,6 +36,7 @@ import javax.swing.JPanel;
  */
 public class ChipsetImporter{
 	private final JLabel tilePreview;
+	private final JCheckBox sharpen;
 	private BufferedImage left;
 	private BufferedImage right;
 	private BufferedImage top;
@@ -47,28 +49,47 @@ public class ChipsetImporter{
 		{
 			frame.setLayout(new BorderLayout());
 			{
-				JPanel panel = new JPanel();
-				panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-				JButton okButton = new JButton("Ok");
-				okButton.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.dispose();
-						TileCategory cat = chipsetList.getSelectedCategory();
-						Tile tile = new Tile(Algorithms.randomUUID(), finalImage, cat);
-						cat.addTile(tile);
-					}
-				});
-				panel.add(okButton);
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.dispose();
-					}
-				});
-				panel.add(cancelButton);
-				frame.add(panel, BorderLayout.SOUTH);
+				JPanel panel_1 = new JPanel();
+				panel_1.setLayout(new BorderLayout());
+				{
+					JPanel panel = new JPanel();
+					panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+					JButton okButton = new JButton("Ok");
+					okButton.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							frame.dispose();
+							TileCategory cat = chipsetList.getSelectedCategory();
+							Tile tile = new Tile(Algorithms.randomUUID(), finalImage, cat);
+							cat.addTile(tile);
+						}
+					});
+					panel.add(okButton);
+					JButton cancelButton = new JButton("Cancel");
+					cancelButton.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							frame.dispose();
+						}
+					});
+					panel.add(cancelButton);
+					panel_1.add(panel, BorderLayout.SOUTH);
+				}
+				{
+					JPanel panel = new JPanel();
+					panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+					sharpen = new JCheckBox("Sharpen");
+					sharpen.setSelected(true);
+					sharpen.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							updatePreview();
+						}
+					});
+					panel.add(sharpen);
+					panel_1.add(panel, BorderLayout.CENTER);
+				}
+				frame.add(panel_1, BorderLayout.SOUTH);
 			}
 			{
 				JPanel panel = new JPanel();
@@ -153,10 +174,12 @@ public class ChipsetImporter{
 		finalImage = generateCube(left, right, top);
 		tilePreview.setIcon(new ImageIcon(finalImage));
 	}
-	private static BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
-		left = sharpen(left);
-		right = sharpen(right);
-		top = sharpen(top);
+	private BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
+		if(sharpen.isSelected()){
+			left = sharpen(left);
+			right = sharpen(right);
+			top = sharpen(top);
+		}
 		BufferedImage topPanel = rotate(top);
 		BufferedImage leftPanel = skew(left, 0, 0.5);
 		BufferedImage rightPanel = skew(right, 0, -0.5);

@@ -194,7 +194,7 @@ public class ChipsetImporter{
 		if(full){
 			finalImage = generateCube(left, right, top);
 		}
-		BufferedImage preview = scale(finalImage, (int)(finalImage.getWidth()*(zoom.getValue()/100f)));
+		BufferedImage preview = Algorithms.smoothResize(finalImage, (int)(finalImage.getWidth()*(zoom.getValue()/100f)));
 		tilePreview.setIcon(new ImageIcon(preview));
 		frame.pack();
 	}
@@ -209,33 +209,7 @@ public class ChipsetImporter{
 		BufferedImage rightPanel = skew(right, 0, -0.5);
 		darken(leftPanel, 0.9f);
 		darken(rightPanel, 0.75f);
-		return scale(combine(leftPanel, rightPanel, topPanel), WraithEngine.projectBitSize);
-	}
-	private static BufferedImage scale(BufferedImage image, int size){
-		BufferedImage buf = image;
-		int s = image.getWidth();
-		do{
-			if(s>size){
-				s /= 2;
-				if(s<size){
-					s = size;
-				}
-			}else{
-				s *= 2;
-				if(s>size){
-					s = size;
-				}
-			}
-			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = out.createGraphics();
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-			g.drawImage(buf, 0, 0, s, s, null);
-			g.dispose();
-			buf = out;
-		}while(s!=size); // This loop enhances quality, while resizing!
-		return buf;
+		return Algorithms.smoothResize(combine(leftPanel, rightPanel, topPanel), WraithEngine.projectBitSize);
 	}
 	private static BufferedImage combine(BufferedImage left, BufferedImage right, BufferedImage top){
 		double size = top.getWidth()/2.0/left.getWidth();
@@ -251,7 +225,7 @@ public class ChipsetImporter{
 		return out;
 	}
 	private static BufferedImage sharpen(BufferedImage image){
-		image = scale(image, WraithEngine.projectBitSize*8);
+		image = Algorithms.smoothResize(image, WraithEngine.projectBitSize*8);
 		float[] elements = new float[9];
 		for(int i = 0; i<elements.length; i++){
 			elements[i] = -1;

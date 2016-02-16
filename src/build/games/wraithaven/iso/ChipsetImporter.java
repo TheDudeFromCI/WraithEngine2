@@ -24,25 +24,31 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.File;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * @author TheDudeFromCI
  */
 public class ChipsetImporter{
+	private final JFrame frame;
 	private final JLabel tilePreview;
 	private final JCheckBox sharpen;
+	private final JSlider zoom;
 	private BufferedImage left;
 	private BufferedImage right;
 	private BufferedImage top;
 	private BufferedImage finalImage;
 	public ChipsetImporter(ChipsetList chipsetList, File file){
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setTitle("Import Tile");
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -83,10 +89,24 @@ public class ChipsetImporter{
 					sharpen.addActionListener(new ActionListener(){
 						@Override
 						public void actionPerformed(ActionEvent e){
-							updatePreview();
+							updatePreview(true);
 						}
 					});
 					panel.add(sharpen);
+					zoom = new JSlider(JSlider.HORIZONTAL, 50, 400, 100);
+					zoom.setMajorTickSpacing(25);
+					zoom.setMinorTickSpacing(1);
+					zoom.setPaintTicks(true);
+					zoom.setPaintTrack(true);
+					zoom.setSnapToTicks(false);
+					zoom.addChangeListener(new ChangeListener(){
+						@Override
+						public void stateChanged(ChangeEvent e){
+							updatePreview(false);
+						}
+					});
+					zoom.setBorder(BorderFactory.createTitledBorder("Zoom"));
+					panel.add(zoom);
 					panel_1.add(panel, BorderLayout.CENTER);
 				}
 				frame.add(panel_1, BorderLayout.SOUTH);
@@ -105,7 +125,7 @@ public class ChipsetImporter{
 						exception.printStackTrace();
 					}
 				}
-				updatePreview();
+				updatePreview(true);
 				panel.add(tilePreview, BorderLayout.CENTER);
 				frame.add(panel, BorderLayout.WEST);
 			}
@@ -124,7 +144,7 @@ public class ChipsetImporter{
 						}
 						try{
 							top = ImageIO.read(file);
-							updatePreview();
+							updatePreview(true);
 						}catch(Exception exception){
 							exception.printStackTrace();
 						}
@@ -139,7 +159,7 @@ public class ChipsetImporter{
 						}
 						try{
 							left = ImageIO.read(file);
-							updatePreview();
+							updatePreview(true);
 						}catch(Exception exception){
 							exception.printStackTrace();
 						}
@@ -154,7 +174,7 @@ public class ChipsetImporter{
 						}
 						try{
 							right = ImageIO.read(file);
-							updatePreview();
+							updatePreview(true);
 						}catch(Exception exception){
 							exception.printStackTrace();
 						}
@@ -170,9 +190,13 @@ public class ChipsetImporter{
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
-	private void updatePreview(){
-		finalImage = generateCube(left, right, top);
-		tilePreview.setIcon(new ImageIcon(finalImage));
+	private void updatePreview(boolean full){
+		if(full){
+			finalImage = generateCube(left, right, top);
+		}
+		BufferedImage preview = scale(finalImage, (int)(finalImage.getWidth()*(zoom.getValue()/100f)));
+		tilePreview.setIcon(new ImageIcon(preview));
+		frame.pack();
 	}
 	private BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
 		if(sharpen.isSelected()){

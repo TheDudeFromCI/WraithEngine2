@@ -172,7 +172,7 @@ public class IsoMapStyle implements MapStyle{
 								}
 								TileCategory cat = chipsetList.getSelectedCategory();
 								cat.addEntityType(importer.build(cat), importer.getEntityImage());
-								chipsetList.getPainter().repaint();
+								chipsetList.getEntityList().repaint();
 							}
 						});
 						mnFile.add(item);

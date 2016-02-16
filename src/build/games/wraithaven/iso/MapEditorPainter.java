@@ -407,6 +407,7 @@ public class MapEditorPainter extends JPanel{
 			int maxA = w+h-1;
 			HashMap<Layer,EntityType> entities;
 			EntityType entity;
+			int entityHeight;
 			for(a = 0; a<maxA; a++){
 				for(b = 0; b<=a; b++){
 					x = b;
@@ -437,8 +438,8 @@ public class MapEditorPainter extends JPanel{
 								continue;
 							}
 							entity = entities.get(layer);
-							g.drawImage(imageStorage.getImage(entity), u, v+(1-entity.getHeight())*tileSize, tileSize, tileSize*entity.getHeight(),
-								null);
+							entityHeight = entity.getHeight()>=0?(1-entity.getHeight())*tileSize:0;
+							g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*Math.abs(entity.getHeight()), null);
 						}
 					}
 				}

@@ -118,7 +118,7 @@ public class TileCategory{
 		int w = originalImage.getWidth();
 		int h = originalImage.getHeight();
 		try{
-			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", "Fulls", e.getUUID()+".png"));
+			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", e.getCategory().getUUID(), e.getUUID()+".png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}

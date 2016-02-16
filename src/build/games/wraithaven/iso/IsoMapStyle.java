@@ -10,6 +10,7 @@ package build.games.wraithaven.iso;
 import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
+import build.games.wraithaven.core.WraithEngine;
 import static build.games.wraithaven.core.WraithEngine.outputFolder;
 import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
 import build.games.wraithaven.util.Algorithms;
@@ -20,7 +21,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -117,6 +120,36 @@ public class IsoMapStyle implements MapStyle{
 						mnFile.add(mntmImportNewChipset);
 					}
 					{
+						// Import New Raw Tile
+						JMenuItem mntmImportNewChipset = new JMenuItem("Import New Raw Tile");
+						mntmImportNewChipset.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent event){
+								File file = Algorithms.userChooseImage("Import New Raw Tile", "Import");
+								if(file==null){
+									return;
+								}
+								BufferedImage image;
+								try{
+									image = ImageIO.read(file);
+									int width = image.getWidth();
+									int height = image.getHeight();
+									if(width!=height||width!=WraithEngine.projectBitSize){
+										image = Algorithms.smoothResize(image, WraithEngine.projectBitSize);
+									}
+								}catch(Exception exception){
+									exception.printStackTrace();
+									return;
+								}
+								TileCategory cat = chipsetList.getSelectedCategory();
+								Tile tile = new Tile(Algorithms.randomUUID(), image, cat);
+								cat.addTile(tile);
+								JOptionPane.showMessageDialog(null, "Tile imported.");
+							}
+						});
+						mnFile.add(mntmImportNewChipset);
+					}
+					{
 						// Import New Entity
 						JMenuItem item = new JMenuItem("Import New Entity");
 						item.addActionListener(new ActionListener(){
@@ -137,7 +170,9 @@ public class IsoMapStyle implements MapStyle{
 								if(response!=JOptionPane.OK_OPTION){
 									return;
 								}
-								chipsetList.getEntityList().addEntityType(importer.build(), importer.getEntityImage());
+								TileCategory cat = chipsetList.getSelectedCategory();
+								cat.addEntityType(importer.build(cat), importer.getEntityImage());
+								chipsetList.getEntityList().repaint();
 							}
 						});
 						mnFile.add(item);
@@ -173,5 +208,21 @@ public class IsoMapStyle implements MapStyle{
 			return true;
 		}
 		return response==JOptionPane.NO_OPTION;
+	}
+	public void updateTileList(){
+		try{
+			chipsetList.getPainter().updateTiles();
+		}catch(Exception exception){
+			// Fails if not finished loading.
+			// Not a problem.
+		}
+	}
+	public void updateEntityList(){
+		try{
+			chipsetList.getEntityList().updateEntities();
+		}catch(Exception exception){
+			// Fails if not finished loading.
+			// Not a problem.
+		}
 	}
 }

@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -47,5 +48,16 @@ public class TileInstance{
 	}
 	public HashMap<Layer,EntityType> getAllEntities(){
 		return entities;
+	}
+	public void removeEntity(EntityType entity){
+		ArrayList<Layer> toRemove = new ArrayList(1);
+		for(Layer layer : entities.keySet()){
+			if(entities.get(layer)==entity){
+				toRemove.add(layer);
+			}
+		}
+		for(Layer layer : toRemove){
+			entities.remove(layer);
+		}
 	}
 }

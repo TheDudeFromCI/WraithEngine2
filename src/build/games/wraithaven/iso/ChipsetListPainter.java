@@ -7,8 +7,6 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,7 +15,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 
@@ -38,15 +35,15 @@ public class ChipsetListPainter extends JPanel{
 		y[3] = PREVIEW_TILE_SCALE;
 		return new Polygon(x, y, 4);
 	}
-	public static final int PREVIEW_TILES_WIDTH = 8;
-	public static final int PREVIEW_TILE_SCALE = 32;
-	private final ArrayList<Tile> tiles = new ArrayList(64);
+	private static final int PREVIEW_TILES_WIDTH = 8;
+	private static final int PREVIEW_TILE_SCALE = 32;
 	private final CursorSelection cursorSelection;
 	private final Polygon cursor;
-	public ChipsetListPainter(){
+	private final IsoMapStyle mapStyle;
+	public ChipsetListPainter(IsoMapStyle mapStyle){
+		this.mapStyle = mapStyle;
 		cursorSelection = new CursorSelection();
 		cursor = generateCursor();
-		load();
 		updatePrefferedSize();
 		InputAdapter ia = new InputAdapter(){
 			@Override
@@ -54,6 +51,7 @@ public class ChipsetListPainter extends JPanel{
 				int x = event.getX()/PREVIEW_TILE_SCALE;
 				int y = event.getY()/PREVIEW_TILE_SCALE;
 				int index = y*PREVIEW_TILES_WIDTH+x-1;
+				ArrayList<Tile> tiles = mapStyle.getChipsetList().getSelectedCategory().getTiles();
 				if(index<0||index>=tiles.size()){
 					cursorSelection.setSelectedTile(null, -1);
 					repaint();
@@ -65,49 +63,13 @@ public class ChipsetListPainter extends JPanel{
 		};
 		addMouseListener(ia);
 	}
-	public int getIndexOfTile(Tile tile){
-		return tiles.indexOf(tile);
-	}
 	public CursorSelection getCursorSelection(){
 		return cursorSelection;
 	}
-	private void load(){
-		File file = Algorithms.getFile("Chipsets", "List.dat");
-		if(!file.exists()){
-			return;
-		}
-		BinaryFile bin = new BinaryFile(file);
-		bin.decompress(false);
-		int tileCount = bin.getInt();
-		for(int i = 0; i<tileCount; i++){
-			tiles.add(new Tile(bin.getString()));
-		}
-	}
-	private void save(){
-		BinaryFile bin = new BinaryFile(4);
-		bin.addInt(tiles.size());
-		for(Tile tile : tiles){
-			bin.addStringAllocated(tile.getUUID());
-		}
-		bin.compress(false);
-		bin.compile(Algorithms.getFile("Chipsets", "List.dat"));
-	}
-	public void addTile(Tile tile){
-		tiles.add(tile);
+	public void updateTiles(){
 		updatePrefferedSize();
+		cursorSelection.setSelectedTile(null, -1);
 		repaint();
-		save();
-	}
-	public Tile getTile(String uuid){
-		for(Tile tile : tiles){
-			if(tile.getUUID().equals(uuid)){
-				return tile;
-			}
-		}
-		return null;
-	}
-	public ArrayList<Tile> getAllTiles(){
-		return tiles;
 	}
 	@Override
 	public void paintComponent(Graphics g1){
@@ -117,8 +79,9 @@ public class ChipsetListPainter extends JPanel{
 		final int maxWidth = PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE;
 		int x = PREVIEW_TILE_SCALE;
 		int y = 0;
+		ArrayList<Tile> tiles = mapStyle.getChipsetList().getSelectedCategory().getTiles();
 		for(Tile tile : tiles){
-			g.drawImage(tile.getPreviewImage(), x, y, null);
+			g.drawImage(mapStyle.getMapEditor().getImageStorage().getImage(tile), x, y, PREVIEW_TILE_SCALE, PREVIEW_TILE_SCALE, null);
 			x += PREVIEW_TILE_SCALE;
 			if(x==maxWidth){
 				x = 0;
@@ -133,7 +96,12 @@ public class ChipsetListPainter extends JPanel{
 		g.dispose();
 	}
 	private void updatePrefferedSize(){
-		setPreferredSize(
-			new Dimension(PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, Math.max((int)Math.ceil((tiles.size()+1)/(double)PREVIEW_TILES_WIDTH), 150)));
+		try{
+			ArrayList<Tile> tiles = mapStyle.getChipsetList().getSelectedCategory().getTiles();
+			setPreferredSize(
+				new Dimension(PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, Math.max((int)Math.ceil((tiles.size()+1)/(double)PREVIEW_TILES_WIDTH), 150)));
+		}catch(Exception exception){
+			setPreferredSize(new Dimension(PREVIEW_TILES_WIDTH*PREVIEW_TILE_SCALE, 150));
+		}
 	}
 }

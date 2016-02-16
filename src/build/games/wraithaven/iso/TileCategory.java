@@ -9,8 +9,10 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 
 /**
  * @author thedudefromci
@@ -18,15 +20,14 @@ import java.util.ArrayList;
 public class TileCategory{
 	private static final short FILE_VERSION = 0;
 	private final String uuid;
-	private ArrayList<Tile> tiles = new ArrayList(64);
-	private ArrayList<EntityType> entities = new ArrayList(64);
+	private final IsoMapStyle mapStyle;
+	private ArrayList<Tile> tiles;
+	private ArrayList<EntityType> entities;
 	private String name;
-	private boolean defaultCategory;
-	private boolean loaded;
-	public TileCategory(String uuid){
+	public TileCategory(IsoMapStyle mapStyle, String uuid){
+		this.mapStyle = mapStyle;
 		this.uuid = uuid;
-		loaded = false;
-		partLoad();
+		load();
 	}
 	public String getUUID(){
 		return uuid;
@@ -38,42 +39,11 @@ public class TileCategory{
 		this.name = name;
 		save();
 	}
-	public boolean isDefaultCategory(){
-		return defaultCategory;
-	}
-	public void setDefaultCategory(boolean def){
-		defaultCategory = def;
-		save();
-	}
-	private void partLoad(){
-		File file = Algorithms.getFile("Categories", uuid+".dat");
-		if(!file.exists()){
-			return;
-		}
-		BinaryFile bin = new BinaryFile(file);
-		bin.decompress(false);
-		short version = bin.getShort();
-		switch(version){
-			case 0:
-				name = bin.getString();
-				defaultCategory = bin.getBoolean();
-				break;
-			default:
-				throw new RuntimeException();
-		}
-	}
-	public boolean isLoaded(){
-		return loaded;
-	}
 	public void load(){
-		if(loaded){
-			throw new RuntimeException("Already loaded!");
-		}
-		loaded = true;
-		tiles = new ArrayList(64);
-		entities = new ArrayList(64);
 		File file = Algorithms.getFile("Categories", uuid+".dat");
 		if(!file.exists()){
+			tiles = new ArrayList(64);
+			entities = new ArrayList(64);
 			return;
 		}
 		BinaryFile bin = new BinaryFile(file);
@@ -82,41 +52,29 @@ public class TileCategory{
 		switch(version){
 			case 0:
 				name = bin.getString();
-				defaultCategory = bin.getBoolean();
 				int tileCount = bin.getInt();
+				tiles = new ArrayList(Math.max(tileCount, 64));
 				for(int i = 0; i<tileCount; i++){
-					tiles.add(new Tile(bin.getString()));
+					tiles.add(new Tile(bin.getString(), this));
 				}
 				int entityCount = bin.getInt();
+				entities = new ArrayList(Math.max(entityCount, 64));
 				String entityUuid;
 				int height;
 				for(int i = 0; i<entityCount; i++){
 					entityUuid = bin.getString();
 					height = bin.getInt();
-					entities.add(new EntityType(entityUuid, height));
+					entities.add(new EntityType(entityUuid, height, this));
 				}
 				break;
 			default:
 				throw new RuntimeException();
 		}
 	}
-	public void unload(){
-		if(!loaded){
-			return;
-		}
-		loaded = false;
-		tiles = null;
-		entities = null;
-	}
 	private void save(){
-		boolean manuallyLoaded = !loaded;
-		if(manuallyLoaded){
-			load();
-		}
-		BinaryFile bin = new BinaryFile(8+entities.size()*4+2+1);
+		BinaryFile bin = new BinaryFile(8+entities.size()*4+2);
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
-		bin.addBoolean(defaultCategory);
 		bin.addInt(tiles.size());
 		for(Tile tile : tiles){
 			bin.addStringAllocated(tile.getUUID());
@@ -128,12 +86,64 @@ public class TileCategory{
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Categories", uuid+".dat"));
-		if(manuallyLoaded){
-			unload();
-		}
 	}
 	@Override
 	public String toString(){
 		return name;
+	}
+	public ArrayList<Tile> getTiles(){
+		return tiles;
+	}
+	public ArrayList<EntityType> getEntities(){
+		return entities;
+	}
+	public void addTile(Tile tile){
+		tiles.add(tile);
+		save();
+		mapStyle.updateTileList();
+	}
+	public Tile getTile(String uuid){
+		for(Tile tile : tiles){
+			if(tile.getUUID().equals(uuid)){
+				return tile;
+			}
+		}
+		return null;
+	}
+	public int getIndexOf(Tile tile){
+		return tiles.indexOf(tile);
+	}
+	public void addEntityType(EntityType e, BufferedImage originalImage){
+		entities.add(e);
+		int w = originalImage.getWidth();
+		int h = originalImage.getHeight();
+		try{
+			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", e.getCategory().getUUID(), e.getUUID()+".png"));
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
+		save();
+	}
+	public EntityType getEntity(String uuid){
+		for(EntityType entity : entities){
+			if(entity.getUUID().equals(uuid)){
+				return entity;
+			}
+		}
+		return null;
+	}
+	public int getIndexOf(EntityType entity){
+		return entities.indexOf(entity);
+	}
+	public void delete(){
+		for(Tile tile : tiles){
+			mapStyle.getMapEditor().removeTile(tile);
+		}
+		for(EntityType entity : entities){
+			mapStyle.getMapEditor().removeEntity(entity);
+		}
+		Algorithms.deleteFile(Algorithms.getFile("Categories", uuid+".dat"));
+		Algorithms.deleteFile(Algorithms.getFile("Entities", uuid));
+		Algorithms.deleteFile(Algorithms.getFile("Chipsets", uuid));
 	}
 }

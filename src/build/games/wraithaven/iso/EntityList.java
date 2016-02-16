@@ -7,8 +7,6 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -19,10 +17,7 @@ import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 /**
@@ -44,15 +39,11 @@ public class EntityList extends JPanel{
 	}
 	private static final int PREVIEW_WIDTH = 4;
 	private static final int PREVIEW_ICON_SIZE = 64;
-	private static final short FILE_VERSION = 0;
-	private final ArrayList<EntityType> entityTypes = new ArrayList(16);
-	private final HashMap<EntityType,BufferedImage> previews = new HashMap(16);
-	private final CursorSelection cursorSelection;
 	private final Polygon cursor;
-	public EntityList(CursorSelection cursorSelection){
-		this.cursorSelection = cursorSelection;
+	private final IsoMapStyle mapStyle;
+	public EntityList(IsoMapStyle mapStyle){
+		this.mapStyle = mapStyle;
 		cursor = generateCursor();
-		load();
 		updatePrefferedSize();
 		InputAdapter ia = new InputAdapter(){
 			@Override
@@ -60,105 +51,26 @@ public class EntityList extends JPanel{
 				int x = event.getX()/PREVIEW_ICON_SIZE;
 				int y = event.getY()/PREVIEW_ICON_SIZE;
 				int index = y*PREVIEW_WIDTH+x-1;
-				if(index<0||index>=entityTypes.size()){
+				ArrayList<EntityType> entities = mapStyle.getChipsetList().getSelectedCategory().getEntities();
+				CursorSelection cursorSelection = mapStyle.getChipsetList().getPainter().getCursorSelection();
+				if(index<0||index>=entities.size()){
 					cursorSelection.setSelectedEntity(null, -1);
 					repaint();
 					return;
 				}
-				cursorSelection.setSelectedEntity(entityTypes.get(index), index);
+				cursorSelection.setSelectedEntity(entities.get(index), index);
 				repaint();
 			}
 		};
 		addMouseListener(ia);
 	}
 	private void updatePrefferedSize(){
-		setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil((entityTypes.size()+1)/(double)PREVIEW_WIDTH), 150)));
-	}
-	private void load(){
-		File file = Algorithms.getFile("Entities", "Previews", "List.dat");
-		if(!file.exists()){
-			return;
-		}
-		BinaryFile bin = new BinaryFile(file);
-		bin.decompress(false);
-		short version = bin.getShort();
-		switch(version){
-			case 0:
-				int count = bin.getInt();
-				EntityType e;
-				BufferedImage img;
-				String uuid;
-				int height;
-				for(int i = 0; i<count; i++){
-					uuid = bin.getString();
-					height = bin.getInt();
-					e = new EntityType(uuid, height);
-					entityTypes.add(e);
-					try{
-						img = ImageIO.read(Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
-						previews.put(e, img);
-					}catch(Exception exception){
-						exception.printStackTrace();
-					}
-				}
-				break;
-			default:
-				throw new RuntimeException();
-		}
-	}
-	public EntityType getType(String uuid){
-		for(EntityType e : entityTypes){
-			if(e.getUUID().equals(uuid)){
-				return e;
-			}
-		}
-		return null;
-	}
-	private void save(){
-		BinaryFile bin = new BinaryFile(4+2+entityTypes.size()*4);
-		bin.addShort(FILE_VERSION);
-		bin.addInt(entityTypes.size());
-		for(EntityType e : entityTypes){
-			bin.addStringAllocated(e.getUUID());
-			bin.addInt(e.getHeight());
-		}
-		bin.compress(false);
-		bin.compile(Algorithms.getFile("Entities", "Previews", "List.dat"));
-	}
-	public void removeEntityType(EntityType e){
-		entityTypes.remove(e);
-		previews.remove(e);
-		Algorithms.deleteFile(Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
-		save();
-		repaint();
-	}
-	public void addEntityType(EntityType e, BufferedImage originalImage){
-		entityTypes.add(e);
-		int w = originalImage.getWidth();
-		int h = originalImage.getHeight();
-		if(originalImage.getWidth()>PREVIEW_ICON_SIZE){
-			w = PREVIEW_ICON_SIZE;
-			h = (w*originalImage.getHeight())/originalImage.getWidth();
-		}
-		if(h>PREVIEW_ICON_SIZE){
-			h = PREVIEW_ICON_SIZE;
-			w = (h*originalImage.getWidth())/originalImage.getHeight();
-		}
-		int x = (PREVIEW_ICON_SIZE-w)/2;
-		int y = (PREVIEW_ICON_SIZE-h)/2;
-		BufferedImage buf = new BufferedImage(PREVIEW_ICON_SIZE, PREVIEW_ICON_SIZE, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = buf.createGraphics();
-		g.drawImage(originalImage, x, y, w, h, null);
-		g.dispose();
-		previews.put(e, buf);
 		try{
-			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", "Fulls", e.getUUID()+".png"));
-			ImageIO.write(buf, "png", Algorithms.getFile("Entities", "Previews", e.getUUID()+".png"));
+			ArrayList<EntityType> entities = mapStyle.getChipsetList().getSelectedCategory().getEntities();
+			setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil((entities.size()+1)/(double)PREVIEW_WIDTH), 150)));
 		}catch(Exception exception){
-			exception.printStackTrace();
+			setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, 150));
 		}
-		save();
-		repaint();
 	}
 	@Override
 	public void paintComponent(Graphics g1){
@@ -170,14 +82,21 @@ public class EntityList extends JPanel{
 		g.fillRect(0, 0, width, height);
 		int x = PREVIEW_ICON_SIZE;
 		int y = 0;
-		for(EntityType e : entityTypes){
-			g.drawImage(previews.get(e), x, y, null);
+		int[] imageSize = new int[4];
+		ArrayList<EntityType> entities = mapStyle.getChipsetList().getSelectedCategory().getEntities();
+		MapImageStorage imageStorage = mapStyle.getMapEditor().getImageStorage();
+		BufferedImage image;
+		for(EntityType e : entities){
+			image = imageStorage.getImage(e);
+			getImageSize(image, imageSize);
+			g.drawImage(image, x+imageSize[0], y+imageSize[1], imageSize[2], imageSize[3], null);
 			x += PREVIEW_ICON_SIZE;
 			if(x==PREVIEW_ICON_SIZE*PREVIEW_WIDTH){
 				x = 0;
 				y += PREVIEW_ICON_SIZE;
 			}
 		}
+		CursorSelection cursorSelection = mapStyle.getChipsetList().getPainter().getCursorSelection();
 		int index = cursorSelection.isEntityActive()?cursorSelection.getSelectedEntityIndex()+1:0;
 		g.setStroke(new BasicStroke(3));
 		g.translate(index%PREVIEW_WIDTH*PREVIEW_ICON_SIZE, index/PREVIEW_WIDTH*PREVIEW_ICON_SIZE);
@@ -185,7 +104,23 @@ public class EntityList extends JPanel{
 		g.drawPolygon(cursor);
 		g.dispose();
 	}
-	public ArrayList<EntityType> getAllTypes(){
-		return entityTypes;
+	private void getImageSize(BufferedImage image, int[] out){
+		out[2] = image.getWidth();
+		out[3] = image.getHeight();
+		if(image.getWidth()>PREVIEW_ICON_SIZE){
+			out[2] = PREVIEW_ICON_SIZE;
+			out[3] = (out[2]*image.getHeight())/image.getWidth();
+		}
+		if(out[3]>PREVIEW_ICON_SIZE){
+			out[3] = PREVIEW_ICON_SIZE;
+			out[2] = (out[3]*image.getWidth())/image.getHeight();
+		}
+		out[0] = (PREVIEW_ICON_SIZE-out[2])/2;
+		out[1] = (PREVIEW_ICON_SIZE-out[3])/2;
+	}
+	public void updateEntities(){
+		updatePrefferedSize();
+		mapStyle.getChipsetList().getPainter().getCursorSelection().setSelectedEntity(null, -1);
+		repaint();
 	}
 }

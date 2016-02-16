@@ -20,6 +20,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 /**
@@ -29,6 +30,7 @@ public class EntityImporter extends JPanel{
 	private final String uuid;
 	private final BufferedImage image;
 	private final int height;
+	private final JCheckBox below;
 	public EntityImporter(File file){
 		try{
 			image = ImageIO.read(file);
@@ -68,14 +70,15 @@ public class EntityImporter extends JPanel{
 			JPanel sideBar = new JPanel();
 			sideBar.setLayout(new VerticalFlowLayout(0, 5));
 			{
-				// ... I don't know what can go here now...
+				below = new JCheckBox("Is Below");
+				sideBar.add(below);
 			}
 			add(sideBar, BorderLayout.EAST);
 		}
 		add(imagePreview, BorderLayout.CENTER);
 	}
-	public EntityType build(){
-		return new EntityType(uuid, height);
+	public EntityType build(TileCategory cat){
+		return new EntityType(uuid, below.isSelected()?-height:height, cat);
 	}
 	public BufferedImage getEntityImage(){
 		return image;

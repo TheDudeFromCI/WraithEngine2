@@ -19,7 +19,7 @@ import java.util.HashMap;
  */
 public class Map implements MapInterface{
 	private static final short FILE_VERSION_PROPERTIES = 0;
-	private static final short FILE_VERSION_TILES = 1;
+	private static final short FILE_VERSION_TILES = 0;
 	private final String uuid;
 	private final ArrayList<Map> childMaps = new ArrayList(1);
 	private final IsoMapStyle iso;
@@ -58,6 +58,9 @@ public class Map implements MapInterface{
 	public boolean needsSaving(){
 		return needsSaving;
 	}
+	public ArrayList<Map> getChildMaps(){
+		return childMaps;
+	}
 	public void save(){
 		if(!loaded){
 			throw new RuntimeException();
@@ -78,6 +81,7 @@ public class Map implements MapInterface{
 			}
 			bin.addInt(tileReferences.size());
 			for(Tile t : tileReferences){
+				bin.addStringAllocated(t.getCategory().getUUID());
 				bin.addStringAllocated(t.getUUID());
 			}
 			for(TileInstance t : tiles){
@@ -90,9 +94,12 @@ public class Map implements MapInterface{
 					bin.addInt(t.getHeight());
 					HashMap<Layer,EntityType> entities = t.getAllEntities();
 					bin.addInt(entities.size());
+					EntityType entity;
 					for(Layer layer : entities.keySet()){
 						bin.addStringAllocated(layer.getUUID());
-						bin.addStringAllocated(entities.get(layer).getUUID());
+						entity = entities.get(layer);
+						bin.addStringAllocated(entity.getCategory().getUUID());
+						bin.addStringAllocated(entity.getUUID());
 					}
 				}
 			}
@@ -120,34 +127,13 @@ public class Map implements MapInterface{
 		bin.decompress(true);
 		short version = bin.getShort();
 		switch(version){
-			case 0:{
+			case 0:
 				tiles = new TileInstance[width*height];
 				Tile[] tileReferences = new Tile[bin.getInt()];
 				for(int i = 0; i<tileReferences.length; i++){
-					tileReferences[i] = iso.getChipsetList().getTile(bin.getString());
-				}
-				for(int i = 0; i<tiles.length; i++){
-					int id = bin.getInt();
-					if(id==-1){
-						bin.skip(5);
-						continue;
-					}
-					tiles[i] = new TileInstance(tileReferences[id], bin.getInt());
-					if(bin.getBoolean()){
-						String entity = bin.getString();
-						Layer layer = iso.getChipsetList().getEntityLayers().getSelectedLayer();
-						if(layer!=null){
-							tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(entity), layer);
-						}
-					}
-				}
-			}
-				break;
-			case 1:{
-				tiles = new TileInstance[width*height];
-				Tile[] tileReferences = new Tile[bin.getInt()];
-				for(int i = 0; i<tileReferences.length; i++){
-					tileReferences[i] = iso.getChipsetList().getTile(bin.getString());
+					String cat = bin.getString();
+					String tile = bin.getString();
+					tileReferences[i] = iso.getChipsetList().getTile(cat, tile);
 				}
 				for(int i = 0; i<tiles.length; i++){
 					int id = bin.getInt();
@@ -159,11 +145,11 @@ public class Map implements MapInterface{
 					int entityCount = bin.getInt();
 					for(int j = 0; j<entityCount; j++){
 						String layer = bin.getString();
+						String cat = bin.getString();
 						String entity = bin.getString();
-						tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(entity), iso.getChipsetList().getEntityLayers().getType(layer));
+						tiles[i].setEntity(iso.getChipsetList().getEntity(cat, entity), iso.getChipsetList().getEntityLayers().getType(layer));
 					}
 				}
-			}
 				break;
 			default:
 				throw new RuntimeException();
@@ -280,5 +266,8 @@ public class Map implements MapInterface{
 	public void removeChild(MapInterface map){
 		childMaps.remove(map);
 		saveProperties();
+	}
+	public boolean isLoaded(){
+		return loaded;
 	}
 }

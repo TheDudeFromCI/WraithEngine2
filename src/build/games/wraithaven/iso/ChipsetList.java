@@ -43,22 +43,40 @@ public class ChipsetList extends JPanel{
 	private final EntityLayers entityLayers;
 	private final JButton addLayerIcon;
 	private final JButton trashLayerIcon;
+	private final JButton trashCategoryIcon;
 	private final JTabbedPane tabbedPane;
 	private final JComboBox categoryComboBox;
 	private final CategoryComboBoxModel categoryComboBoxModel;
 	public ChipsetList(IsoMapStyle mapStyle){
-		categoryComboBoxModel = new CategoryComboBoxModel(this);
+		categoryComboBoxModel = new CategoryComboBoxModel(mapStyle);
 		entityLayers = new EntityLayers(mapStyle);
-		painter = new ChipsetListPainter();
-		entityList = new EntityList(painter.getCursorSelection());
+		painter = new ChipsetListPainter(mapStyle);
+		entityList = new EntityList(mapStyle);
 		tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
 		{
 			// Select tile category drop down.
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
 			categoryComboBox = new JComboBox();
 			categoryComboBox.setModel(categoryComboBoxModel);
 			categoryComboBox.setEditable(true);
-			add(categoryComboBox, BorderLayout.NORTH);
+			trashCategoryIcon = makeIcon("Trash Can.png", "Trash Can Over.png", "Trash Can Down.png", "Trash Can Disabled.png");
+			trashCategoryIcon.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					TileCategory sel = categoryComboBoxModel.getSelected();
+					int response = JOptionPane.showConfirmDialog(null, "Are you sure you wish to delete the '"+sel.getName()+"' category?",
+						"Confirm Delete", JOptionPane.YES_NO_OPTION);
+					if(response!=JOptionPane.YES_OPTION){
+						return;
+					}
+					categoryComboBoxModel.deleteCategory(sel);
+				}
+			});
+			panel.add(trashCategoryIcon, BorderLayout.EAST);
+			panel.add(categoryComboBox, BorderLayout.CENTER);
+			add(panel, BorderLayout.NORTH);
 		}
 		add(tabbedPane, BorderLayout.CENTER);
 		{
@@ -122,17 +140,17 @@ public class ChipsetList extends JPanel{
 		addLayerIcon.setEnabled(entityLayers.isLoaded());
 		trashLayerIcon.setEnabled(entityLayers.isLoaded());
 	}
-	public Tile getTile(String uuid){
-		return painter.getTile(uuid);
+	public Tile getTile(String cat, String tile){
+		return categoryComboBoxModel.getCategory(cat).getTile(tile);
+	}
+	public int getIndexOfTile(Tile tile){
+		return tile.getCategory().getIndexOf(tile);
+	}
+	public int getIndexOfEntity(EntityType entity){
+		return entity.getCategory().getIndexOf(entity);
 	}
 	public CursorSelection getCursorSelection(){
 		return painter.getCursorSelection();
-	}
-	public int getIndexOfTile(Tile tile){
-		return painter.getIndexOfTile(tile);
-	}
-	public void addTile(Tile tile){
-		painter.addTile(tile);
 	}
 	public EntityList getEntityList(){
 		return entityList;
@@ -142,5 +160,11 @@ public class ChipsetList extends JPanel{
 	}
 	public TileCategory getSelectedCategory(){
 		return categoryComboBoxModel.getSelected();
+	}
+	public ChipsetListPainter getPainter(){
+		return painter;
+	}
+	public EntityType getEntity(String cat, String entity){
+		return categoryComboBoxModel.getCategory(cat).getEntity(entity);
 	}
 }

@@ -24,50 +24,92 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.File;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * @author TheDudeFromCI
  */
 public class ChipsetImporter{
+	private final JFrame frame;
 	private final JLabel tilePreview;
+	private final JCheckBox sharpen;
+	private final JSlider zoom;
 	private BufferedImage left;
 	private BufferedImage right;
 	private BufferedImage top;
 	private BufferedImage finalImage;
 	public ChipsetImporter(ChipsetList chipsetList, File file){
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setTitle("Import Tile");
 		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		{
 			frame.setLayout(new BorderLayout());
 			{
-				JPanel panel = new JPanel();
-				panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-				JButton okButton = new JButton("Ok");
-				okButton.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.dispose();
-						Tile tile = new Tile(Algorithms.randomUUID(), finalImage);
-						chipsetList.addTile(tile);
-					}
-				});
-				panel.add(okButton);
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e){
-						frame.dispose();
-					}
-				});
-				panel.add(cancelButton);
-				frame.add(panel, BorderLayout.SOUTH);
+				JPanel panel_1 = new JPanel();
+				panel_1.setLayout(new BorderLayout());
+				{
+					JPanel panel = new JPanel();
+					panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+					JButton okButton = new JButton("Ok");
+					okButton.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							frame.dispose();
+							TileCategory cat = chipsetList.getSelectedCategory();
+							Tile tile = new Tile(Algorithms.randomUUID(), finalImage, cat);
+							cat.addTile(tile);
+						}
+					});
+					panel.add(okButton);
+					JButton cancelButton = new JButton("Cancel");
+					cancelButton.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							frame.dispose();
+						}
+					});
+					panel.add(cancelButton);
+					panel_1.add(panel, BorderLayout.SOUTH);
+				}
+				{
+					JPanel panel = new JPanel();
+					panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+					sharpen = new JCheckBox("Sharpen");
+					sharpen.setSelected(true);
+					sharpen.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							updatePreview(true);
+						}
+					});
+					panel.add(sharpen);
+					zoom = new JSlider(JSlider.HORIZONTAL, 50, 400, 100);
+					zoom.setMajorTickSpacing(25);
+					zoom.setMinorTickSpacing(1);
+					zoom.setPaintTicks(true);
+					zoom.setPaintTrack(true);
+					zoom.setSnapToTicks(false);
+					zoom.addChangeListener(new ChangeListener(){
+						@Override
+						public void stateChanged(ChangeEvent e){
+							updatePreview(false);
+						}
+					});
+					zoom.setBorder(BorderFactory.createTitledBorder("Zoom"));
+					panel.add(zoom);
+					panel_1.add(panel, BorderLayout.CENTER);
+				}
+				frame.add(panel_1, BorderLayout.SOUTH);
 			}
 			{
 				JPanel panel = new JPanel();
@@ -83,7 +125,7 @@ public class ChipsetImporter{
 						exception.printStackTrace();
 					}
 				}
-				updatePreview();
+				updatePreview(true);
 				panel.add(tilePreview, BorderLayout.CENTER);
 				frame.add(panel, BorderLayout.WEST);
 			}
@@ -102,7 +144,7 @@ public class ChipsetImporter{
 						}
 						try{
 							top = ImageIO.read(file);
-							updatePreview();
+							updatePreview(true);
 						}catch(Exception exception){
 							exception.printStackTrace();
 						}
@@ -117,7 +159,7 @@ public class ChipsetImporter{
 						}
 						try{
 							left = ImageIO.read(file);
-							updatePreview();
+							updatePreview(true);
 						}catch(Exception exception){
 							exception.printStackTrace();
 						}
@@ -132,7 +174,7 @@ public class ChipsetImporter{
 						}
 						try{
 							right = ImageIO.read(file);
-							updatePreview();
+							updatePreview(true);
 						}catch(Exception exception){
 							exception.printStackTrace();
 						}
@@ -148,46 +190,26 @@ public class ChipsetImporter{
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
-	private void updatePreview(){
-		finalImage = generateCube(left, right, top);
-		tilePreview.setIcon(new ImageIcon(finalImage));
+	private void updatePreview(boolean full){
+		if(full){
+			finalImage = generateCube(left, right, top);
+		}
+		BufferedImage preview = Algorithms.smoothResize(finalImage, (int)(finalImage.getWidth()*(zoom.getValue()/100f)));
+		tilePreview.setIcon(new ImageIcon(preview));
+		frame.pack();
 	}
-	private static BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
-		left = sharpen(left);
-		right = sharpen(right);
-		top = sharpen(top);
+	private BufferedImage generateCube(BufferedImage left, BufferedImage right, BufferedImage top){
+		if(sharpen.isSelected()){
+			left = sharpen(left);
+			right = sharpen(right);
+			top = sharpen(top);
+		}
 		BufferedImage topPanel = rotate(top);
 		BufferedImage leftPanel = skew(left, 0, 0.5);
 		BufferedImage rightPanel = skew(right, 0, -0.5);
 		darken(leftPanel, 0.9f);
 		darken(rightPanel, 0.75f);
-		return scale(combine(leftPanel, rightPanel, topPanel), WraithEngine.projectBitSize);
-	}
-	private static BufferedImage scale(BufferedImage image, int size){
-		BufferedImage buf = image;
-		int s = image.getWidth();
-		do{
-			if(s>size){
-				s /= 2;
-				if(s<size){
-					s = size;
-				}
-			}else{
-				s *= 2;
-				if(s>size){
-					s = size;
-				}
-			}
-			BufferedImage out = new BufferedImage(s, s, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = out.createGraphics();
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-			g.drawImage(buf, 0, 0, s, s, null);
-			g.dispose();
-			buf = out;
-		}while(s!=size); // This loop enhances quality, while resizing!
-		return buf;
+		return Algorithms.smoothResize(combine(leftPanel, rightPanel, topPanel), WraithEngine.projectBitSize);
 	}
 	private static BufferedImage combine(BufferedImage left, BufferedImage right, BufferedImage top){
 		double size = top.getWidth()/2.0/left.getWidth();
@@ -203,7 +225,7 @@ public class ChipsetImporter{
 		return out;
 	}
 	private static BufferedImage sharpen(BufferedImage image){
-		image = scale(image, WraithEngine.projectBitSize*8);
+		image = Algorithms.smoothResize(image, WraithEngine.projectBitSize*8);
 		float[] elements = new float[9];
 		for(int i = 0; i<elements.length; i++){
 			elements[i] = -1;

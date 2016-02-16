@@ -113,6 +113,7 @@ public class CategoryComboBoxModel implements ComboBoxModel{
 	private void select(TileCategory cat){
 		selected = cat;
 		mapStyle.updateTileList();
+		mapStyle.updateEntityList();
 	}
 	public TileCategory getCategory(String uuid){
 		return list.getCategory(uuid);

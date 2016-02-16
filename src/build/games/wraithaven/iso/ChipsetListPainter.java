@@ -67,8 +67,8 @@ public class ChipsetListPainter extends JPanel{
 		return cursorSelection;
 	}
 	public void updateTiles(){
-		ArrayList<Tile> tiles = mapStyle.getChipsetList().getSelectedCategory().getTiles();
 		updatePrefferedSize();
+		cursorSelection.setSelectedTile(null, -1);
 		repaint();
 	}
 	@Override

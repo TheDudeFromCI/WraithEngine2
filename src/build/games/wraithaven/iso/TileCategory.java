@@ -9,8 +9,10 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.BinaryFile;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 
 /**
  * @author thedudefromci
@@ -62,7 +64,7 @@ public class TileCategory{
 				for(int i = 0; i<entityCount; i++){
 					entityUuid = bin.getString();
 					height = bin.getInt();
-					entities.add(new EntityType(entityUuid, height));
+					entities.add(new EntityType(entityUuid, height, this));
 				}
 				break;
 			default:
@@ -110,5 +112,27 @@ public class TileCategory{
 	}
 	public int getIndexOf(Tile tile){
 		return tiles.indexOf(tile);
+	}
+	public void addEntityType(EntityType e, BufferedImage originalImage){
+		entities.add(e);
+		int w = originalImage.getWidth();
+		int h = originalImage.getHeight();
+		try{
+			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", "Fulls", e.getUUID()+".png"));
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
+		save();
+	}
+	public EntityType getEntity(String uuid){
+		for(EntityType entity : entities){
+			if(entity.getUUID().equals(uuid)){
+				return entity;
+			}
+		}
+		return null;
+	}
+	public int getIndexOf(EntityType entity){
+		return entities.indexOf(entity);
 	}
 }

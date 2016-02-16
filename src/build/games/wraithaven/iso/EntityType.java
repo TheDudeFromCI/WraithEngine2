@@ -13,14 +13,19 @@ package build.games.wraithaven.iso;
 public class EntityType{
 	private final String uuid;
 	private final int height;
-	public EntityType(String uuid, int height){
+	private final TileCategory cat;
+	public EntityType(String uuid, int height, TileCategory cat){
 		this.uuid = uuid;
 		this.height = height;
+		this.cat = cat;
 	}
 	public String getUUID(){
 		return uuid;
 	}
 	public int getHeight(){
 		return height;
+	}
+	public TileCategory getCategory(){
+		return cat;
 	}
 }

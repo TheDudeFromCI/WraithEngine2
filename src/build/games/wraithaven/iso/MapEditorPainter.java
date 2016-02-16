@@ -168,7 +168,7 @@ public class MapEditorPainter extends JPanel{
 							mapStyle.getChipsetList().repaint();
 						}else{
 							EntityType entity = tile.getEntity(mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
-							cursorSelection.setSelectedEntity(entity, mapStyle.getChipsetList().getEntityList().getAllTypes().indexOf(entity));
+							cursorSelection.setSelectedEntity(entity, mapStyle.getChipsetList().getIndexOfEntity(entity));
 							mapStyle.getChipsetList().repaint();
 						}
 					}

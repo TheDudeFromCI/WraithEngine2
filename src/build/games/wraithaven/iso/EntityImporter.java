@@ -74,8 +74,8 @@ public class EntityImporter extends JPanel{
 		}
 		add(imagePreview, BorderLayout.CENTER);
 	}
-	public EntityType build(){
-		return new EntityType(uuid, height);
+	public EntityType build(TileCategory cat){
+		return new EntityType(uuid, height, cat);
 	}
 	public BufferedImage getEntityImage(){
 		return image;

@@ -137,7 +137,8 @@ public class IsoMapStyle implements MapStyle{
 								if(response!=JOptionPane.OK_OPTION){
 									return;
 								}
-								chipsetList.getEntityList().addEntityType(importer.build(), importer.getEntityImage());
+								TileCategory cat = chipsetList.getSelectedCategory();
+								cat.addEntityType(importer.build(cat), importer.getEntityImage());
 							}
 						});
 						mnFile.add(item);
@@ -177,6 +178,14 @@ public class IsoMapStyle implements MapStyle{
 	public void updateTileList(){
 		try{
 			chipsetList.getPainter().updateTiles();
+		}catch(Exception exception){
+			// Fails if not finished loading.
+			// Not a problem.
+		}
+	}
+	public void updateEntityList(){
+		try{
+			chipsetList.getEntityList().updateEntities();
 		}catch(Exception exception){
 			// Fails if not finished loading.
 			// Not a problem.

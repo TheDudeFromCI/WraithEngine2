@@ -51,7 +51,7 @@ public class ChipsetList extends JPanel{
 		categoryComboBoxModel = new CategoryComboBoxModel(mapStyle);
 		entityLayers = new EntityLayers(mapStyle);
 		painter = new ChipsetListPainter(mapStyle);
-		entityList = new EntityList(painter.getCursorSelection());
+		entityList = new EntityList(mapStyle);
 		tabbedPane = new JTabbedPane();
 		setLayout(new BorderLayout());
 		{
@@ -146,6 +146,9 @@ public class ChipsetList extends JPanel{
 	public int getIndexOfTile(Tile tile){
 		return tile.getCategory().getIndexOf(tile);
 	}
+	public int getIndexOfEntity(EntityType entity){
+		return entity.getCategory().getIndexOf(entity);
+	}
 	public CursorSelection getCursorSelection(){
 		return painter.getCursorSelection();
 	}
@@ -160,5 +163,8 @@ public class ChipsetList extends JPanel{
 	}
 	public ChipsetListPainter getPainter(){
 		return painter;
+	}
+	public EntityType getEntity(String cat, String entity){
+		return categoryComboBoxModel.getCategory(cat).getEntity(entity);
 	}
 }

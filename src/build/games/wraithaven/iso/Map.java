@@ -91,9 +91,12 @@ public class Map implements MapInterface{
 					bin.addInt(t.getHeight());
 					HashMap<Layer,EntityType> entities = t.getAllEntities();
 					bin.addInt(entities.size());
+					EntityType entity;
 					for(Layer layer : entities.keySet()){
 						bin.addStringAllocated(layer.getUUID());
-						bin.addStringAllocated(entities.get(layer).getUUID());
+						entity = entities.get(layer);
+						bin.addStringAllocated(entity.getCategory().getUUID());
+						bin.addStringAllocated(entity.getUUID());
 					}
 				}
 			}
@@ -139,8 +142,9 @@ public class Map implements MapInterface{
 					int entityCount = bin.getInt();
 					for(int j = 0; j<entityCount; j++){
 						String layer = bin.getString();
+						String cat = bin.getString();
 						String entity = bin.getString();
-						tiles[i].setEntity(iso.getChipsetList().getEntityList().getType(entity), iso.getChipsetList().getEntityLayers().getType(layer));
+						tiles[i].setEntity(iso.getChipsetList().getEntity(cat, entity), iso.getChipsetList().getEntityLayers().getType(layer));
 					}
 				}
 				break;

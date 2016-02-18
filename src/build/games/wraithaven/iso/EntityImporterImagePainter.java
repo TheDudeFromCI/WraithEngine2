@@ -9,7 +9,9 @@ package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.InputAdapter;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -28,9 +30,12 @@ public class EntityImporterImagePainter extends JPanel{
 	private final EntityImporterGrid grid;
 	private final int width;
 	private final int height;
+	private final InputAdapter drag;
+	private final InputAdapter tileSelect;
+	private boolean confirmed;
+	private EntityImporterGrid tileGrid;
 	private int posX;
 	private int posY;
-	private boolean confirmed;
 	public EntityImporterImagePainter(BufferedImage image, EntityImporterGrid grid){
 		this.image = image;
 		this.grid = grid;
@@ -38,7 +43,7 @@ public class EntityImporterImagePainter extends JPanel{
 		height = nextMultiple(image.getHeight());
 		System.out.println("Scaled to "+width+" x "+height);
 		setPreferredSize(new Dimension(width, height));
-		InputAdapter ia = new InputAdapter(){
+		drag = new InputAdapter(){
 			private int downX;
 			private int downY;
 			private int posStartX;
@@ -52,21 +57,64 @@ public class EntityImporterImagePainter extends JPanel{
 			}
 			@Override
 			public void mouseDragged(MouseEvent event){
-				if(!confirmed){
-					posX = (event.getX()-downX)+posStartX;
-					posY = (event.getY()-downY)+posStartY;
-					repaint();
-				}
+				posX = (event.getX()-downX)+posStartX;
+				posY = (event.getY()-downY)+posStartY;
+				repaint();
 			}
 		};
-		addMouseListener(ia);
-		addMouseMotionListener(ia);
+		addMouseListener(drag);
+		addMouseMotionListener(drag);
+		tileSelect = new InputAdapter(){
+			private boolean showCursor;
+			@Override
+			public void mouseMoved(MouseEvent event){
+				cursor(event.getX(), event.getY());
+			}
+			@Override
+			public void mouseExited(MouseEvent event){
+				showCursor = false;
+				repaint();
+				grid.repaint();
+			}
+			@Override
+			public void mouseEntered(MouseEvent event){
+				showCursor = true;
+				cursor(event.getX(), event.getY());
+			}
+			@Override
+			public void mousePressed(MouseEvent event){
+				int x = event.getX();
+				int y = event.getY();
+				int tileX = (int)Math.floor((x/(float)(WraithEngine.projectBitSize/2)+(y/(float)(WraithEngine.projectBitSize/4)))/2);
+				int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
+				int cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
+				int cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
+				grid.cursorClick(cursorX, cursorY);
+				repaint();
+			}
+			private void cursor(int x, int y){
+				int tileX = (int)Math.floor((x/(float)(WraithEngine.projectBitSize/2)+(y/(float)(WraithEngine.projectBitSize/4)))/2);
+				int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
+				int cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
+				int cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
+				tileGrid.updateCursor(showCursor, cursorX, cursorY);
+				repaint();
+			}
+		};
 	}
 	@Override
 	public void paintComponent(Graphics g1){
 		Graphics2D g = (Graphics2D)g1;
 		grid.drawGrid(g, width, height);
+		Composite composite = null;
+		if(confirmed){
+			composite = g.getComposite();
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+		}
 		g.drawImage(image, posX, posY, null);
+		if(confirmed){
+			g.setComposite(composite);
+		}
 		g.setColor(Color.gray);
 		g.drawRect(0, 0, width-1, height-1);
 		g.dispose();
@@ -77,7 +125,14 @@ public class EntityImporterImagePainter extends JPanel{
 	public int getIdealHeight(){
 		return height;
 	}
-	public void setConfirmed(){
+	public void setConfirmed(EntityImporterGrid grid){
+		this.tileGrid = grid;
 		confirmed = true;
+		removeMouseListener(drag);
+		removeMouseMotionListener(drag);
+		addMouseListener(tileSelect);
+		addMouseMotionListener(tileSelect);
+		grid.addMouseListener(tileSelect);
+		grid.addMouseMotionListener(tileSelect);
 	}
 }

@@ -78,7 +78,7 @@ public class EntityImporter extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent e){
 					ok.setEnabled(true);
-					painter.setConfirmed();
+					painter.setConfirmed(grid);
 					main.remove(panel);
 					grid.build(painter.getIdealWidth(), painter.getIdealHeight());
 					main.add(grid, BorderLayout.EAST);

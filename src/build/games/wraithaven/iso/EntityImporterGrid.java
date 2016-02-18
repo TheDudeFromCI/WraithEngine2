@@ -8,14 +8,14 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.WraithEngine;
-import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 
 /**
@@ -43,32 +43,34 @@ public class EntityImporterGrid extends JPanel{
 	private boolean showCursor;
 	private int cursorX;
 	private int cursorY;
+	private ArrayList<Point> tiles = new ArrayList(16);
 	public EntityImporterGrid(){
 		isoSquare = generateIsoSquare();
-		InputAdapter ia = new InputAdapter(){
+	}
+	public void updateCursor(boolean show, int x, int y){
+		showCursor = show;
+		cursorX = x;
+		cursorY = y;
+		repaint();
+	}
+	public void cursorClick(int x, int y){
+		cursorX = x;
+		cursorY = y;
+		Point p = new Point(x, y){
 			@Override
-			public void mouseMoved(MouseEvent event){
-				cursor(event.getX(), event.getY());
-			}
-			@Override
-			public void mouseExited(MouseEvent event){
-				showCursor = false;
-				repaint();
-			}
-			@Override
-			public void mouseEntered(MouseEvent event){
-				showCursor = true;
-				cursor(event.getX(), event.getY());
+			public boolean equals(Object o){
+				if(o instanceof Point){
+					Point p = (Point)o;
+					return p.x==x&&p.y==y;
+				}
+				return false;
 			}
 		};
-		addMouseListener(ia);
-		addMouseMotionListener(ia);
-	}
-	public void cursor(int x, int y){
-		int tileX = (int)Math.floor((x/(float)(WraithEngine.projectBitSize/2)+(y/(float)(WraithEngine.projectBitSize/4)))/2);
-		int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
-		cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
-		cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
+		if(tiles.contains(p)){
+			tiles.remove(p);
+		}else{
+			tiles.add(p);
+		}
 		repaint();
 	}
 	public void build(int width, int height){
@@ -87,16 +89,21 @@ public class EntityImporterGrid extends JPanel{
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, w, h);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setColor(Color.gray);
 		int s = WraithEngine.projectBitSize;
 		int x, y;
 		if(showCursor){
 			g.translate(cursorX, cursorY);
 			g.setColor(Color.pink);
 			g.fillPolygon(isoSquare);
-			g.setColor(Color.gray);
 			g.translate(-cursorX, -cursorY);
 		}
+		for(Point p : tiles){
+			g.translate(p.x, p.y);
+			g.setColor(Color.red);
+			g.fillPolygon(isoSquare);
+			g.translate(-p.x, -p.y);
+		}
+		g.setColor(Color.gray);
 		boolean off = false;
 		for(y = 0; y<h; y += s/2){
 			for(x = off?-s:0; x<=w; x += s){

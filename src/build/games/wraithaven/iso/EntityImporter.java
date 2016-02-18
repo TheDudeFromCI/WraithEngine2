@@ -7,80 +7,115 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.VerticalFlowLayout;
-import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
  * @author TheDudeFromCI
  */
-public class EntityImporter extends JPanel{
-	private final String uuid;
+public class EntityImporter extends JFrame{
 	private final BufferedImage image;
-	private final int height;
-	private final JCheckBox below;
-	public EntityImporter(File file){
-		try{
-			image = ImageIO.read(file);
-		}catch(Exception exception){
-			throw new RuntimeException(exception.getMessage());
-		}
-		if(image.getWidth()!=WraithEngine.projectBitSize){
-			throw new WrongImageSizeException("Entity must be "+WraithEngine.projectBitSize+" pixels wide!");
-		}
-		if(image.getHeight()%WraithEngine.projectBitSize!=0){
-			throw new WrongImageSizeException("Entity must be a multiple of "+WraithEngine.projectBitSize+" pixels tall!");
-		}
-		height = image.getHeight()/WraithEngine.projectBitSize;
-		uuid = Algorithms.randomUUID();
-		setLayout(new BorderLayout(5, 0));
-		JPanel imagePreview = new JPanel(){
-			private final Dimension size;
-			{
-				size = new Dimension(image.getWidth(), image.getHeight());
-			}
-			@Override
-			public void paintComponent(Graphics g1){
-				Graphics2D g = (Graphics2D)g1;
-				g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				g.drawImage(image, 0, 0, null);
-				g.setColor(Color.gray);
-				g.drawRect(0, 0, image.getWidth()-1, image.getHeight()-1);
-				g.dispose();
-			}
-			@Override
-			public Dimension getPreferredSize(){
-				return size;
-			}
-		};
+	private final EntityImporterImagePainter painter;
+	private final EntityImporterGrid grid;
+	private final ChipsetList chipsetList;
+	private boolean isBelow;
+	public EntityImporter(File file, ChipsetList chipsetList) throws Exception{
+		this.chipsetList = chipsetList;
+		image = Algorithms.trimTransparency(ImageIO.read(file));
+		grid = new EntityImporterGrid();
+		painter = new EntityImporterImagePainter(image, grid);
+		setLayout(new BorderLayout());
+		JButton ok;
 		{
-			// Side bar information.
-			JPanel sideBar = new JPanel();
-			sideBar.setLayout(new VerticalFlowLayout(0, 5));
-			{
-				below = new JCheckBox("Is Below");
-				sideBar.add(below);
-			}
-			add(sideBar, BorderLayout.EAST);
+			// Add confirm and cancel buttons.
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+			ok = new JButton("Ok");
+			ok.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					build();
+				}
+			});
+			ok.setEnabled(false);
+			panel.add(ok);
+			JButton cancel = new JButton("Cancel");
+			cancel.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					dispose();
+				}
+			});
+			panel.add(cancel);
+			add(panel, BorderLayout.SOUTH);
 		}
-		add(imagePreview, BorderLayout.CENTER);
+		{
+			// Build components.
+			JPanel main = new JPanel();
+			main.setLayout(new BorderLayout());
+			JPanel panel = new JPanel();
+			panel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+			JCheckBox below = new JCheckBox("Is Below");
+			below.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					isBelow = below.isSelected();
+				}
+			});
+			panel.add(below);
+			JButton confirmButton = new JButton("Confirm");
+			confirmButton.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e){
+					ok.setEnabled(true);
+					painter.setConfirmed();
+					main.remove(panel);
+					grid.build(painter.getIdealWidth(), painter.getIdealHeight());
+					main.add(grid, BorderLayout.EAST);
+					main.revalidate();
+					pack();
+					repaint();
+				}
+			});
+			panel.add(confirmButton);
+			main.add(panel, BorderLayout.SOUTH);
+			main.add(painter, BorderLayout.CENTER);
+			add(main, BorderLayout.CENTER);
+		}
+		setTitle("Entity Import");
+		setLocationRelativeTo(null);
+		setResizable(false);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		pack();
 	}
-	public EntityType build(TileCategory cat){
-		return new EntityType(uuid, below.isSelected()?-height:height, cat);
+	public boolean isBelow(){
+		return isBelow;
 	}
-	public BufferedImage getEntityImage(){
-		return image;
+	private void build(){
+		TileCategory cat = chipsetList.getSelectedCategory();
+		EntityType[] entities = build(cat);
+		BufferedImage[] images = getImages();
+		for(int i = 0; i<entities.length; i++){
+			cat.addEntityType(entities[i], images[i]);
+		}
+		chipsetList.getEntityList().repaint();
+	}
+	private EntityType[] build(TileCategory cat){
+		// TODO
+		return null;
+	}
+	private BufferedImage[] getImages(){
+		// TODO
+		return null;
 	}
 }

@@ -165,7 +165,7 @@ public class EntityImporter extends JFrame{
 				g2.dispose();
 				col = nCol;
 			}
-			cat.addEntityType(new EntityType(Algorithms.randomUUID(), colHeight, cat), col);
+			cat.addEntityType(new EntityType(Algorithms.randomUUID(), colHeight, cat, true), col);
 			g.clearRect(x, y, w, h);
 		}
 		g.dispose();

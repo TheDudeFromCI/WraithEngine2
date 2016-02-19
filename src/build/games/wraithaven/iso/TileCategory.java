@@ -59,12 +59,8 @@ public class TileCategory{
 				}
 				int entityCount = bin.getInt();
 				entities = new ArrayList(Math.max(entityCount, 64));
-				String entityUuid;
-				int height;
 				for(int i = 0; i<entityCount; i++){
-					entityUuid = bin.getString();
-					height = bin.getInt();
-					entities.add(new EntityType(entityUuid, height, this));
+					entities.add(new EntityType(bin, version, this));
 				}
 				break;
 			default:
@@ -72,7 +68,7 @@ public class TileCategory{
 		}
 	}
 	private void save(){
-		BinaryFile bin = new BinaryFile(8+entities.size()*4+2);
+		BinaryFile bin = new BinaryFile(8+entities.size()*EntityType.BIN_STORAGE_SIZE+2);
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
 		bin.addInt(tiles.size());
@@ -81,8 +77,7 @@ public class TileCategory{
 		}
 		bin.addInt(entities.size());
 		for(EntityType entity : entities){
-			bin.addStringAllocated(entity.getUUID());
-			bin.addInt(entity.getHeight());
+			entity.store(bin);
 		}
 		bin.compress(false);
 		bin.compile(Algorithms.getFile("Categories", uuid+".dat"));
@@ -115,8 +110,6 @@ public class TileCategory{
 	}
 	public void addEntityType(EntityType e, BufferedImage originalImage){
 		entities.add(e);
-		int w = originalImage.getWidth();
-		int h = originalImage.getHeight();
 		try{
 			ImageIO.write(originalImage, "png", Algorithms.getFile("Entities", e.getCategory().getUUID(), e.getUUID()+".png"));
 		}catch(Exception exception){

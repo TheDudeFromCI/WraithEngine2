@@ -15,8 +15,12 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 
 /**
@@ -26,21 +30,39 @@ public class EntityImporterImagePainter extends JPanel{
 	private static int nextMultiple(int x){
 		return (int)(Math.ceil(x/(double)WraithEngine.projectBitSize)*WraithEngine.projectBitSize);
 	}
+	private static Polygon generateIsoSquare(){
+		int[] x = new int[4];
+		int[] y = new int[4];
+		int r = WraithEngine.projectBitSize/2;
+		int f = WraithEngine.projectBitSize/4;
+		x[0] = 0;
+		y[0] = 0;
+		x[1] = r;
+		y[1] = f;
+		x[2] = 0;
+		y[2] = r;
+		x[3] = -r;
+		y[3] = f;
+		return new Polygon(x, y, 4);
+	}
 	private final BufferedImage image;
-	private final EntityImporterGrid grid;
 	private final int width;
 	private final int height;
 	private final InputAdapter drag;
 	private final InputAdapter tileSelect;
+	private final Polygon isoSquare;
+	private final ArrayList<Point> tiles = new ArrayList(16);
 	private boolean confirmed;
-	private EntityImporterGrid tileGrid;
 	private int posX;
 	private int posY;
-	public EntityImporterImagePainter(BufferedImage image, EntityImporterGrid grid){
+	private boolean showCursor;
+	private int cursorX;
+	private int cursorY;
+	public EntityImporterImagePainter(BufferedImage image){
 		this.image = image;
-		this.grid = grid;
 		width = nextMultiple(image.getWidth());
 		height = nextMultiple(image.getHeight());
+		isoSquare = generateIsoSquare();
 		setPreferredSize(new Dimension(width, height));
 		drag = new InputAdapter(){
 			private int downX;
@@ -71,7 +93,6 @@ public class EntityImporterImagePainter extends JPanel{
 		addMouseListener(drag);
 		addMouseMotionListener(drag);
 		tileSelect = new InputAdapter(){
-			private boolean showCursor;
 			@Override
 			public void mouseMoved(MouseEvent event){
 				cursor(event.getX(), event.getY());
@@ -80,7 +101,6 @@ public class EntityImporterImagePainter extends JPanel{
 			public void mouseExited(MouseEvent event){
 				showCursor = false;
 				repaint();
-				grid.repaint();
 			}
 			@Override
 			public void mouseEntered(MouseEvent event){
@@ -89,21 +109,15 @@ public class EntityImporterImagePainter extends JPanel{
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
-				int x = event.getX();
-				int y = event.getY();
-				int tileX = (int)Math.floor((x/(float)(WraithEngine.projectBitSize/2)+(y/(float)(WraithEngine.projectBitSize/4)))/2);
-				int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
-				int cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
-				int cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
-				grid.cursorClick(cursorX, cursorY);
+				cursor(event.getX(), event.getY());
+				cursorClick();
 				repaint();
 			}
 			private void cursor(int x, int y){
 				int tileX = (int)Math.floor((x/(float)(WraithEngine.projectBitSize/2)+(y/(float)(WraithEngine.projectBitSize/4)))/2);
 				int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
-				int cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
-				int cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
-				tileGrid.updateCursor(showCursor, cursorX, cursorY);
+				cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
+				cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
 				repaint();
 			}
 		};
@@ -111,7 +125,7 @@ public class EntityImporterImagePainter extends JPanel{
 	@Override
 	public void paintComponent(Graphics g1){
 		Graphics2D g = (Graphics2D)g1;
-		grid.drawGrid(g, width, height);
+		drawGrid(g, width, height);
 		Composite composite = null;
 		if(confirmed){
 			composite = g.getComposite();
@@ -131,15 +145,12 @@ public class EntityImporterImagePainter extends JPanel{
 	public int getIdealHeight(){
 		return height;
 	}
-	public void setConfirmed(EntityImporterGrid grid){
-		this.tileGrid = grid;
+	public void setConfirmed(){
 		confirmed = true;
 		removeMouseListener(drag);
 		removeMouseMotionListener(drag);
 		addMouseListener(tileSelect);
 		addMouseMotionListener(tileSelect);
-		grid.addMouseListener(tileSelect);
-		grid.addMouseMotionListener(tileSelect);
 	}
 	public int getImageX(){
 		return posX;
@@ -149,5 +160,70 @@ public class EntityImporterImagePainter extends JPanel{
 	}
 	public BufferedImage getImage(){
 		return image;
+	}
+	public void drawGrid(Graphics2D g, int w, int h){
+		g.setColor(Color.lightGray);
+		g.fillRect(0, 0, w, h);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		int s = WraithEngine.projectBitSize;
+		int x, y;
+		if(showCursor){
+			g.translate(cursorX, cursorY);
+			g.setColor(Color.pink);
+			g.fillPolygon(isoSquare);
+			g.translate(-cursorX, -cursorY);
+		}
+		g.setColor(Color.red);
+		for(Point p : tiles){
+			g.translate(p.x, p.y);
+			g.fillPolygon(isoSquare);
+			g.translate(-p.x, -p.y);
+		}
+		g.setColor(Color.gray);
+		boolean off = false;
+		for(y = 0; y<h; y += s/2){
+			for(x = off?-s:0; x<=w; x += s){
+				drawSquare(g, x, y);
+			}
+			off = !off;
+		}
+	}
+	private void drawSquare(Graphics2D g, int x, int y){
+		g.translate(x, y);
+		g.drawPolygon(isoSquare);
+		g.translate(-x, -y);
+	}
+	private void cursorClick(){
+		Point p = new Point(cursorX, cursorY){
+			@Override
+			public boolean equals(Object o){
+				if(o instanceof Point){
+					Point p = (Point)o;
+					return p.x==x&&p.y==y;
+				}
+				return false;
+			}
+			@Override
+			public int hashCode(){
+				// Eh. Good enough for what we are using this for.
+				return super.hashCode();
+			}
+		};
+		if(tiles.contains(p)){
+			tiles.remove(p);
+		}else{
+			tiles.add(p);
+		}
+		repaint();
+	}
+	public ArrayList<Point> getTiles(){
+		return tiles;
+	}
+	public int getLayers(){
+		int minY = Integer.MAX_VALUE;
+		for(Point p : tiles){
+			minY = Math.min(minY, p.y);
+		}
+		return (int)Math.ceil(minY/(float)WraithEngine.projectBitSize)+1;
 	}
 }

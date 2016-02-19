@@ -11,9 +11,7 @@ import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -35,14 +33,12 @@ import javax.swing.JPanel;
 public class EntityImporter extends JFrame{
 	private final BufferedImage image;
 	private final EntityImporterImagePainter painter;
-	private final EntityImporterGrid grid;
 	private final ChipsetList chipsetList;
 	private boolean isBelow;
 	public EntityImporter(File file, ChipsetList chipsetList) throws Exception{
 		this.chipsetList = chipsetList;
 		image = Algorithms.trimTransparency(ImageIO.read(file));
-		grid = new EntityImporterGrid();
-		painter = new EntityImporterImagePainter(image, grid);
+		painter = new EntityImporterImagePainter(image);
 		setLayout(new BorderLayout());
 		JButton ok;
 		{
@@ -87,10 +83,8 @@ public class EntityImporter extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent e){
 					ok.setEnabled(true);
-					painter.setConfirmed(grid);
+					painter.setConfirmed();
 					main.remove(panel);
-					grid.build(painter.getIdealWidth(), painter.getIdealHeight());
-					main.add(grid, BorderLayout.EAST);
 					main.revalidate();
 					pack();
 					repaint();
@@ -111,14 +105,12 @@ public class EntityImporter extends JFrame{
 		return isBelow;
 	}
 	private void build(){
-		ArrayList<Point> tiles = grid.getTiles();
+		ArrayList<Point> tiles = painter.getTiles();
 		if(tiles.isEmpty()){
 			JOptionPane.showMessageDialog(null, "You must select at least one base tile!", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		int layers = grid.getLayers();
-		System.out.println("Tiles: "+tiles.size());
-		System.out.println("Layers: "+layers);
+		int layers = painter.getLayers();
 		tiles.sort(new Comparator<Point>(){
 			@Override
 			public int compare(Point a, Point b){
@@ -133,7 +125,6 @@ public class EntityImporter extends JFrame{
 		g.drawImage(painter.getImage(), painter.getImageX(), painter.getImageY(), null);
 		g.setBackground(new Color(0, 0, 0, 0));
 		TileCategory cat = chipsetList.getSelectedCategory();
-		int i = 0;
 		int s = WraithEngine.projectBitSize;
 		int x, y, w, h;
 		for(Point t : tiles){
@@ -159,24 +150,9 @@ public class EntityImporter extends JFrame{
 			}
 			cat.addEntityType(new EntityType(Algorithms.randomUUID(), colHeight, cat), col);
 			g.clearRect(x, y, w, h);
-			if(i==0){
-				// g.setColor(new Color((float)Math.random(), (float)Math.random(), (float)Math.random()));
-				// g.drawRect(x, y, w, h);
-			}
-			i++;
 		}
 		g.dispose();
-		add(new JPanel(){
-			{
-				setPreferredSize(new Dimension(temp.getWidth(), temp.getHeight()));
-			}
-			@Override
-			public void paintComponent(Graphics g){
-				g.drawImage(temp, 0, 0, null);
-				g.dispose();
-			}
-		}, BorderLayout.NORTH);
-		pack();
 		chipsetList.getEntityList().repaint();
+		dispose();
 	}
 }

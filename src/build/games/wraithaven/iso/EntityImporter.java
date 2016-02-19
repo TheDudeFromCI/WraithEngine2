@@ -37,7 +37,11 @@ public class EntityImporter extends JFrame{
 	private boolean isBelow;
 	public EntityImporter(File file, ChipsetList chipsetList) throws Exception{
 		this.chipsetList = chipsetList;
-		image = Algorithms.trimTransparency(ImageIO.read(file));
+		BufferedImage fileIn = ImageIO.read(file);
+		if(fileIn.getWidth()%WraithEngine.projectBitSize!=0||fileIn.getHeight()%WraithEngine.projectBitSize!=0){
+			fileIn = Algorithms.trimTransparency(fileIn);
+		}
+		image = fileIn;
 		painter = new EntityImporterImagePainter(image);
 		setLayout(new BorderLayout());
 		JButton ok;

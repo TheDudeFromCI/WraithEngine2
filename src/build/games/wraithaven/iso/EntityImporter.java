@@ -31,6 +31,16 @@ import javax.swing.JPanel;
  * @author TheDudeFromCI
  */
 public class EntityImporter extends JFrame{
+	private static boolean isEmptyImage(BufferedImage img){
+		int[] rgb = new int[img.getWidth()*img.getHeight()];
+		img.getRGB(0, 0, img.getWidth(), img.getHeight(), rgb, 0, img.getWidth());
+		for(int i : rgb){
+			if(((i>>24)&0xFF)>0){
+				return false;
+			}
+		}
+		return true;
+	}
 	private final BufferedImage image;
 	private final EntityImporterImagePainter painter;
 	private final ChipsetList chipsetList;
@@ -144,6 +154,9 @@ public class EntityImporter extends JFrame{
 				y = 0;
 			}
 			BufferedImage col = temp.getSubimage(x, y, w, h);
+			if(isEmptyImage(col)){
+				continue;
+			}
 			int colHeight = (int)Math.ceil(h/(float)s);
 			if(col.getHeight()!=colHeight*s){
 				BufferedImage nCol = new BufferedImage(col.getWidth(), colHeight*s, BufferedImage.TYPE_INT_ARGB);

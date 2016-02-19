@@ -40,6 +40,9 @@ public class TileInstance{
 		return null;
 	}
 	public void setEntity(EntityType entity, Layer selectedLayer){
+		if(selectedLayer==null){
+			return;
+		}
 		if(entity==null){
 			entities.remove(selectedLayer);
 		}else{

@@ -41,7 +41,6 @@ public class EntityImporterImagePainter extends JPanel{
 		this.grid = grid;
 		width = nextMultiple(image.getWidth());
 		height = nextMultiple(image.getHeight());
-		System.out.println("Scaled to "+width+" x "+height);
 		setPreferredSize(new Dimension(width, height));
 		drag = new InputAdapter(){
 			private int downX;
@@ -57,8 +56,15 @@ public class EntityImporterImagePainter extends JPanel{
 			}
 			@Override
 			public void mouseDragged(MouseEvent event){
+				// Drag around the image.
 				posX = (event.getX()-downX)+posStartX;
 				posY = (event.getY()-downY)+posStartY;
+				// Don't let the user move the image outside of the frame.
+				posX = Math.max(posX, 0);
+				posY = Math.max(posY, 0);
+				posX = Math.min(posX, width-image.getWidth());
+				posY = Math.min(posY, height-image.getHeight());
+				// Draw
 				repaint();
 			}
 		};
@@ -134,5 +140,14 @@ public class EntityImporterImagePainter extends JPanel{
 		addMouseMotionListener(tileSelect);
 		grid.addMouseListener(tileSelect);
 		grid.addMouseMotionListener(tileSelect);
+	}
+	public int getImageX(){
+		return posX;
+	}
+	public int getImageY(){
+		return posY;
+	}
+	public BufferedImage getImage(){
+		return image;
 	}
 }

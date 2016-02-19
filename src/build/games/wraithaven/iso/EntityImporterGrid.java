@@ -97,9 +97,9 @@ public class EntityImporterGrid extends JPanel{
 			g.fillPolygon(isoSquare);
 			g.translate(-cursorX, -cursorY);
 		}
+		g.setColor(Color.red);
 		for(Point p : tiles){
 			g.translate(p.x, p.y);
-			g.setColor(Color.red);
 			g.fillPolygon(isoSquare);
 			g.translate(-p.x, -p.y);
 		}
@@ -116,5 +116,15 @@ public class EntityImporterGrid extends JPanel{
 		g.translate(x, y);
 		g.drawPolygon(isoSquare);
 		g.translate(-x, -y);
+	}
+	public ArrayList<Point> getTiles(){
+		return tiles;
+	}
+	public int getLayers(){
+		int minY = Integer.MAX_VALUE;
+		for(Point p : tiles){
+			minY = Math.min(minY, p.y);
+		}
+		return (int)Math.ceil(minY/(float)WraithEngine.projectBitSize)+1;
 	}
 }

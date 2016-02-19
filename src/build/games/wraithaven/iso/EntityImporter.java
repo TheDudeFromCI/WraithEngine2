@@ -7,17 +7,26 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -102,20 +111,72 @@ public class EntityImporter extends JFrame{
 		return isBelow;
 	}
 	private void build(){
-		TileCategory cat = chipsetList.getSelectedCategory();
-		EntityType[] entities = build(cat);
-		BufferedImage[] images = getImages();
-		for(int i = 0; i<entities.length; i++){
-			cat.addEntityType(entities[i], images[i]);
+		ArrayList<Point> tiles = grid.getTiles();
+		if(tiles.isEmpty()){
+			JOptionPane.showMessageDialog(null, "You must select at least one base tile!", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
+		int layers = grid.getLayers();
+		System.out.println("Tiles: "+tiles.size());
+		System.out.println("Layers: "+layers);
+		tiles.sort(new Comparator<Point>(){
+			@Override
+			public int compare(Point a, Point b){
+				if(a.y==b.y){
+					return a.x==b.x?0:a.x>b.x?1:-1;
+				}
+				return a.y>b.y?-1:1;
+			}
+		});
+		BufferedImage temp = new BufferedImage(painter.getIdealWidth(), painter.getIdealHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = temp.createGraphics();
+		g.drawImage(painter.getImage(), painter.getImageX(), painter.getImageY(), null);
+		g.setBackground(new Color(0, 0, 0, 0));
+		TileCategory cat = chipsetList.getSelectedCategory();
+		int i = 0;
+		int s = WraithEngine.projectBitSize;
+		int x, y, w, h;
+		for(Point t : tiles){
+			w = s;
+			h = layers*s;
+			x = t.x-s/2;
+			y = t.y+s-h;
+			if(y+h>=temp.getHeight()){
+				h = (temp.getHeight()-1)-y;
+			}
+			if(y<0){
+				h += y;
+				y = 0;
+			}
+			BufferedImage col = temp.getSubimage(x, y, w, h);
+			int colHeight = (int)Math.ceil(h/(float)s);
+			if(col.getHeight()!=colHeight*s){
+				BufferedImage nCol = new BufferedImage(col.getWidth(), colHeight*s, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D g2 = nCol.createGraphics();
+				g2.drawImage(col, 0, 0, null);
+				g2.dispose();
+				col = nCol;
+			}
+			cat.addEntityType(new EntityType(Algorithms.randomUUID(), colHeight, cat), col);
+			g.clearRect(x, y, w, h);
+			if(i==0){
+				// g.setColor(new Color((float)Math.random(), (float)Math.random(), (float)Math.random()));
+				// g.drawRect(x, y, w, h);
+			}
+			i++;
+		}
+		g.dispose();
+		add(new JPanel(){
+			{
+				setPreferredSize(new Dimension(temp.getWidth(), temp.getHeight()));
+			}
+			@Override
+			public void paintComponent(Graphics g){
+				g.drawImage(temp, 0, 0, null);
+				g.dispose();
+			}
+		}, BorderLayout.NORTH);
+		pack();
 		chipsetList.getEntityList().repaint();
-	}
-	private EntityType[] build(TileCategory cat){
-		// TODO
-		return null;
-	}
-	private BufferedImage[] getImages(){
-		// TODO
-		return null;
 	}
 }

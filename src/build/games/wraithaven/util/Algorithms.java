@@ -114,4 +114,40 @@ public class Algorithms{
 		}while(s!=size); // This loop enhances quality, while resizing!
 		return buf;
 	}
+	public static BufferedImage trimTransparency(BufferedImage in){
+		int minX = Integer.MAX_VALUE;
+		int minY = Integer.MAX_VALUE;
+		int maxX = Integer.MIN_VALUE;
+		int maxY = Integer.MIN_VALUE;
+		int[] rgb = new int[in.getWidth()*in.getHeight()];
+		in.getRGB(0, 0, in.getWidth(), in.getHeight(), rgb, 0, in.getWidth());
+		int x, y, i, a;
+		for(y = 0; y<in.getHeight(); y++){
+			for(x = 0; x<in.getWidth(); x++){
+				// TODO Skip already checked regions for a slight speed increase.
+				i = y*in.getWidth()+x;
+				a = (rgb[i]>>24)&0xFF;
+				if(a==0){
+					continue;
+				}
+				minX = Math.min(minX, x);
+				minY = Math.min(minY, y);
+				maxX = Math.max(maxX, x);
+				maxY = Math.max(maxY, y);
+			}
+		}
+		if(minX==Integer.MAX_VALUE){
+			// If nothing is visible.
+			throw new IllegalArgumentException("Image contains no visible pixels!");
+		}
+		if(minX==0&&minY==0&&maxX==in.getWidth()-1&&maxY==in.getHeight()-1){
+			// All transparency is already trimmed.
+			return in;
+		}
+		BufferedImage out = new BufferedImage(maxX-minX+1, maxY-minY+1, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = out.createGraphics();
+		g.drawImage(in, minX, minY, null);
+		g.dispose();
+		return out;
+	}
 }

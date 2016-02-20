@@ -7,17 +7,40 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.util.BinaryFile;
+
 /**
  * @author TheDudeFromCI
  */
 public class EntityType{
+	public static int BIN_STORAGE_SIZE = 4+1;
 	private final String uuid;
 	private final int height;
 	private final TileCategory cat;
-	public EntityType(String uuid, int height, TileCategory cat){
+	private final boolean complex;
+	public EntityType(String uuid, int height, TileCategory cat, boolean complex){
 		this.uuid = uuid;
 		this.height = height;
 		this.cat = cat;
+		this.complex = complex;
+	}
+	// public EntityType(String uuid, int height, TileCategory cat){
+	// this.uuid = uuid;
+	// this.height = height;
+	// this.cat = cat;
+	// this.complex = false;
+	// }
+	public EntityType(BinaryFile bin, short fileVersion, TileCategory cat){
+		this.cat = cat;
+		switch(fileVersion){
+			case 0:
+				uuid = bin.getString();
+				height = bin.getInt();
+				complex = bin.getBoolean();
+				break;
+			default:
+				throw new RuntimeException();
+		}
 	}
 	public String getUUID(){
 		return uuid;
@@ -27,5 +50,10 @@ public class EntityType{
 	}
 	public TileCategory getCategory(){
 		return cat;
+	}
+	public void store(BinaryFile bin){
+		bin.addStringAllocated(uuid);
+		bin.addInt(height);
+		bin.addBoolean(complex);
 	}
 }

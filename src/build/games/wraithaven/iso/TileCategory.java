@@ -21,6 +21,7 @@ public class TileCategory{
 	private static final short FILE_VERSION = 0;
 	private final String uuid;
 	private final IsoMapStyle mapStyle;
+	private final ComplexEntityList complexEntityList;
 	private ArrayList<Tile> tiles;
 	private ArrayList<EntityType> entities;
 	private String name;
@@ -28,6 +29,7 @@ public class TileCategory{
 		this.mapStyle = mapStyle;
 		this.uuid = uuid;
 		load();
+		complexEntityList = new ComplexEntityList(this);
 	}
 	public String getUUID(){
 		return uuid;
@@ -138,5 +140,8 @@ public class TileCategory{
 		Algorithms.deleteFile(Algorithms.getFile("Categories", uuid+".dat"));
 		Algorithms.deleteFile(Algorithms.getFile("Entities", uuid));
 		Algorithms.deleteFile(Algorithms.getFile("Chipsets", uuid));
+	}
+	public ComplexEntityList getComplexEntityList(){
+		return complexEntityList;
 	}
 }

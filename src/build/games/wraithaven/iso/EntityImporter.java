@@ -140,6 +140,8 @@ public class EntityImporter extends JFrame{
 		g.setBackground(new Color(0, 0, 0, 0));
 		TileCategory cat = chipsetList.getSelectedCategory();
 		int s = WraithEngine.projectBitSize;
+		ComplexEntityBuilder builder = new ComplexEntityBuilder();
+		EntityType entity;
 		int x, y, w, h;
 		for(Point t : tiles){
 			w = s;
@@ -165,10 +167,17 @@ public class EntityImporter extends JFrame{
 				g2.dispose();
 				col = nCol;
 			}
-			cat.addEntityType(new EntityType(Algorithms.randomUUID(), colHeight, cat, true), col);
+			entity = new EntityType(Algorithms.randomUUID(), colHeight, cat, true);
+			cat.addEntityType(entity, col);
+			int tileX = (int)Math.floor(((t.x-tiles.get(0).x)/(float)(s/2)+(t.y-tiles.get(0).y)/(float)(s/4))/2);
+			int tileY = (int)Math.floor(((t.y-tiles.get(0).y)/(float)(s/4)-((t.x-tiles.get(0).x)/(float)(s/2)))/2);
+			builder.addEntity(entity, tileX, tileY);
 			g.clearRect(x, y, w, h);
 		}
 		g.dispose();
+		builder.setPreview(painter.getImage());
+		ComplexEntity complex = builder.build();
+		cat.getComplexEntityList().addComplexEntity(complex);
 		chipsetList.getEntityList().repaint();
 		dispose();
 	}

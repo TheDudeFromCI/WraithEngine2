@@ -154,6 +154,13 @@ public class EntityImporter extends JFrame{
 				h += y;
 				y = 0;
 			}
+			if(x+w>=temp.getWidth()){
+				w = (temp.getWidth()-1)-x;
+			}
+			if(x<0){
+				w += x;
+				x = 0;
+			}
 			BufferedImage col = temp.getSubimage(x, y, w, h);
 			if(isEmptyImage(col)){
 				dispose();
@@ -184,6 +191,13 @@ public class EntityImporter extends JFrame{
 				if(y<0){
 					h += y;
 					y = 0;
+				}
+				if(x+w>=temp.getWidth()){
+					w = (temp.getWidth()-1)-x;
+				}
+				if(x<0){
+					w += x;
+					x = 0;
 				}
 				BufferedImage col = temp.getSubimage(x, y, w, h);
 				if(isEmptyImage(col)){

@@ -140,10 +140,9 @@ public class EntityImporter extends JFrame{
 		g.setBackground(new Color(0, 0, 0, 0));
 		TileCategory cat = chipsetList.getSelectedCategory();
 		int s = WraithEngine.projectBitSize;
-		ComplexEntityBuilder builder = new ComplexEntityBuilder();
-		EntityType entity;
-		int x, y, w, h;
-		for(Point t : tiles){
+		if(tiles.size()==1){
+			int x, y, w, h;
+			Point t = tiles.get(0);
 			w = s;
 			h = layers*s;
 			x = t.x-s/2;
@@ -157,7 +156,8 @@ public class EntityImporter extends JFrame{
 			}
 			BufferedImage col = temp.getSubimage(x, y, w, h);
 			if(isEmptyImage(col)){
-				continue;
+				dispose();
+				return;
 			}
 			int colHeight = (int)Math.ceil(h/(float)s);
 			if(col.getHeight()!=colHeight*s){
@@ -167,19 +167,49 @@ public class EntityImporter extends JFrame{
 				g2.dispose();
 				col = nCol;
 			}
-			entity = new EntityType(Algorithms.randomUUID(), colHeight, cat, true);
+			EntityType entity = new EntityType(Algorithms.randomUUID(), colHeight, cat, false);
 			cat.addEntityType(entity, col);
-			int tileX = (int)Math.floor(((t.x-tiles.get(0).x)/(float)(s/2)+(t.y-tiles.get(0).y)/(float)(s/4))/2);
-			int tileY = (int)Math.floor(((t.y-tiles.get(0).y)/(float)(s/4)-((t.x-tiles.get(0).x)/(float)(s/2)))/2);
-			builder.addEntity(entity, tileX, tileY);
-			g.clearRect(x, y, w, h);
+		}else{
+			EntityType entity;
+			int x, y, w, h;
+			ComplexEntityBuilder builder = new ComplexEntityBuilder();
+			for(Point t : tiles){
+				w = s;
+				h = layers*s;
+				x = t.x-s/2;
+				y = t.y+s-h;
+				if(y+h>=temp.getHeight()){
+					h = (temp.getHeight()-1)-y;
+				}
+				if(y<0){
+					h += y;
+					y = 0;
+				}
+				BufferedImage col = temp.getSubimage(x, y, w, h);
+				if(isEmptyImage(col)){
+					continue;
+				}
+				int colHeight = (int)Math.ceil(h/(float)s);
+				if(col.getHeight()!=colHeight*s){
+					BufferedImage nCol = new BufferedImage(col.getWidth(), colHeight*s, BufferedImage.TYPE_INT_ARGB);
+					Graphics2D g2 = nCol.createGraphics();
+					g2.drawImage(col, 0, 0, null);
+					g2.dispose();
+					col = nCol;
+				}
+				entity = new EntityType(Algorithms.randomUUID(), colHeight, cat, true);
+				cat.addEntityType(entity, col);
+				int tileX = (int)Math.floor(((t.x-tiles.get(0).x)/(float)(s/2)+(t.y-tiles.get(0).y)/(float)(s/4))/2);
+				int tileY = (int)Math.floor(((t.y-tiles.get(0).y)/(float)(s/4)-((t.x-tiles.get(0).x)/(float)(s/2)))/2);
+				builder.addEntity(entity, tileX, tileY);
+				g.clearRect(x, y, w, h);
+			}
+			builder.setPreview(painter.getImage());
+			ComplexEntity complex = builder.build();
+			cat.getComplexEntityList().addComplexEntity(complex);
 		}
 		g.dispose();
-		builder.setPreview(painter.getImage());
-		ComplexEntity complex = builder.build();
-		cat.getComplexEntityList().addComplexEntity(complex);
 		chipsetList.getEntityList().updateEntities();
-		chipsetList.getEntityList().repaint();
 		dispose();
 	}
 }

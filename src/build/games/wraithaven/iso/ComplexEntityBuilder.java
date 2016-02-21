@@ -10,6 +10,7 @@ package build.games.wraithaven.iso;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 
 /**
  * @author TheDudeFromCI
@@ -39,6 +40,11 @@ public class ComplexEntityBuilder{
 		for(int i = 0; i<positionList.length; i++){
 			positionList[i] = positions.get(i);
 		}
-		return new ComplexEntity(Algorithms.randomUUID(), entityList, positionList);
+		try{
+			ImageIO.write(preview, "png", Algorithms.getFile("Entities", "Complex", uuid+".png"));
+		}catch(Exception exception){
+			exception.printStackTrace();
+		}
+		return new ComplexEntity(uuid, entityList, positionList);
 	}
 }

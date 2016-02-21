@@ -41,6 +41,7 @@ public class EntityList extends JPanel{
 	private static final int PREVIEW_ICON_SIZE = 64;
 	private final Polygon cursor;
 	private final IsoMapStyle mapStyle;
+	private final ArrayList<EntityInterface> entities = new ArrayList(16);
 	public EntityList(IsoMapStyle mapStyle){
 		this.mapStyle = mapStyle;
 		cursor = generateCursor();
@@ -51,7 +52,6 @@ public class EntityList extends JPanel{
 				int x = event.getX()/PREVIEW_ICON_SIZE;
 				int y = event.getY()/PREVIEW_ICON_SIZE;
 				int index = y*PREVIEW_WIDTH+x-1;
-				ArrayList<EntityType> entities = mapStyle.getChipsetList().getSelectedCategory().getEntities();
 				CursorSelection cursorSelection = mapStyle.getChipsetList().getPainter().getCursorSelection();
 				if(index<0||index>=entities.size()){
 					cursorSelection.setSelectedEntity(null, -1);
@@ -64,13 +64,26 @@ public class EntityList extends JPanel{
 		};
 		addMouseListener(ia);
 	}
-	private void updatePrefferedSize(){
-		try{
-			ArrayList<EntityType> entities = mapStyle.getChipsetList().getSelectedCategory().getEntities();
-			setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil((entities.size()+1)/(double)PREVIEW_WIDTH), 150)));
-		}catch(Exception exception){
-			setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, 150));
+	public void updateEntities(){
+		TileCategory cat = mapStyle.getChipsetList().getSelectedCategory();
+		entities.clear();
+		if(cat!=null){
+			for(EntityType e : cat.getEntities()){
+				if(e.isComplex()){
+					continue;
+				}
+				entities.add(e);
+			}
+			for(ComplexEntity e : cat.getComplexEntityList().getAllEntities()){
+				entities.add(e);
+			}
 		}
+		mapStyle.getChipsetList().getPainter().getCursorSelection().setSelectedEntity(null, -1);
+		updatePrefferedSize();
+		repaint();
+	}
+	private void updatePrefferedSize(){
+		setPreferredSize(new Dimension(PREVIEW_WIDTH*PREVIEW_ICON_SIZE, Math.max((int)Math.ceil((entities.size()+1)/(double)PREVIEW_WIDTH), 150)));
 	}
 	@Override
 	public void paintComponent(Graphics g1){
@@ -83,10 +96,9 @@ public class EntityList extends JPanel{
 		int x = PREVIEW_ICON_SIZE;
 		int y = 0;
 		int[] imageSize = new int[4];
-		ArrayList<EntityType> entities = mapStyle.getChipsetList().getSelectedCategory().getEntities();
 		MapImageStorage imageStorage = mapStyle.getMapEditor().getImageStorage();
 		BufferedImage image;
-		for(EntityType e : entities){
+		for(EntityInterface e : entities){
 			image = imageStorage.getImage(e);
 			getImageSize(image, imageSize);
 			g.drawImage(image, x+imageSize[0], y+imageSize[1], imageSize[2], imageSize[3], null);
@@ -117,10 +129,5 @@ public class EntityList extends JPanel{
 		}
 		out[0] = (PREVIEW_ICON_SIZE-out[2])/2;
 		out[1] = (PREVIEW_ICON_SIZE-out[3])/2;
-	}
-	public void updateEntities(){
-		updatePrefferedSize();
-		mapStyle.getChipsetList().getPainter().getCursorSelection().setSelectedEntity(null, -1);
-		repaint();
 	}
 }

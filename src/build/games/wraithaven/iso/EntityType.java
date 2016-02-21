@@ -12,7 +12,7 @@ import build.games.wraithaven.util.BinaryFile;
 /**
  * @author TheDudeFromCI
  */
-public class EntityType{
+public class EntityType implements EntityInterface{
 	public static int BIN_STORAGE_SIZE = 4+1;
 	private final String uuid;
 	private final int height;
@@ -24,12 +24,6 @@ public class EntityType{
 		this.cat = cat;
 		this.complex = complex;
 	}
-	// public EntityType(String uuid, int height, TileCategory cat){
-	// this.uuid = uuid;
-	// this.height = height;
-	// this.cat = cat;
-	// this.complex = false;
-	// }
 	public EntityType(BinaryFile bin, short fileVersion, TileCategory cat){
 		this.cat = cat;
 		switch(fileVersion){
@@ -55,5 +49,8 @@ public class EntityType{
 		bin.addStringAllocated(uuid);
 		bin.addInt(height);
 		bin.addBoolean(complex);
+	}
+	public boolean isComplex(){
+		return complex;
 	}
 }

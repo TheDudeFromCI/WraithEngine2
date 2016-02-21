@@ -138,16 +138,27 @@ public class MapEditorPainter extends JPanel{
 						}else if(!tool.isDragBased()){
 							switch(tool){
 								case BASIC:
-									TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
-									if(tile!=null){
-										tile.setEntity(cursorSelection.getSelectedEntity(),
+									EntityInterface selectedEntity = cursorSelection.getSelectedEntity();
+									if(selectedEntity instanceof ComplexEntity){
+										((ComplexEntity)selectedEntity).place(map, cursorSelection.getTileX(), cursorSelection.getTileY(),
 											mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
 										map.setNeedsSaving();
 										updateNeedsSaving();
 										repaint();
+									}else{
+										TileInstance tile = map.getTile(cursorSelection.getTileX(), cursorSelection.getTileY());
+										if(tile!=null){
+											tile.setEntity((EntityType)selectedEntity, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
+											map.setNeedsSaving();
+											updateNeedsSaving();
+											repaint();
+										}
 									}
 									break;
 								case FILL:
+									if(!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+										return;
+									}
 									IsoMapFillableEntities fillable =
 										new IsoMapFillableEntities(map, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
 									fillable.fill(cursorSelection.getTileX(), cursorSelection.getTileY(), cursorSelection.getSelectedEntity());
@@ -199,6 +210,9 @@ public class MapEditorPainter extends JPanel{
 				drawing = false;
 				if(button==MouseEvent.BUTTON1){
 					if(tool.isDragBased()){
+						if(cursorSelection.isEntityActive()&&!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+							return;
+						}
 						if(cursorSelection.isOverMap()){
 							drawStartTileX = cursorSelection.getTileX();
 							drawStartTileY = cursorSelection.getTileY();
@@ -224,6 +238,9 @@ public class MapEditorPainter extends JPanel{
 							fillable = new IsoMapFillable(map);
 							selected = cursorSelection.getSelectedTile();
 						}else{
+							if(!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+								return;
+							}
 							fillable = new IsoMapFillableEntities(map, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());
 							selected = cursorSelection.getSelectedEntity();
 						}

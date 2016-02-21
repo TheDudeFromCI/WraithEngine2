@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 public class MapImageStorage{
 	private final HashMap<Tile,BufferedImage> tileImages = new HashMap(8);
 	private final HashMap<EntityType,BufferedImage> entityImages = new HashMap(4);
+	private final HashMap<ComplexEntity,BufferedImage> comEntityImages = new HashMap(4);
 	public BufferedImage getImage(Tile tile){
 		if(tileImages.containsKey(tile)){
 			return tileImages.get(tile);
@@ -44,8 +45,31 @@ public class MapImageStorage{
 			return null;
 		}
 	}
+	public BufferedImage getImage(ComplexEntity entity){
+		if(comEntityImages.containsKey(entity)){
+			return comEntityImages.get(entity);
+		}
+		try{
+			BufferedImage image = ImageIO.read(Algorithms.getFile("Entities", "Complex", entity.getUUID()+".png"));
+			comEntityImages.put(entity, image);
+			return image;
+		}catch(Exception exception){
+			exception.printStackTrace();
+			return null;
+		}
+	}
+	public BufferedImage getImage(EntityInterface entity){
+		if(entity instanceof EntityType){
+			return getImage((EntityType)entity);
+		}
+		if(entity instanceof ComplexEntity){
+			return getImage((ComplexEntity)entity);
+		}
+		return null;
+	}
 	public void clear(){
 		tileImages.clear();
 		entityImages.clear();
+		comEntityImages.clear();
 	}
 }

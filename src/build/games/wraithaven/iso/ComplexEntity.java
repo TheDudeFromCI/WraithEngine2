@@ -12,7 +12,7 @@ import build.games.wraithaven.util.BinaryFile;
 /**
  * @author TheDudeFromCI
  */
-public class ComplexEntity{
+public class ComplexEntity implements EntityInterface{
 	private final EntityType[] entities;
 	private final int[] positions;
 	private final String uuid;
@@ -54,5 +54,8 @@ public class ComplexEntity{
 				tile.setEntity(entities[i], layer);
 			}
 		}
+	}
+	public String getUUID(){
+		return uuid;
 	}
 }

@@ -20,7 +20,7 @@ public class CursorSelection{
 	private int mapWidth;
 	private int mapHeight;
 	private boolean onEditor;
-	private EntityType selectedEntity;
+	private EntityInterface selectedEntity;
 	private int selectedEntityIndex;
 	public void setScreenLocation(int x, int y){
 		screenX = x;
@@ -44,10 +44,10 @@ public class CursorSelection{
 	public Tile getSelectedTile(){
 		return selectedTile;
 	}
-	public EntityType getSelectedEntity(){
+	public EntityInterface getSelectedEntity(){
 		return selectedEntity;
 	}
-	public void setSelectedEntity(EntityType entity, int index){
+	public void setSelectedEntity(EntityInterface entity, int index){
 		selectedEntity = entity;
 		selectedEntityIndex = index;
 		selectedTile = null;

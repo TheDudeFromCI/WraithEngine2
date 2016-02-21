@@ -47,4 +47,10 @@ public class ComplexEntityList{
 		entities.add(complex);
 		save();
 	}
+	public int getSize(){
+		return entities.size();
+	}
+	public ArrayList<ComplexEntity> getAllEntities(){
+		return entities;
+	}
 }

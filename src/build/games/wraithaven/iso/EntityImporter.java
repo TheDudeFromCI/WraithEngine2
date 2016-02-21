@@ -178,6 +178,7 @@ public class EntityImporter extends JFrame{
 		builder.setPreview(painter.getImage());
 		ComplexEntity complex = builder.build();
 		cat.getComplexEntityList().addComplexEntity(complex);
+		chipsetList.getEntityList().updateEntities();
 		chipsetList.getEntityList().repaint();
 		dispose();
 	}

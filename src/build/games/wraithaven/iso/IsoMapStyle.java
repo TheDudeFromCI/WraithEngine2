@@ -43,6 +43,7 @@ public class IsoMapStyle implements MapStyle{
 		mapEditor = new MapEditor(this);
 		worldList = new WorldList(mapEditor);
 		frame = new JFrame();
+		updateEntityList();
 	}
 	public JFrame getFrame(){
 		return frame;

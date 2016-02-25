@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.core;
 
+import build.games.wraithaven.core.os.Installer;
 import java.io.File;
 import javax.swing.UIManager;
 
@@ -23,14 +24,17 @@ public class WraithEngine{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
+		Installer installer = new Installer();
+		installer.unloadAssets();
 		final String workspaceName = "WraithEngine Projects";
+		String dataFolder;
 		if(args.length>0){
-			workspaceFolder = args[0]+File.separatorChar+workspaceName;
+			dataFolder = args[0];
 		}else{
-			workspaceFolder = System.getProperty("user.dir")+File.separatorChar+workspaceName;
+			dataFolder = installer.getDataFolder().getAbsolutePath();
 		}
-		outputFolder = workspaceFolder;
-		assetFolder = System.getProperty("user.dir")+File.separatorChar+"Assets";
+		outputFolder = dataFolder+File.separatorChar+workspaceName;
+		assetFolder = dataFolder+File.separatorChar+"Assets";
 		new ProjectList();
 	}
 }

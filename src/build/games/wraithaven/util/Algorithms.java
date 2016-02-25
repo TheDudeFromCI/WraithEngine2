@@ -11,7 +11,14 @@ import build.games.wraithaven.core.WraithEngine;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -149,5 +156,25 @@ public class Algorithms{
 		g.drawImage(in, minX, minY, null);
 		g.dispose();
 		return out;
+	}
+	public static void copyFile(File file, File outFile) throws IOException{
+		try(BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile))){
+			byte[] buffer = new byte[4096];
+			int nBytes;
+			while((nBytes = in.read(buffer))!=-1){
+				out.write(buffer, 0, nBytes);
+			}
+			out.flush();
+		}
+	}
+	public static String readFileText(File file) throws IOException{
+		StringBuilder sb = new StringBuilder(64);
+		BufferedReader in = new BufferedReader(new FileReader(file));
+		String s;
+		while((s = in.readLine())!=null){
+			sb.append(s).append('\n');
+		}
+		return sb.toString();
 	}
 }

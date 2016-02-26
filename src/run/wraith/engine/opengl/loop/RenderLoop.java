@@ -5,11 +5,12 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine;
+package run.wraith.engine.opengl.loop;
 
 /**
  * @author thedudefromci
  */
-public class WraithEngineGame{
-	public static void main(String[] args){}
+public interface RenderLoop{
+	public void render();
+	public void update(double delta, double time);
 }

@@ -8,8 +8,8 @@
 package run.wraith.engine.opengl.loop;
 
 import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
 import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.opengl.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -27,6 +27,15 @@ public abstract class MainLoop{
 	private int fpsCap = 30;
 	private boolean rebuildWindow = false;
 	private WindowInitalizer nextWindowStats;
+	/**
+	 * This starts Open GL. This blocks until OpenGL terminates. Must be called on main thread. A window must be visible when this is called.
+	 *
+	 * @param renderLoop
+	 *            - The class in charge of rendering with OpenGL.
+	 * @param exitGame
+	 *            - Whether or not the program should exit when OpenGL is terminated. If true, the program will auto exist. If false, OpenGL is cleaned
+	 *            up, and this method returns as normal.
+	 */
 	public void begin(RenderLoop renderLoop, boolean exitGame){
 		try{
 			loop(renderLoop);
@@ -38,6 +47,12 @@ public abstract class MainLoop{
 			System.exit(0);
 		}
 	}
+	/**
+	 * This creates the game window. If a window already exists, it disposes the old one, and replaces it. Must be called on main thread.
+	 *
+	 * @param windowInitalizer
+	 *            - The window properties.
+	 */
 	public void buildWindow(WindowInitalizer windowInitalizer){
 		if(windowOpen){
 			rebuildWindow = true;
@@ -169,6 +184,7 @@ public abstract class MainLoop{
 		glfwMakeContextCurrent(window);
 		glfwSwapInterval(windowInitalizer.isvSync()?1:0);
 		glfwShowWindow(window);
+		GL.createCapabilities();
 	}
 	protected abstract void dispose();
 	protected abstract void preloop();

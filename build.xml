@@ -16,6 +16,11 @@
         <javac srcdir="src" destdir="build/classes2" debug="true">
             <include name="run/**"/>
             <include name="wraith/lib/**"/>
+            <classpath>
+                <fileset dir="src/Native">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
         </javac>
         <copy todir="build/classes1/Assets">
             <fileset dir="src/Assets"/>
@@ -27,6 +32,7 @@
              basedir="build/classes2">
             <manifest>
                 <attribute name="Main-Class" value="run.wraith.engine.WraithEngineGame"/>
+                <attribute name="Class-Path" value="lwjgl.jar"/>
             </manifest>
         </jar>
         <copy file="dist/WraithGame.jar" todir="build/classes1/Native"/>

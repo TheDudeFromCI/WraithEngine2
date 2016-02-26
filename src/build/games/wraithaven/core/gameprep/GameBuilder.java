@@ -7,25 +7,25 @@
  */
 package build.games.wraithaven.core.gameprep;
 
-import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.util.Algorithms;
 import build.games.wraithaven.util.ResourceUtils;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 /**
  * @author thedudefromci
  */
 public class GameBuilder{
-	private final MapStyle mapStyle;
 	private final File outFolder;
-	public GameBuilder(MapStyle mapStyle){
-		this.mapStyle = mapStyle;
+	private final File gameProperties;
+	public GameBuilder(){
 		outFolder = Algorithms.getFile("Compiled");
+		gameProperties = Algorithms.getFile(); // Get data folder.
 	}
-	public void prepare(){
-		// TODO
-	}
-	public void unpackResources(){
+	public void compile(){
 		try{
 			if(outFolder.exists()){
 				// This is just to clean up any old resources.
@@ -38,7 +38,43 @@ public class GameBuilder{
 			exception.printStackTrace();
 		}
 	}
-	public void run(){
-		// TODO
+	public void run(String... args) throws IOException{
+		// Run the program with the correct arguments.
+		String[] flags = Arrays.copyOf(args, args.length+1);
+		flags[args.length] = "-data:\""+gameProperties.getAbsolutePath()+"\"";
+		Runtime rt = Runtime.getRuntime();
+		final Process process = rt.exec(flags);
+		// This thread handles debug events.
+		Thread thread1 = new Thread(new Runnable(){
+			@Override
+			public void run(){
+				try(BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()))){
+					String line;
+					while((line = in.readLine())!=null){
+						System.out.println(line);
+					}
+				}catch(IOException ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+		thread1.setDaemon(false);
+		thread1.start();
+		// This thread handles error events.
+		Thread thread2 = new Thread(new Runnable(){
+			@Override
+			public void run(){
+				try(BufferedReader in = new BufferedReader(new InputStreamReader(process.getErrorStream()))){
+					String line;
+					while((line = in.readLine())!=null){
+						System.err.println(line);
+					}
+				}catch(IOException ex){
+					ex.printStackTrace();
+				}
+			}
+		});
+		thread2.setDaemon(false);
+		thread2.start();
 	}
 }

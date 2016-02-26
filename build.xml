@@ -9,10 +9,10 @@
         <mkdir dir="dist"/>
         <mkdir dir="build/classes1/Assets"/>
         <mkdir dir="build/classes1/Native"/>
-        <javac srcdir="src" destdir="build/classes1">
+        <javac srcdir="src" destdir="build/classes1" debug="true">
             <include name="build/**"/>
         </javac>
-        <javac srcdir="src" destdir="build/classes2">
+        <javac srcdir="src" destdir="build/classes2" debug="true">
             <include name="run/**"/>
         </javac>
         <copy todir="build/classes1/Assets">

@@ -173,7 +173,10 @@ public class Algorithms{
 		BufferedReader in = new BufferedReader(new FileReader(file));
 		String s;
 		while((s = in.readLine())!=null){
-			sb.append(s).append('\n');
+			if(sb.length()>0){
+				sb.append('\n');
+			}
+			sb.append(s);
 		}
 		return sb.toString();
 	}

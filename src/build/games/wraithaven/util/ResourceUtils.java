@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.jar.JarEntry;
@@ -25,7 +23,7 @@ import java.util.jar.JarFile;
 public class ResourceUtils{
 	private static final int BUFFER_SIZE = 4096;
 	public static void exportFile(String path, File file) throws IOException{
-		try(InputStream in = ResourceUtils.class.getResourceAsStream(path);
+		try(InputStream in = ResourceUtils.class.getResourceAsStream("/"+path);
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file))){
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int nBytes;
@@ -36,36 +34,34 @@ public class ResourceUtils{
 		}
 	}
 	public static void exportFolder(String path, File file) throws IOException{
+		file.mkdirs();
 		File jarFile = new File(ResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-		if(jarFile.isFile()){
-			// Run with JAR file
-			try(JarFile jar = new JarFile(jarFile)){
-				Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
-				while(entries.hasMoreElements()){
-					String name = entries.nextElement().getName();
-					if(name.startsWith(path+"/")){ // filter according to the path
+		System.out.println("Unpacking Jar.");
+		try(JarFile jar = new JarFile(jarFile)){
+			Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
+			JarEntry entry;
+			while(entries.hasMoreElements()){
+				entry = entries.nextElement();
+				String name = entry.getName();
+				if(name.startsWith(path+"/")){ // filter according to the path
+					System.out.print("Extracting: "+name+"... ");
+					if(entry.isDirectory()){
+						new File(file, name.substring(path.length()+1)).mkdir();
+					}else{
 						exportFile(name, new File(file, name.substring(path.length()+1)));
 					}
-				}
-			}
-		}else{ // Run with IDE
-			URL url = ResourceUtils.class.getResource(path);
-			if(url!=null){
-				try{
-					File apps = new File(url.toURI());
-					for(File app : apps.listFiles()){
-						Algorithms.copyFile(app, new File(file, app.getName()));
-					}
-				}catch(URISyntaxException ex){
-					// never happens
+					System.out.println("Done.");
 				}
 			}
 		}
 	}
 	public static String readAllText(String path){
 		StringBuilder sb = new StringBuilder(64);
-		try(Scanner in = new Scanner(ResourceUtils.class.getResourceAsStream(path))){
+		try(Scanner in = new Scanner(ResourceUtils.class.getResourceAsStream("/"+path))){
 			while(in.hasNext()){
+				if(sb.length()>0){
+					sb.append('\n');
+				}
 				sb.append(in.nextLine());
 			}
 		}

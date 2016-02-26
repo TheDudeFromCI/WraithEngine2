@@ -37,7 +37,7 @@ public class Installer{
 	}
 	private void extract(File assetFolder){
 		try{
-			ResourceUtils.exportFolder("/Assets", assetFolder);
+			ResourceUtils.exportFolder("Assets", assetFolder);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
@@ -49,7 +49,9 @@ public class Installer{
 		}
 		try{
 			String version = Algorithms.readFileText(file);
-			String version2 = ResourceUtils.readAllText("/Assets/version.txt");
+			String version2 = ResourceUtils.readAllText("Assets/version.txt");
+			System.out.println("Client Asset Version: '"+version+"'");
+			System.out.println("Server Asset Version: '"+version2+"'");
 			return version.equals(version2);
 		}catch(IOException ex){
 			ex.printStackTrace();

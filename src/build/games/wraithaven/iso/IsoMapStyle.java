@@ -13,6 +13,7 @@ import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
 import static build.games.wraithaven.core.WraithEngine.outputFolder;
 import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
+import build.games.wraithaven.core.gameprep.GameBuilder;
 import build.games.wraithaven.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -183,6 +185,30 @@ public class IsoMapStyle implements MapStyle{
 							}
 						});
 						mnFile.add(mntmExit);
+					}
+				}
+				{
+					// Run
+					JMenu menu = new JMenu("Run");
+					menuBar.add(menu);
+					{
+						// Run Full Game
+						JMenuItem item = new JMenuItem("Run Full Game");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								try{
+									GameBuilder builder = new GameBuilder();
+									builder.compile();
+									builder.run(); // No args for full game.
+								}catch(IOException ex){
+									ex.printStackTrace();
+									JOptionPane.showMessageDialog(null, "There has been an error trying to launch this game.", "Warning",
+										JOptionPane.WARNING_MESSAGE);
+								}
+							}
+						});
+						menu.add(item);
 					}
 				}
 			}

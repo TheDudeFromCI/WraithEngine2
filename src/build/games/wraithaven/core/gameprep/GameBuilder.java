@@ -40,10 +40,19 @@ public class GameBuilder{
 	}
 	public void run(String... args) throws IOException{
 		// Run the program with the correct arguments.
-		String[] flags = Arrays.copyOf(args, args.length+1);
-		flags[args.length] = "-data:\""+gameProperties.getAbsolutePath()+"\"";
+		String[] flags = Arrays.copyOf(args, args.length+4);
+		{
+			int i = 0;
+			flags[i++] = "java";
+			flags[i++] = "-jar";
+			flags[i++] = "WraithGame.jar";
+			for(String s : args){
+				flags[i++] = s;
+			}
+			flags[i++] = "-data:\""+gameProperties.getAbsolutePath()+"\"";
+		}
 		Runtime rt = Runtime.getRuntime();
-		final Process process = rt.exec(flags);
+		final Process process = rt.exec(flags, null, outFolder);
 		// This thread handles debug events.
 		Thread thread1 = new Thread(new Runnable(){
 			@Override

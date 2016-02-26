@@ -11,9 +11,11 @@
         <mkdir dir="build/classes1/Native"/>
         <javac srcdir="src" destdir="build/classes1" debug="true">
             <include name="build/**"/>
+            <include name="wraith/lib/**"/>
         </javac>
         <javac srcdir="src" destdir="build/classes2" debug="true">
             <include name="run/**"/>
+            <include name="wraith/lib/**"/>
         </javac>
         <copy todir="build/classes1/Assets">
             <fileset dir="src/Assets"/>

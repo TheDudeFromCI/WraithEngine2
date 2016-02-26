@@ -7,18 +7,14 @@
  */
 package run.wraith.engine;
 
-import javax.swing.JFrame;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
  */
 public class WraithEngineGame{
 	public static void main(String[] args){
-		JFrame frame = new JFrame();
-		frame.setTitle("Game");
-		frame.setSize(300, 300);
-		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
+		String random = Algorithms.randomUUID();
+		System.out.println("Random UUID: '"+random+"'");
 	}
 }

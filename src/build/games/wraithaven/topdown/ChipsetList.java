@@ -7,8 +7,8 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.BinaryFile;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;

@@ -5,9 +5,8 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.util;
+package wraith.lib.util;
 
-import build.games.wraithaven.core.WraithEngine;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -23,6 +22,12 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 public class Algorithms{
+	private static String outputFolder;
+	private static String assetFolder;
+	public static void initalize(String outputFolder, String assetFolder){
+		Algorithms.outputFolder = outputFolder;
+		Algorithms.assetFolder = assetFolder;
+	}
 	public static void deleteFile(File file){
 		if(file.isDirectory()){
 			for(File f : file.listFiles()){
@@ -32,7 +37,7 @@ public class Algorithms{
 		file.delete();
 	}
 	public static File getAsset(String name){
-		File file = new File(WraithEngine.assetFolder+File.separatorChar+name);
+		File file = new File(assetFolder+File.separatorChar+name);
 		if(!file.exists()){
 			if(file.getName().contains(".")){
 				file.getParentFile().mkdirs();
@@ -44,7 +49,7 @@ public class Algorithms{
 	}
 	public static File getFile(String... path){
 		StringBuilder sb = new StringBuilder(0);
-		sb.append(WraithEngine.outputFolder);
+		sb.append(outputFolder);
 		for(String s : path){
 			sb.append(File.separatorChar);
 			sb.append(s);

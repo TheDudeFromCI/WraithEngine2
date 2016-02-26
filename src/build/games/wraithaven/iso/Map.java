@@ -8,8 +8,8 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.MapInterface;
-import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.BinaryFile;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;

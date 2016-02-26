@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.core.os;
 
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.ResourceUtils;
 import java.io.File;
 import java.io.IOException;

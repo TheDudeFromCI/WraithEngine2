@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.core.tools;
 
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;

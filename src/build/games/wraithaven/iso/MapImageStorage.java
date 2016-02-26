@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import javax.imageio.ImageIO;

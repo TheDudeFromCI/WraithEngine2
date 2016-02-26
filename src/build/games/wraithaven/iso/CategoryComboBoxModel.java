@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.util.ArrayList;
 import javax.swing.ComboBoxModel;
 import javax.swing.JOptionPane;

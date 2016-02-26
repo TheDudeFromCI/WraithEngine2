@@ -10,6 +10,7 @@ package build.games.wraithaven.core;
 import build.games.wraithaven.core.os.Installer;
 import java.io.File;
 import javax.swing.UIManager;
+import wraith.lib.util.Algorithms;
 
 @SuppressWarnings("serial")
 public class WraithEngine{
@@ -35,6 +36,7 @@ public class WraithEngine{
 		}
 		outputFolder = dataFolder+File.separatorChar+workspaceName;
 		assetFolder = dataFolder+File.separatorChar+"Assets";
+		Algorithms.initalize(outputFolder, assetFolder);
 		new ProjectList();
 	}
 }

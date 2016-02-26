@@ -8,7 +8,7 @@
 package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.tools.Tool;
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;

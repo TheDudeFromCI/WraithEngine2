@@ -14,7 +14,7 @@ import build.games.wraithaven.core.WraithEngine;
 import static build.games.wraithaven.core.WraithEngine.outputFolder;
 import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
 import build.games.wraithaven.core.gameprep.GameBuilder;
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

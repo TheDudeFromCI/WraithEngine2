@@ -9,7 +9,7 @@ package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.tools.Tool;
 import build.games.wraithaven.core.WraithEngine;
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;

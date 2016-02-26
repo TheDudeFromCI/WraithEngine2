@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.core;
 
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

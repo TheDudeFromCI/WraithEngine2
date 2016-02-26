@@ -12,7 +12,7 @@ import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
 import static build.games.wraithaven.core.WraithEngine.outputFolder;
 import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

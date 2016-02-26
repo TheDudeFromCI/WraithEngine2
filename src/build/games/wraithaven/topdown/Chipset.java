@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.util.BinaryFile;
+import wraith.lib.util.BinaryFile;
 
 public class Chipset{
 	public static final int PREVIEW_TILES_WIDTH = 8;

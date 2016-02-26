@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.core.gameprep;
 
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.ResourceUtils;
 import java.io.BufferedReader;
 import java.io.File;

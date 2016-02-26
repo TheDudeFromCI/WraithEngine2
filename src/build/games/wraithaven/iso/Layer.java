@@ -7,8 +7,8 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.BinaryFile;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author TheDudeFromCI

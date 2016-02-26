@@ -9,7 +9,7 @@ package build.games.wraithaven.topdown;
 
 import build.games.wraithaven.core.MapInterface;
 import build.games.wraithaven.core.WorldList;
-import build.games.wraithaven.util.Algorithms;
+import wraith.lib.util.Algorithms;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 

@@ -7,8 +7,8 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.util.Algorithms;
-import build.games.wraithaven.util.BinaryFile;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.TextEditor;
 import java.awt.Color;

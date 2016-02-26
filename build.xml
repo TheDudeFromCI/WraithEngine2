@@ -1,42 +1,42 @@
 <project name="WraithEngine2" basedir="." default="main">
     <target name="clean">
-        <delete dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build"/>
-        <delete dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/dist"/>
+        <delete dir="build"/>
+        <delete dir="dist"/>
     </target>
     <target name="jar">
-        <mkdir dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1"/>
-        <mkdir dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes2"/>
-        <mkdir dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/dist"/>
-        <mkdir dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1/Assets"/>
-        <mkdir dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1/Native"/>
-        <javac srcdir="/home/thedudefromci/NetBeansProjects/WraithEngine2/src" destdir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1">
+        <mkdir dir="build/classes1"/>
+        <mkdir dir="build/classes2"/>
+        <mkdir dir="dist"/>
+        <mkdir dir="build/classes1/Assets"/>
+        <mkdir dir="build/classes1/Native"/>
+        <javac srcdir="src" destdir="build/classes1">
             <include name="build/**"/>
         </javac>
-        <javac srcdir="/home/thedudefromci/NetBeansProjects/WraithEngine2/src" destdir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes2">
+        <javac srcdir="src" destdir="build/classes2">
             <include name="run/**"/>
         </javac>
-        <copy todir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1/Assets">
-            <fileset dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/src/Assets"/>
+        <copy todir="build/classes1/Assets">
+            <fileset dir="src/Assets"/>
         </copy>
-        <copy todir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1/Native">
-            <fileset dir="/home/thedudefromci/NetBeansProjects/WraithEngine2/src/Native"/>
+        <copy todir="build/classes1/Native">
+            <fileset dir="src/Native"/>
         </copy>
-        <jar destfile="/home/thedudefromci/NetBeansProjects/WraithEngine2/dist/WraithGame.jar"
-             basedir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes2">
+        <jar destfile="dist/WraithGame.jar"
+             basedir="build/classes2">
             <manifest>
                 <attribute name="Main-Class" value="run.wraith.engine.WraithEngineGame"/>
             </manifest>
         </jar>
-        <copy file="/home/thedudefromci/NetBeansProjects/WraithEngine2/dist/WraithGame.jar" todir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1/Native"/>
-        <jar destfile="/home/thedudefromci/NetBeansProjects/WraithEngine2/dist/WraithEngine.jar"
-             basedir="/home/thedudefromci/NetBeansProjects/WraithEngine2/build/classes1">
+        <copy file="dist/WraithGame.jar" todir="build/classes1/Native"/>
+        <jar destfile="dist/WraithEngine.jar"
+             basedir="build/classes1">
             <manifest>
                 <attribute name="Main-Class" value="build.games.wraithaven.core.WraithEngine"/>
             </manifest>
         </jar>
     </target>
     <target name="run" depends="jar">
-        <java jar="/home/thedudefromci/NetBeansProjects/WraithEngine2/dist/WraithEngine.jar" fork="true"/>
+        <java jar="dist/WraithEngine.jar" fork="true"/>
     </target>
     <target name="clean-build" depends="clean,jar"/>
     <target name="main" depends="clean,run"/>

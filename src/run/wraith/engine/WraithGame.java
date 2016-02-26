@@ -7,11 +7,10 @@
  */
 package run.wraith.engine;
 
-import org.lwjgl.opengl.GL11;
 import run.wraith.engine.opengl.loop.InputHandler;
 import run.wraith.engine.opengl.loop.MainLoop;
-import run.wraith.engine.opengl.loop.RenderLoop;
 import run.wraith.engine.opengl.loop.WindowInitalizer;
+import run.wraith.engine.opengl.renders.iso.MapRenderer;
 import wraith.lib.util.Algorithms;
 
 /**
@@ -20,11 +19,14 @@ import wraith.lib.util.Algorithms;
 public class WraithGame{
 	public static void main(String[] args){
 		loadArgs(args);
+		MapRenderer render = new MapRenderer();
 		MainLoop loop = new MainLoop(){
 			@Override
 			protected void dispose(){}
 			@Override
-			protected void preloop(){}
+			protected void preloop(){
+				render.initalize();
+			}
 		};
 		loop.setFpsCap(60);
 		InputHandler input = new InputHandler(){
@@ -38,15 +40,6 @@ public class WraithGame{
 			public void mouseWheel(long window, double x, double y){}
 		};
 		WindowInitalizer windowInitalizer = new WindowInitalizer(800, 600, false, false, "Wraith Game", input);
-		RenderLoop render = new RenderLoop(){
-			@Override
-			public void render(){
-				GL11.glClearColor(1, 0, 0, 1);
-				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-			}
-			@Override
-			public void update(double delta, double time){}
-		};
 		loop.buildWindow(windowInitalizer);
 		loop.begin(render, true);
 	}

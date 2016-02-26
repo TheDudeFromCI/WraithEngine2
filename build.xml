@@ -31,7 +31,7 @@
         <jar destfile="dist/WraithGame.jar"
              basedir="build/classes2">
             <manifest>
-                <attribute name="Main-Class" value="run.wraith.engine.WraithEngineGame"/>
+                <attribute name="Main-Class" value="run.wraith.engine.WraithGame"/>
                 <attribute name="Class-Path" value="lwjgl.jar"/>
             </manifest>
         </jar>

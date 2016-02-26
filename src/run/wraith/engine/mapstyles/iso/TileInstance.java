@@ -10,8 +10,17 @@ package run.wraith.engine.mapstyles.iso;
 /**
  * @author thedudefromci
  */
-public class Tile{
-	public Tile(String cat, String uuid){
-		// TODO Load tile.
+public class TileInstance{
+	private final Tile tile;
+	private final int height;
+	public TileInstance(Tile tile, int height){
+		this.tile = tile;
+		this.height = height;
+	}
+	public Tile getTile(){
+		return tile;
+	}
+	public int getHeight(){
+		return height;
 	}
 }

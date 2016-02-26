@@ -17,7 +17,7 @@ import wraith.lib.util.Algorithms;
 /**
  * @author thedudefromci
  */
-public class WraithEngineGame{
+public class WraithGame{
 	public static void main(String[] args){
 		loadArgs(args);
 		MainLoop loop = new MainLoop(){
@@ -52,14 +52,28 @@ public class WraithEngineGame{
 	}
 	private static void loadArgs(String[] args){
 		final String DATA = "-data:";
+		// TODO Add game compression!
+		// final String COMPRESSED = "-compressed:";
+		boolean dataSet = false;
 		for(String s : args){
 			if(s.startsWith(DATA)){
+				if(dataSet){
+					System.err.println("Data folder already set!");
+					continue;
+				}
+				dataSet = true;
 				String dataFolder = s.substring(DATA.length());
 				Algorithms.initalize(dataFolder, null);
 				System.out.println("Program data folder set.\n  '"+dataFolder+"'");
 			}else{
 				System.err.println("Unknown program argument: '"+s+"'");
 			}
+		}
+		if(dataSet){
+			System.out.println("Required flags set.");
+		}else{
+			System.err.println("Required flags not all set!");
+			System.exit(1);
 		}
 	}
 }

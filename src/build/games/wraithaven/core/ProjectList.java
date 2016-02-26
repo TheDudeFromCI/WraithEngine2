@@ -7,8 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import wraith.lib.util.Algorithms;
-import wraith.lib.util.BinaryFile;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -27,6 +25,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 @SuppressWarnings("serial")
 public class ProjectList extends JFrame{
@@ -186,7 +186,7 @@ public class ProjectList extends JFrame{
 		setLocationRelativeTo(null);
 	}
 	private void loadProject(ProjectConstraints pc){
-		WraithEngine.outputFolder += File.separatorChar+pc.getUUID();
+		WraithEngine.updateFolders(WraithEngine.getWorkspace()+File.separatorChar+pc.getUUID(), WraithEngine.getAssetFolder());
 		WraithEngine.projectName = pc.getName();
 		WraithEngine.projectBitSize = pc.getBitSize();
 		MapStyleFactory.loadMapStyle(pc.getType()).buildWindow();

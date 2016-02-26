@@ -10,8 +10,7 @@ package build.games.wraithaven.topdown;
 import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
-import static build.games.wraithaven.core.WraithEngine.outputFolder;
-import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
+import build.games.wraithaven.core.WraithEngine;
 import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
@@ -99,7 +98,7 @@ public class TopDownMapStyle implements MapStyle{
 			@Override
 			public void actionPerformed(ActionEvent e){
 				frame.dispose();
-				outputFolder = workspaceFolder;
+				WraithEngine.updateFolders(WraithEngine.getWorkspace(), WraithEngine.getAssetFolder());
 				new ProjectList();
 			}
 		});

@@ -12,12 +12,14 @@ import run.wraith.engine.opengl.loop.InputHandler;
 import run.wraith.engine.opengl.loop.MainLoop;
 import run.wraith.engine.opengl.loop.RenderLoop;
 import run.wraith.engine.opengl.loop.WindowInitalizer;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
  */
 public class WraithEngineGame{
 	public static void main(String[] args){
+		loadArgs(args);
 		MainLoop loop = new MainLoop(){
 			@Override
 			protected void dispose(){}
@@ -47,5 +49,17 @@ public class WraithEngineGame{
 		};
 		loop.buildWindow(windowInitalizer);
 		loop.begin(render, true);
+	}
+	private static void loadArgs(String[] args){
+		final String DATA = "-data:";
+		for(String s : args){
+			if(s.startsWith(DATA)){
+				String dataFolder = s.substring(DATA.length());
+				Algorithms.initalize(dataFolder, null);
+				System.out.println("Program data folder set.\n  '"+dataFolder+"'");
+			}else{
+				System.err.println("Unknown program argument: '"+s+"'");
+			}
+		}
 	}
 }

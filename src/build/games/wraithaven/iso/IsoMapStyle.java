@@ -11,10 +11,7 @@ import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
-import static build.games.wraithaven.core.WraithEngine.outputFolder;
-import static build.games.wraithaven.core.WraithEngine.workspaceFolder;
 import build.games.wraithaven.core.gameprep.GameBuilder;
-import wraith.lib.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -31,6 +28,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author TheDudeFromCI
@@ -100,7 +98,7 @@ public class IsoMapStyle implements MapStyle{
 							@Override
 							public void actionPerformed(ActionEvent e){
 								frame.dispose();
-								outputFolder = workspaceFolder;
+								WraithEngine.updateFolders(WraithEngine.getWorkspace(), WraithEngine.getAssetFolder());
 								new ProjectList();
 							}
 						});

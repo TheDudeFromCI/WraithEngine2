@@ -14,9 +14,9 @@ import wraith.lib.util.Algorithms;
 
 @SuppressWarnings("serial")
 public class WraithEngine{
-	public static String workspaceFolder;
-	public static String outputFolder;
-	public static String assetFolder;
+	private static String workspaceFolder;
+	private static String outputFolder;
+	private static String assetFolder;
 	public static String projectName;
 	public static int projectBitSize;
 	public static void main(String[] args){
@@ -27,16 +27,31 @@ public class WraithEngine{
 		}
 		Installer installer = new Installer();
 		installer.unloadAssets();
-		final String workspaceName = "WraithEngine Projects";
+		final String workspaceName = "Projects";
 		String dataFolder;
 		if(args.length>0){
 			dataFolder = args[0];
 		}else{
 			dataFolder = installer.getDataFolder().getAbsolutePath();
 		}
-		outputFolder = dataFolder+File.separatorChar+workspaceName;
+		workspaceFolder = dataFolder+File.separatorChar+workspaceName;
+		outputFolder = workspaceFolder;
 		assetFolder = dataFolder+File.separatorChar+"Assets";
 		Algorithms.initalize(outputFolder, assetFolder);
 		new ProjectList();
+	}
+	public static String getOutputFolder(){
+		return outputFolder;
+	}
+	public static String getAssetFolder(){
+		return assetFolder;
+	}
+	public static String getWorkspace(){
+		return workspaceFolder;
+	}
+	public static void updateFolders(String out, String asset){
+		outputFolder = out;
+		assetFolder = asset;
+		Algorithms.initalize(outputFolder, assetFolder);
 	}
 }

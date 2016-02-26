@@ -37,6 +37,9 @@ public class Algorithms{
 		file.delete();
 	}
 	public static File getAsset(String name){
+		if(assetFolder==null){
+			throw new RuntimeException();
+		}
 		File file = new File(assetFolder+File.separatorChar+name);
 		if(!file.exists()){
 			if(file.getName().contains(".")){
@@ -48,6 +51,9 @@ public class Algorithms{
 		return file;
 	}
 	public static File getFile(String... path){
+		if(outputFolder==null){
+			throw new RuntimeException();
+		}
 		StringBuilder sb = new StringBuilder(0);
 		sb.append(outputFolder);
 		for(String s : path){

@@ -61,7 +61,7 @@ public class MapRenderer implements RenderLoop{
 			universe.setShader(shader, 0, 1, 2);
 			universe.getFlags().setDepthTest(true);
 			universe.getFlags().setTexture2D(true);
-			universe.getFlags().setCullFace(false);
+			universe.getFlags().setCullFace(true);
 			universe.getFlags().setWireframe(false);
 			File textureFile = new File("/home/thedudefromci/Documents/Texture.png");
 			texture = new Texture(textureFile, true);

@@ -87,33 +87,50 @@ public class PrimitiveGenerator{
 	}
 	public static VertexBuildData generateBox(float x, float y, float z, PrimitiveFlags flags){
 		Builder builder = new Builder(flags);
-		builder.add(-x, -y, -z, 0, 0);
+		// Face 0
+		builder.add(x, y, z, 0, 0);
+		builder.add(x, -y, z, 0, 1);
+		builder.add(x, -y, -z, 1, 1);
+		builder.add(x, y, z, 0, 0);
+		builder.add(x, -y, -z, 1, 1);
+		builder.add(x, y, -z, 1, 0);
+		// Face 1
+		builder.add(-x, y, -z, 0, 0);
+		builder.add(-x, -y, -z, 0, 1);
+		builder.add(-x, -y, z, 1, 1);
+		builder.add(-x, y, -z, 0, 0);
+		builder.add(-x, -y, z, 1, 1);
+		builder.add(-x, y, z, 1, 0);
+		// Face 2
+		builder.add(-x, y, -z, 0, 0);
+		builder.add(-x, y, z, 0, 1);
+		builder.add(x, y, z, 1, 1);
+		builder.add(-x, y, -z, 0, 0);
+		builder.add(x, y, z, 1, 1);
+		builder.add(x, y, -z, 1, 0);
+		// Face 3
+		builder.add(-x, -y, z, 0, 0);
+		builder.add(-x, -y, -z, 0, 1);
+		builder.add(x, -y, -z, 1, 1);
+		builder.add(-x, -y, z, 0, 0);
+		builder.add(x, -y, -z, 1, 1);
+		builder.add(x, -y, z, 1, 0);
+		// Face 4
+		builder.add(-x, y, z, 0, 0);
+		builder.add(-x, -y, z, 0, 1);
 		builder.add(x, -y, z, 1, 1);
-		builder.add(-x, -y, z, 1, 0);
-		builder.add(-x, -y, -z, 0, 0);
+		builder.add(-x, y, z, 0, 0);
+		builder.add(x, -y, z, 1, 1);
+		builder.add(x, y, z, 1, 0);
+		// Face 5
+		builder.add(x, y, -z, 0, 0);
 		builder.add(x, -y, -z, 0, 1);
-		builder.add(x, -y, z, 1, 1);
+		builder.add(-x, -y, -z, 1, 1);
+		builder.add(x, y, -z, 0, 0);
+		builder.add(-x, -y, -z, 1, 1);
+		builder.add(-x, y, -z, 1, 0);
+		// Compile
 		System.out.println("Generated box, ["+x*2+"x"+y*2+"x"+z*2+"] V:"+builder.verts.length+" I:"+builder.indes.length);
-		// builder.place(-radiusX, -radiusY, -radiusZ, 0, 0);
-		// builder.place(-radiusX, -radiusY, radiusZ, 0, 0);
-		// builder.place(-radiusX, radiusY, -radiusZ, 0, 0);
-		// builder.place(-radiusX, radiusY, radiusZ, 0, 0);
-		// builder.place(radiusX, -radiusY, -radiusZ, 0, 0);
-		// builder.place(radiusX, -radiusY, radiusZ, 0, 0);
-		// builder.place(radiusX, radiusY, -radiusZ, 0, 0);
-		// builder.place(radiusX, radiusY, radiusZ, 1, 1);
-		// builder.placeTri(0, 5, 1);
-		// builder.placeTri(0, 4, 5);
-		// builder.placeTri(0, 2, 6);
-		// builder.placeTri(0, 6, 4);
-		// builder.placeTri(0, 1, 2);
-		// builder.placeTri(1, 3, 2);
-		// builder.placeTri(1, 7, 3);
-		// builder.placeTri(1, 5, 7);
-		// builder.placeTri(4, 6, 5);
-		// builder.placeTri(5, 6, 7);
-		// builder.placeTri(2, 3, 7);
-		// builder.placeTri(2, 7, 6);
 		return new VertexBuildData(builder.verts, builder.indes);
 	}
 	public static VAO convertToVAO(VertexBuildData data){

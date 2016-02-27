@@ -22,7 +22,9 @@ public class WraithGame{
 		MapRenderer render = new MapRenderer();
 		MainLoop loop = new MainLoop(){
 			@Override
-			protected void dispose(){}
+			protected void dispose(){
+				render.dispose();
+			}
 			@Override
 			protected void preloop(){
 				render.initalize();

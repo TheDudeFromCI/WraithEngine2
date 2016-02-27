@@ -32,7 +32,7 @@
              basedir="build/classes2">
             <manifest>
                 <attribute name="Main-Class" value="run.wraith.engine.WraithGame"/>
-                <attribute name="Class-Path" value="lwjgl.jar"/>
+                <attribute name="Class-Path" value="lwjgl.jar joml.jar"/>
             </manifest>
         </jar>
         <copy file="dist/WraithGame.jar" todir="build/classes1/Native"/>

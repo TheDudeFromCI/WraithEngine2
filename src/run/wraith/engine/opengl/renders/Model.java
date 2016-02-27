@@ -28,4 +28,7 @@ public class Model{
 	public void render(){
 		vao.render();
 	}
+	public void update(double delta, double time){
+		// This is here to be overriden by sub classes.
+	}
 }

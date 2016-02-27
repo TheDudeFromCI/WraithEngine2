@@ -8,6 +8,7 @@
 package run.wraith.engine.opengl.renders.iso;
 
 import java.io.File;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import run.wraith.engine.mapstyles.iso.Map;
 import run.wraith.engine.opengl.loop.RenderLoop;
@@ -40,7 +41,13 @@ public class MapRenderer implements RenderLoop{
 			// TEST
 			VertexBuildData buildData = PrimitiveGenerator.generateBox(0.5f, 0.5f, 0.5f, PrimitiveGenerator.ALL);
 			VAO vao = PrimitiveGenerator.convertToVAO(buildData);
-			Model model = new Model(vao);
+			Vector3f yAxis = new Vector3f(0, 1, 0);
+			Model model = new Model(vao){
+				@Override
+				public void update(double delta, double time){
+					getMatrix().rotate((float)Math.toRadians(delta*20), yAxis);
+				}
+			};
 			universe.addModel(model);
 			Camera camera = new Camera();
 			camera.setPerspective(70, 4/3f, 0.1f, 100.0f);
@@ -74,5 +81,7 @@ public class MapRenderer implements RenderLoop{
 		shader.dispose();
 	}
 	@Override
-	public void update(double delta, double time){}
+	public void update(double delta, double time){
+		universe.update(delta, time);
+	}
 }

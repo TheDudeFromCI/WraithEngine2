@@ -75,4 +75,10 @@ public class Universe{
 		this.viewLocation = shader.getUniformLocations()[viewLocation];
 		this.modelLocation = shader.getUniformLocations()[modelLocation];
 	}
+	public void update(double delta, double time){
+		// TODO Add better support for adding/removing models during an update.
+		for(Model model : models){
+			model.update(delta, time);
+		}
+	}
 }

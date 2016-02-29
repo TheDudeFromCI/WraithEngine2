@@ -16,6 +16,10 @@ WraithEngine is an open sourced, game development engine, used to aid indie deve
 # Requirements
 Currently, the only requirements for running WraithEngine is Java 1.8 or higher, and OpenGL 3.0 or higher. All other libraries are loading inside of the program file. Runs on all major operating systems, where Java 1.8 is supported.
 
+OpenGL is supported by almost all modern computers, and graphics cards now. So it's safe to assume you have it if your computer was built within the last five years. It's also safe to assume most of your target market owns it if they are gamers.
+
+Java 1.8+ is still a growing runtime environment, and may not be supported by many users. Eventually WraithEngine will come with a self contained Java version for development, and deployment.
+
 # Installation
 At the moment, the installtion process is simply downloading the jar file to your desktop, and double clicking it. All internal files are installed to a folder called "WraithEngine" in your home directory. This setup will become more flexible and user friendly in the future.
 

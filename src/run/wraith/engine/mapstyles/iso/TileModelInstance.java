@@ -5,31 +5,24 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.opengl.renders;
+package run.wraith.engine.mapstyles.iso;
+
+import run.wraith.engine.opengl.renders.Model;
+import run.wraith.engine.opengl.renders.ModelInstance;
+import run.wraith.engine.opengl.utils.RenderIndex;
 
 /**
  * @author thedudefromci
  */
-public class Model{
-	private final VAO vao;
-	private boolean disposed;
-	public Model(VAO vao){
-		this.vao = vao;
+public class TileModelInstance extends ModelInstance implements RenderIndex{
+	private double renderIndex;
+	public TileModelInstance(Model model){
+		super(model);
 	}
-	public void dispose(){
-		if(disposed){
-			return;
-		}
-		vao.dispose();
-		disposed = true;
+	public void setRenderIndex(double index){
+		renderIndex = index;
 	}
-	public void render(){
-		if(disposed){
-			throw new RuntimeException("Model already disposed!");
-		}
-		vao.render();
-	}
-	public VAO getVAO(){
-		return vao;
+	public double getRenderIndex(){
+		return renderIndex;
 	}
 }

@@ -9,6 +9,7 @@ package run.wraith.engine.opengl.renders;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Comparator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
@@ -17,7 +18,7 @@ import org.lwjgl.opengl.GL20;
  */
 public class Universe{
 	private final FloatBuffer buffer;
-	private final ArrayList<Model> models = new ArrayList(16);
+	private final ArrayList<ModelInstance> models = new ArrayList(16);
 	private final UniverseFlags flags;
 	private ShaderProgram shader;
 	private Camera camera;
@@ -28,12 +29,12 @@ public class Universe{
 		buffer = BufferUtils.createFloatBuffer(16);
 		flags = new UniverseFlags();
 	}
-	public void addModel(Model model){
+	public void addModel(ModelInstance model){
 		models.add(model);
 	}
 	public void dispose(){
-		for(Model model : models){
-			model.dispose();
+		for(ModelInstance model : models){
+			model.getModel().dispose();
 		}
 		models.clear();
 		shader = null;
@@ -58,8 +59,8 @@ public class Universe{
 		shader.bind();
 		flags.bind();
 		camera.dumpToShader(viewLocation, projectionLocation);
-		for(Model model : models){
-			model.getMatrix().get(buffer);
+		for(ModelInstance model : models){
+			model.getPosition().get(buffer);
 			GL20.glUniformMatrix4fv(modelLocation, false, buffer);
 			model.render();
 		}
@@ -77,8 +78,11 @@ public class Universe{
 	}
 	public void update(double delta, double time){
 		// TODO Add better support for adding/removing models during an update.
-		for(Model model : models){
+		for(ModelInstance model : models){
 			model.update(delta, time);
 		}
+	}
+	public void sortModels(Comparator<ModelInstance> compare){
+		models.sort(compare);
 	}
 }

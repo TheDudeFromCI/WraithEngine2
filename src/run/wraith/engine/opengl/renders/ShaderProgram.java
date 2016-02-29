@@ -21,14 +21,15 @@ import org.lwjgl.opengl.GL32;
 public class ShaderProgram{
 	private static String readFile(File file){
 		try{
-			BufferedReader in = new BufferedReader(new FileReader(file));
-			StringBuilder sb = new StringBuilder();
-			String s;
-			while((s = in.readLine())!=null){
-				sb.append(s);
-				sb.append('\n');
+			StringBuilder sb;
+			try(BufferedReader in = new BufferedReader(new FileReader(file))){
+				sb = new StringBuilder(128);
+				String s;
+				while((s = in.readLine())!=null){
+					sb.append(s);
+					sb.append('\n');
+				}
 			}
-			in.close();
 			return sb.toString();
 		}catch(Exception exception){
 			exception.printStackTrace();

@@ -55,7 +55,7 @@ public class Camera{
 		return z;
 	}
 	public void lookAt(float x, float y, float z){
-		mat.lookAt(this.x, this.y, this.z, y, y, z, 0, 1, 0);
+		mat.lookAt(this.x, this.y, this.z, x, y, z, 0, 1, 0);
 	}
 	public void move(float x, float y, float z){
 		this.x += x;

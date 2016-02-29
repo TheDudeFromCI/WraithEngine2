@@ -25,8 +25,8 @@ public class Algorithms{
 	private static String outputFolder;
 	private static String assetFolder;
 	public static void initalize(String outputFolder, String assetFolder){
-		Algorithms.outputFolder = outputFolder;
-		Algorithms.assetFolder = assetFolder;
+		Algorithms.outputFolder = stripQuotes(outputFolder);
+		Algorithms.assetFolder = stripQuotes(assetFolder);
 	}
 	public static void deleteFile(File file){
 		if(file.isDirectory()){
@@ -190,5 +190,17 @@ public class Algorithms{
 			sb.append(s);
 		}
 		return sb.toString();
+	}
+	public static String stripQuotes(String s){
+		if(s==null){
+			return s;
+		}
+		if(s.startsWith("\"")){
+			s = s.substring(1);
+		}
+		if(s.endsWith("\"")){
+			s = s.substring(0, s.length()-1);
+		}
+		return s;
 	}
 }

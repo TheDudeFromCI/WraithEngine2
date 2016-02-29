@@ -18,26 +18,26 @@ public class PrimitiveGenerator{
 	public static class PrimitiveFlags{
 		private final boolean position;
 		private final boolean texture;
+		private final int size;
 		public PrimitiveFlags(boolean position, boolean texture){
 			this.position = position;
 			this.texture = texture;
+			int s = 0;
+			if(position){
+				s += 3;
+			}
+			if(texture){
+				s += 2;
+			}
+			size = s;
 		}
 	}
 	private static class Builder{
 		private final PrimitiveFlags flags;
-		private final int vertDataSize;
 		private float[] verts = new float[0];
 		private short[] indes = new short[0];
 		private Builder(PrimitiveFlags flags){
 			this.flags = flags;
-			int size = 0;
-			if(flags.position){
-				size += 3;
-			}
-			if(flags.texture){
-				size += 2;
-			}
-			vertDataSize = size;
 		}
 		private void add(float x, float y, float z, float s, float t){
 			addIndex(addVertex(x, y, z, s, t));
@@ -48,7 +48,7 @@ public class PrimitiveGenerator{
 		}
 		private int addVertex(float x, float y, float z, float s, float t){
 			int offset;
-			for(int i = 0; i<verts.length; i += vertDataSize){
+			for(int i = 0; i<verts.length; i += flags.size){
 				offset = 0;
 				if(flags.position){
 					if(verts[i+offset++]!=x){
@@ -69,10 +69,10 @@ public class PrimitiveGenerator{
 						continue;
 					}
 				}
-				return i/vertDataSize;
+				return i/flags.size;
 			}
 			int pos = verts.length;
-			verts = Arrays.copyOf(verts, verts.length+vertDataSize);
+			verts = Arrays.copyOf(verts, verts.length+flags.size);
 			if(flags.position){
 				verts[pos++] = x;
 				verts[pos++] = y;
@@ -82,7 +82,7 @@ public class PrimitiveGenerator{
 				verts[pos++] = s;
 				verts[pos++] = t;
 			}
-			return pos/vertDataSize-1;
+			return pos/flags.size-1;
 		}
 	}
 	public static VertexBuildData generateBox(float x, float y, float z, PrimitiveFlags flags){
@@ -130,29 +130,42 @@ public class PrimitiveGenerator{
 		builder.add(-x, -y, -z, 1, 1);
 		builder.add(-x, y, -z, 1, 0);
 		// Compile
-		System.out.println("Generated box, ["+x*2+"x"+y*2+"x"+z*2+"] V:"+builder.verts.length+" I:"+builder.indes.length);
 		return new VertexBuildData(builder.verts, builder.indes);
 	}
-	public static VAO convertToVAO(VertexBuildData data){
+	public static VertexBuildData generateSquare(float x, float y, PrimitiveFlags flags){
+		Builder builder = new Builder(flags);
+		builder.add(-x, y, 0, 0, 1);
+		builder.add(-x, -y, 0, 0, 0);
+		builder.add(x, -y, 0, 1, 0);
+		builder.add(-x, y, 0, 0, 1);
+		builder.add(x, -y, 0, 1, 0);
+		builder.add(x, y, 0, 1, 1);
+		return new VertexBuildData(builder.verts, builder.indes);
+	}
+	/**
+	 * Transforms vertex build data into a standard position and texture coords VAO. The output is NOT reflected by the flag parameter.
+	 *
+	 * @param data
+	 *            - The vertex build data.
+	 * @param flags
+	 *            - The flags used to construct the vertex data.
+	 * @return The VAO.
+	 */
+	public static VAO convertToVAO(VertexBuildData data, PrimitiveFlags flags){
 		float[] vertLocations = data.getVertexLocations();
-		float[] vertices = new float[vertLocations.length/5*10];
-		for(int i = 0; i<vertices.length; i += 10){
-			vertices[i+0] = vertLocations[i/10*5+0];
-			vertices[i+1] = vertLocations[i/10*5+1];
-			vertices[i+2] = vertLocations[i/10*5+2];
-			vertices[i+3] = 1.0f;
-			vertices[i+4] = (float)Math.random();
-			vertices[i+5] = (float)Math.random();
-			vertices[i+6] = (float)Math.random();
-			vertices[i+7] = 1.0f;
-			vertices[i+8] = vertLocations[i/10*5+3];
-			vertices[i+9] = vertLocations[i/10*5+4];
+		float[] vertices = new float[vertLocations.length/flags.size*5];
+		for(int i = 0; i<vertices.length; i += 5){
+			vertices[i+0] = vertLocations[i/5*flags.size+0];
+			vertices[i+1] = vertLocations[i/5*flags.size+1];
+			vertices[i+2] = vertLocations[i/5*flags.size+2];
+			vertices[i+3] = vertLocations[i/5*flags.size+3];
+			vertices[i+4] = vertLocations[i/5*flags.size+4];
 		}
 		VaoArray[] parts = new VaoArray[]{
-			new VaoArray(4, false), new VaoArray(4, false), new VaoArray(2, false)
+			new VaoArray(3, false), new VaoArray(2, false)
 		};
 		return new VAO(vertices, data.getIndexLocations(), parts);
 	}
-	public static PrimitiveFlags POSITION_ONLY = new PrimitiveFlags(true, false);
-	public static PrimitiveFlags ALL = new PrimitiveFlags(true, true);
+	public static PrimitiveFlags POSITION_FLAG_ONLY = new PrimitiveFlags(true, false);
+	public static PrimitiveFlags ALL_FLAGS = new PrimitiveFlags(true, true);
 }

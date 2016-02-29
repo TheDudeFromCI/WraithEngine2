@@ -23,7 +23,7 @@ Java 1.8+ is still a growing runtime environment, and may not be supported by ma
 # Installation
 At the moment, the installtion process is simply downloading the jar file to your desktop, and double clicking it. All internal files are installed to a folder called "WraithEngine" in your home directory. This setup will become more flexible and user friendly in the future.
 
-# What Can I Use It For?
+# Can I Use It?
 You may freely use this software for your own projects. Both commerical, or private use is fine. Have fun. You may also edit the code to fit your needs if you wish. My only requirement is that in any games you make with WraithEngine, you keep the WraithEngine splash logo at startup. You can add your own splash before or after it, as long as you don't remove that one. I have put a lot of hard work into this engine. Please don't abuse it.
 
 Other than that, have fun. I encourage you to make awesome stuff, and have a ton of fun doing it. If you're an indie game developer, good luck with your game! I hope it sells well.

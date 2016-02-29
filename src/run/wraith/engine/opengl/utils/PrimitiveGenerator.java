@@ -134,12 +134,12 @@ public class PrimitiveGenerator{
 	}
 	public static VertexBuildData generateSquare(float x, float y, PrimitiveFlags flags){
 		Builder builder = new Builder(flags);
-		builder.add(-x, y, 0, 0, 1);
-		builder.add(-x, -y, 0, 0, 0);
-		builder.add(x, -y, 0, 1, 0);
-		builder.add(-x, y, 0, 0, 1);
-		builder.add(x, -y, 0, 1, 0);
-		builder.add(x, y, 0, 1, 1);
+		builder.add(-x, y, 0, 0, 0);
+		builder.add(-x, -y, 0, 0, 1);
+		builder.add(x, -y, 0, 1, 1);
+		builder.add(-x, y, 0, 0, 0);
+		builder.add(x, -y, 0, 1, 1);
+		builder.add(x, y, 0, 1, 0);
 		return new VertexBuildData(builder.verts, builder.indes);
 	}
 	/**

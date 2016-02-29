@@ -36,7 +36,7 @@ public class Map{
 				// Initalize scene.
 				universe = new Universe();
 				camera = new Camera();
-				camera.setOrthographic(0, 15, 0, 15, -1, 1);
+				camera.setOrthographic(0, 15, 15, 0, -1, 1);
 				universe.setCamera(camera);
 				File vertexShader = new File("/home/thedudefromci/Documents/Vertex.txt");
 				File fragmentShader = new File("/home/thedudefromci/Documents/Fragment.txt");
@@ -108,7 +108,7 @@ public class Map{
 								int u = i%width; // X
 								int v = i/width; // Y
 								mod.getPosition().translate((u-v)*0.5f, (u+v)*0.25f-y*0.125f, 0);
-								double r = (v*(v+1.0)/2.0+v*Math.pow(2.0, u)+3*Math.pow(2.0, u-1.0)-1.0)*0.00001;
+								double r = (v*(v+1.0)/2.0+v*Math.pow(2.0, u)+3*Math.pow(2.0, u-1.0)-1.0)*-0.00001;
 								mod.setRenderIndex(-r);
 								universe.addModel(mod);
 							}

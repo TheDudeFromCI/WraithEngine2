@@ -1,12 +1,14 @@
+# Wraithaven Games
+WraithEngine was developed by Wraithaven Games.
+
+---
+
 # WraithEngine2
 A newer version of WraithEngine, started on January 20th, 2016.
 
 WraithEngine is a game engine, desgined to help users to create awesome games, very quickly. It takes out most of the work when it comes to level design, and programming, so you only have to worry about the core itself.
 
 Although called "WraithEngine2". it's still technically the first one. The original WraithEngine I developed turned out to be more like a library, rather than an actual engine. It also was poorly developed, and highly buggy. I called this one "WraithEngine2" as to seperate this version from the old one. You can ignore the "2" at the end. The program itself is only called "WraithEngine".
-
-# Wraithaven Games
-WraithEngine was developed by Wraithaven Games.
 
 # What Is It?
 WraithEngine is an open sourced, game development engine, used to aid indie developers to make games. This project is designed more as a fun project, rather than a robust, professional-grade editor, such as some of the well known engines out there. It is being developed by a much smaller community, with features being added on a supply and demand basis. If you wish to play with it, go ahead and grab the newest release from above, and have fun.

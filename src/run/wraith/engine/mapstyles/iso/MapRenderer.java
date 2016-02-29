@@ -7,24 +7,32 @@
  */
 package run.wraith.engine.mapstyles.iso;
 
-import run.wraith.engine.opengl.renders.Model;
-import run.wraith.engine.opengl.renders.ModelInstance;
-import run.wraith.engine.opengl.utils.RenderIndex;
+import org.lwjgl.opengl.GL11;
+import run.wraith.engine.opengl.loop.RenderLoop;
+import run.wraith.engine.opengl.renders.UniverseFlags;
 
 /**
  * @author thedudefromci
  */
-public class TileModelInstance extends ModelInstance implements RenderIndex{
-	private double renderIndex;
-	public TileModelInstance(Model model){
-		super(model);
+public class MapRenderer implements RenderLoop{
+	private Map map;
+	public void setMap(Map map){
+		this.map = map;
+	}
+	public void initalize(){
+		GL11.glClearColor(0, 0, 0, 1);
+		UniverseFlags.initalize();
 	}
 	@Override
-	public void setRenderIndex(double index){
-		renderIndex = index;
+	public void render(){
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
+		map.render();
+	}
+	public void dispose(){
+		map.dispose();
 	}
 	@Override
-	public double getRenderIndex(){
-		return renderIndex;
+	public void update(double delta, double time){
+		map.update(delta, time);
 	}
 }

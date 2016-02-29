@@ -80,7 +80,6 @@ public class IsoMapStyle implements MapStyle{
 			// Add components
 			JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, chipsetList, worldList);
 			frame.getContentPane().add(splitPane, BorderLayout.WEST);
-			splitPane.setDividerSize(2);
 			splitPane.setDividerLocation(400);
 			frame.getContentPane().add(mapEditor, BorderLayout.CENTER);
 			{
@@ -198,11 +197,36 @@ public class IsoMapStyle implements MapStyle{
 								try{
 									GameBuilder builder = new GameBuilder();
 									builder.compile();
-									builder.run(); // No args for full game.
+									builder.run("-mapStyle:iso");
 								}catch(IOException ex){
 									ex.printStackTrace();
 									JOptionPane.showMessageDialog(null, "There has been an error trying to launch this game.", "Warning",
 										JOptionPane.WARNING_MESSAGE);
+								}
+							}
+						});
+						menu.add(item);
+					}
+					{
+						// Preview Map
+						JMenuItem item = new JMenuItem("Preview Map");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								try{
+									Map map = mapEditor.getSelectedMap();
+									if(map==null){
+										JOptionPane.showMessageDialog(null, "You must select a map first, to preview it!", "Warning",
+											JOptionPane.WARNING_MESSAGE);
+										return;
+									}
+									GameBuilder builder = new GameBuilder();
+									builder.compile();
+									builder.run("-mapStyle:iso", "-mapPreview:"+map.getUUID());
+								}catch(IOException ex){
+									ex.printStackTrace();
+									JOptionPane.showMessageDialog(null, "There has been an error trying to launch this game.", "Error",
+										JOptionPane.ERROR_MESSAGE);
 								}
 							}
 						});

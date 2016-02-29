@@ -5,37 +5,44 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.opengl.renders.iso;
+package run.wraith.engine.mapstyles.iso.preview;
 
-import org.lwjgl.opengl.GL11;
+import run.wraith.engine.core.RunProtocol;
 import run.wraith.engine.mapstyles.iso.Map;
+import run.wraith.engine.mapstyles.iso.MapRenderer;
+import run.wraith.engine.opengl.loop.InputHandler;
 import run.wraith.engine.opengl.loop.RenderLoop;
-import run.wraith.engine.opengl.renders.UniverseFlags;
 
 /**
  * @author thedudefromci
  */
-public class MapRenderer implements RenderLoop{
-	private Map map;
-	public void setMap(Map map){
-		this.map = map;
+public class MapPreviewProtocol implements RunProtocol{
+	private final String mapId;
+	private MapRenderer renderer;
+	private MapPreviewInputHandler inputHandler;
+	public MapPreviewProtocol(String mapId){
+		this.mapId = mapId;
 	}
+	@Override
 	public void initalize(){
-		GL11.glClearColor(0, 0, 0, 1);
-		UniverseFlags.initalize();
-		// TEST
-		map = new Map("19b5215989014cb98d9a4c96");
+		renderer = new MapRenderer();
+		inputHandler = new MapPreviewInputHandler();
 	}
 	@Override
-	public void render(){
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
-		map.render();
+	public RenderLoop getRenderLoop(){
+		return renderer;
 	}
+	@Override
+	public InputHandler getInputHandler(){
+		return inputHandler;
+	}
+	@Override
+	public void preLoop(){
+		renderer.initalize();
+		renderer.setMap(new Map(mapId));
+	}
+	@Override
 	public void dispose(){
-		map.dispose();
-	}
-	@Override
-	public void update(double delta, double time){
-		map.update(delta, time);
+		renderer.dispose();
 	}
 }

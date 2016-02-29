@@ -5,26 +5,13 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.mapstyles.iso;
-
-import run.wraith.engine.opengl.renders.Model;
-import run.wraith.engine.opengl.renders.ModelInstance;
-import run.wraith.engine.opengl.utils.RenderIndex;
+package run.wraith.engine.core;
 
 /**
  * @author thedudefromci
  */
-public class TileModelInstance extends ModelInstance implements RenderIndex{
-	private double renderIndex;
-	public TileModelInstance(Model model){
-		super(model);
-	}
-	@Override
-	public void setRenderIndex(double index){
-		renderIndex = index;
-	}
-	@Override
-	public double getRenderIndex(){
-		return renderIndex;
-	}
+public class GameProgramContraints{
+	public boolean mapPreviewMode;
+	public String mapId;
+	public MapStyle mapStyle;
 }

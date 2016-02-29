@@ -5,9 +5,8 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.opengl.renders.iso;
+package run.wraith.engine.mapstyles.iso;
 
-import run.wraith.engine.mapstyles.iso.Tile;
 import run.wraith.engine.opengl.renders.Model;
 import run.wraith.engine.opengl.renders.Texture;
 import run.wraith.engine.opengl.renders.VAO;

@@ -9,7 +9,6 @@ package run.wraith.engine.mapstyles.iso;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import run.wraith.engine.opengl.renders.iso.TileModel;
 import wraith.lib.util.Algorithms;
 
 /**

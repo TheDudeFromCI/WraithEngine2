@@ -12,11 +12,12 @@ import static org.lwjgl.glfw.GLFW.*;
 import org.lwjgl.opengl.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
+import run.wraith.engine.core.RunProtocol;
 
 /**
  * @author thedudefromci
  */
-public abstract class MainLoop{
+public class MainLoop{
 	private GLFWCursorPosCallback cursorPosCallback;
 	private GLFWErrorCallback errorCallback;
 	private GLFWKeyCallback keyCallback;
@@ -27,18 +28,23 @@ public abstract class MainLoop{
 	private int fpsCap = 30;
 	private boolean rebuildWindow = false;
 	private WindowInitalizer nextWindowStats;
+	private RunProtocol runProtocol;
+	public RunProtocol getProtocol(){
+		return runProtocol;
+	}
+	public void setProtocol(RunProtocol protocol){
+		runProtocol = protocol;
+	}
 	/**
 	 * This starts Open GL. This blocks until OpenGL terminates. Must be called on main thread. A window must be visible when this is called.
 	 *
-	 * @param renderLoop
-	 *            - The class in charge of rendering with OpenGL.
 	 * @param exitGame
 	 *            - Whether or not the program should exit when OpenGL is terminated. If true, the program will auto exist. If false, OpenGL is cleaned
 	 *            up, and this method returns as normal.
 	 */
-	public void begin(RenderLoop renderLoop, boolean exitGame){
+	public void begin(boolean exitGame){
 		try{
-			loop(renderLoop);
+			loop();
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
@@ -71,7 +77,7 @@ public abstract class MainLoop{
 		fpsCap = cap;
 	}
 	private void cleanup(){
-		dispose();
+		runProtocol.dispose();
 		keyCallback.release();
 		mouseButtonCallback.release();
 		cursorPosCallback.release();
@@ -83,8 +89,8 @@ public abstract class MainLoop{
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
-	private void loop(RenderLoop renderLoop){
-		preloop();
+	private void loop(){
+		runProtocol.preLoop();
 		double lastFrameTime = 0;
 		double currentFrameTime;
 		double delta;
@@ -95,6 +101,7 @@ public abstract class MainLoop{
 		long lastTime = 0;
 		long t;
 		do{
+			RenderLoop renderLoop = runProtocol.getRenderLoop();
 			rebuildWindow = false;
 			while(glfwWindowShouldClose(window)==GL_FALSE&&!rebuildWindow){
 				currentFrameTime = glfwGetTime();
@@ -186,6 +193,4 @@ public abstract class MainLoop{
 		glfwShowWindow(window);
 		GL.createCapabilities();
 	}
-	protected abstract void dispose();
-	protected abstract void preloop();
 }

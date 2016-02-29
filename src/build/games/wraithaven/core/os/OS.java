@@ -14,11 +14,11 @@ import java.io.File;
  */
 public enum OS{
 	// TODO Add more.
-	WINDOWS("C:\\Program Files\\WraithEngine"),
+	WINDOWS("%HOME%/WraithEngine"),
 	LINUX("%HOME%/WraithEngine"),
 	OTHER("%DIR%");
 	public static OS determineOS(){
-		String name = System.getProperty("os.name");
+		String name = System.getProperty("os.name").toLowerCase();
 		if(name.contains("win")){
 			return OS.WINDOWS;
 		}

@@ -7,32 +7,30 @@
  */
 package run.wraith.engine.mapstyles.iso;
 
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import wraith.lib.util.Algorithms;
+import java.util.HashMap;
 
 /**
  * @author thedudefromci
  */
-public class Tile{
-	private final BufferedImage image;
-	private final TileModel model;
-	public Tile(String cat, String uuid){
-		BufferedImage imageTemp;
-		try{
-			imageTemp = ImageIO.read(Algorithms.getFile("Chipsets", cat, uuid+".png"));
-		}catch(Exception exception){
-			exception.printStackTrace();
-			System.exit(1);
-			imageTemp = null;
+public class EntityList{
+	private static class EntityId{
+		private final String cat;
+		private final String uuid;
+		private EntityId(String cat, String uuid){
+			this.cat = cat;
+			this.uuid = uuid;
 		}
-		image = imageTemp;
-		model = new TileModel(this);
 	}
-	public BufferedImage getImage(){
-		return image;
-	}
-	public TileModel getModel(){
-		return model;
+	private final HashMap<EntityId,Entity> entities = new HashMap(16);
+	public Entity getEntity(String cat, String id, String layer){
+		for(EntityId e : entities.keySet()){
+			if(e.cat.equals(cat)&&e.uuid.equals(layer)){
+				return entities.get(e);
+			}
+		}
+		EntityId e = new EntityId(cat, id);
+		Entity entity = new Entity(cat, id, layer);
+		entities.put(e, entity);
+		return entity;
 	}
 }

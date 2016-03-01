@@ -14,25 +14,35 @@ import wraith.lib.util.Algorithms;
 /**
  * @author thedudefromci
  */
-public class Tile{
+public class Entity{
 	private final BufferedImage image;
-	private final TileModel model;
-	public Tile(String cat, String uuid){
+	private final EntityModel model;
+	private final int height;
+	private final String layer;
+	public Entity(String cat, String uuid, String layer){
+		this.layer = layer;
 		BufferedImage imageTemp;
 		try{
-			imageTemp = ImageIO.read(Algorithms.getFile("Chipsets", cat, uuid+".png"));
+			imageTemp = ImageIO.read(Algorithms.getFile("Entities", cat, uuid+".png"));
 		}catch(Exception exception){
 			exception.printStackTrace();
 			System.exit(1);
 			imageTemp = null;
 		}
 		image = imageTemp;
-		model = new TileModel(this);
+		height = 1;
+		model = new EntityModel(this);
 	}
 	public BufferedImage getImage(){
 		return image;
 	}
-	public TileModel getModel(){
+	public EntityModel getModel(){
 		return model;
+	}
+	public int getHeight(){
+		return height;
+	}
+	public String getLayer(){
+		return layer;
 	}
 }

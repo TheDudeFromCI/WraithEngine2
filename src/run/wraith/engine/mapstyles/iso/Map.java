@@ -88,29 +88,47 @@ public class Map{
 					case 0:
 						try{
 							Tile[] references = new Tile[bin.getInt()];
-							String cat, id;
-							int index, y;
-							for(int i = 0; i<references.length; i++){
+							String layer, cat, id;
+							int index, y, entityCount, i, j;
+							int u, v, r;
+							float s, t;
+							TileModelInstance mod;
+							EntityModelInstance mod2;
+							Entity entity;
+							EntityList entityList = new EntityList();
+							for(i = 0; i<references.length; i++){
 								cat = bin.getString();
 								id = bin.getString();
 								references[i] = new Tile(cat, id);
 							}
-							for(int i = 0; i<tiles.length; i++){
+							for(i = 0; i<tiles.length; i++){
 								index = bin.getInt();
 								if(index==-1){
 									bin.skip(8);
 									continue;
 								}
 								y = bin.getInt();
+								u = i%width; // X
+								v = i/width; // Y
+								s = (u-v)*0.5f;
+								t = (u+v)*0.25f-y*0.125f;
+								r = Math.max(u, v);
 								tiles[i] = new TileInstance(references[index], y);
-								bin.skip(4); // TODO Count entities!
-								TileModelInstance mod = new TileModelInstance(references[index].getModel());
-								int u = i%width; // X
-								int v = i/width; // Y
-								mod.getPosition().translate((u-v)*0.5f, (u+v)*0.25f-y*0.125f, 0);
-								double r = (v*(v+1.0)/2.0+v*Math.pow(2.0, u)+3*Math.pow(2.0, u-1.0)-1.0)*-0.00001;
-								mod.setRenderIndex(-r);
+								mod = new TileModelInstance(references[index].getModel());
+								mod.getPosition().translate(s, t, 0);
+								mod.setRenderIndex(r);
 								universe.addModel(mod);
+								entityCount = bin.getInt();
+								for(j = 0; j<entityCount; j++){
+									layer = bin.getString();
+									cat = bin.getString();
+									id = bin.getString();
+									entity = entityList.getEntity(cat, id, layer);
+									mod2 = new EntityModelInstance(entity.getModel());
+									mod2.getPosition().translate(s, t+(entity.getHeight()>=0?(1-entity.getHeight()):0), 0);
+									mod2.setRenderIndex(r+0.5);
+									universe.addModel(mod2);
+								}
 							}
 							universe.sortModels(new Comparator<ModelInstance>(){
 								@Override

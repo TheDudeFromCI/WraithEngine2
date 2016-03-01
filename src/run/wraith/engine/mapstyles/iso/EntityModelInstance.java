@@ -7,32 +7,24 @@
  */
 package run.wraith.engine.mapstyles.iso;
 
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import wraith.lib.util.Algorithms;
+import run.wraith.engine.opengl.renders.Model;
+import run.wraith.engine.opengl.renders.ModelInstance;
+import run.wraith.engine.opengl.utils.RenderIndex;
 
 /**
  * @author thedudefromci
  */
-public class Tile{
-	private final BufferedImage image;
-	private final TileModel model;
-	public Tile(String cat, String uuid){
-		BufferedImage imageTemp;
-		try{
-			imageTemp = ImageIO.read(Algorithms.getFile("Chipsets", cat, uuid+".png"));
-		}catch(Exception exception){
-			exception.printStackTrace();
-			System.exit(1);
-			imageTemp = null;
-		}
-		image = imageTemp;
-		model = new TileModel(this);
+public class EntityModelInstance extends ModelInstance implements RenderIndex{
+	private double renderIndex;
+	public EntityModelInstance(Model model){
+		super(model);
 	}
-	public BufferedImage getImage(){
-		return image;
+	@Override
+	public void setRenderIndex(double index){
+		renderIndex = index;
 	}
-	public TileModel getModel(){
-		return model;
+	@Override
+	public double getRenderIndex(){
+		return renderIndex;
 	}
 }

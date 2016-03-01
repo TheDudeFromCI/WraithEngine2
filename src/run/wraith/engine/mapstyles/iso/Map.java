@@ -36,7 +36,7 @@ public class Map{
 				// Initalize scene.
 				universe = new Universe();
 				camera = new Camera();
-				camera.setOrthographic(0, 15, 15, 0, -1, 1);
+				camera.setOrthographic(0, 15*4/3f, 15, 0, -1, 1);
 				universe.setCamera(camera);
 				File vertexShader = new File("/home/thedudefromci/Documents/Vertex.txt");
 				File fragmentShader = new File("/home/thedudefromci/Documents/Fragment.txt");

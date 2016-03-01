@@ -125,7 +125,7 @@ public class Map{
 									id = bin.getString();
 									entity = entityList.getEntity(cat, id, layer);
 									mod2 = new EntityModelInstance(entity.getModel());
-									mod2.getPosition().translate(s, t+(entity.getHeight()>=0?(1-entity.getHeight()):0), 0);
+									mod2.getPosition().translate(s, t+(entity.getHeight()>=0?(1-entity.getHeight()):0)/2f, 0);
 									mod2.setRenderIndex(r+0.5);
 									universe.addModel(mod2);
 								}

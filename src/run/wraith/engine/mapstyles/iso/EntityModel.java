@@ -21,7 +21,7 @@ public class EntityModel extends Model{
 	private static VAO generateVAO(Entity entity){
 		// TODO Optimize algorithm to cut out transparency.
 		PrimitiveFlags flags = new PrimitiveFlags(true, true);
-		VertexBuildData data = PrimitiveGenerator.generateSquare(0.5f*entity.getHeight(), 0.5f, flags);
+		VertexBuildData data = PrimitiveGenerator.generateSquare(0.5f, 0.5f*entity.getHeight(), flags);
 		VAO vao = PrimitiveGenerator.convertToVAO(data, flags);
 		return vao;
 	}

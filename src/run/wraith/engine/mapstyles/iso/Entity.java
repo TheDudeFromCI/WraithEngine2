@@ -8,13 +8,51 @@
 package run.wraith.engine.mapstyles.iso;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import javax.imageio.ImageIO;
 import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public class Entity{
+	private static int loadEntityHeight(String cat, String id){
+		try{
+			File file = Algorithms.getFile("Categories", cat+".dat");
+			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(false);
+			short version = bin.getShort();
+			switch(version){
+				case 0:{
+					bin.getString(); // Skip name.
+					int tileCount = bin.getInt();
+					for(int i = 0; i<tileCount; i++){
+						bin.getString(); // Skip tiles.
+					}
+					int entityCount = bin.getInt();
+					String uuid;
+					int height;
+					for(int i = 0; i<entityCount; i++){
+						uuid = bin.getString();
+						height = bin.getInt();
+						bin.getBoolean(); // It's not complex.
+						if(uuid.equals(id)){
+							// Yay! We found it.
+							return height;
+						}
+					}
+					throw new RuntimeException("Entity height not found!");
+				}
+				default:
+					throw new RuntimeException("Unknown file version! "+version);
+			}
+		}catch(Exception exception){
+			exception.printStackTrace();
+			System.exit(1);
+			return 0;
+		}
+	}
 	private final BufferedImage image;
 	private final EntityModel model;
 	private final int height;
@@ -30,7 +68,7 @@ public class Entity{
 			imageTemp = null;
 		}
 		image = imageTemp;
-		height = 1;
+		height = loadEntityHeight(cat, uuid);
 		model = new EntityModel(this);
 	}
 	public BufferedImage getImage(){

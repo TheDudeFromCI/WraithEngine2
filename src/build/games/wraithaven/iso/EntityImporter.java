@@ -8,7 +8,6 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.WraithEngine;
-import wraith.lib.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -26,6 +25,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author TheDudeFromCI
@@ -124,7 +124,7 @@ public class EntityImporter extends JFrame{
 			JOptionPane.showMessageDialog(null, "You must select at least one base tile!", "Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		int layers = painter.getLayers();
+		int layers = painter.getLayers(isBelow);
 		tiles.sort(new Comparator<Point>(){
 			@Override
 			public int compare(Point a, Point b){
@@ -146,7 +146,11 @@ public class EntityImporter extends JFrame{
 			w = s;
 			h = layers*s;
 			x = t.x-s/2;
-			y = t.y+s-h;
+			if(isBelow){
+				y = t.y;
+			}else{
+				y = t.y+s-h;
+			}
 			if(y+h>=temp.getHeight()){
 				h = (temp.getHeight()-1)-y;
 			}
@@ -174,6 +178,9 @@ public class EntityImporter extends JFrame{
 				g2.dispose();
 				col = nCol;
 			}
+			if(isBelow){
+				colHeight = -colHeight;
+			}
 			EntityType entity = new EntityType(Algorithms.randomUUID(), colHeight, cat, false);
 			cat.addEntityType(entity, col);
 		}else{
@@ -184,7 +191,11 @@ public class EntityImporter extends JFrame{
 				w = s;
 				h = layers*s;
 				x = t.x-s/2;
-				y = t.y+s-h;
+				if(isBelow){
+					y = t.y;
+				}else{
+					y = t.y+s-h;
+				}
 				if(y+h>=temp.getHeight()){
 					h = (temp.getHeight()-1)-y;
 				}
@@ -210,6 +221,9 @@ public class EntityImporter extends JFrame{
 					g2.drawImage(col, 0, 0, null);
 					g2.dispose();
 					col = nCol;
+				}
+				if(isBelow){
+					colHeight = -colHeight;
 				}
 				entity = new EntityType(Algorithms.randomUUID(), colHeight, cat, true);
 				cat.addEntityType(entity, col);

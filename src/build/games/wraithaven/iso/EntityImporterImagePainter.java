@@ -216,11 +216,19 @@ public class EntityImporterImagePainter extends JPanel{
 	public ArrayList<Point> getTiles(){
 		return tiles;
 	}
-	public int getLayers(){
-		int minY = Integer.MAX_VALUE;
-		for(Point p : tiles){
-			minY = Math.min(minY, p.y);
+	public int getLayers(boolean below){
+		if(below){
+			int maxY = Integer.MIN_VALUE;
+			for(Point p : tiles){
+				maxY = Math.max(maxY, p.y);
+			}
+			return (int)Math.ceil((height-maxY)/(float)WraithEngine.projectBitSize)+1;
+		}else{
+			int minY = Integer.MAX_VALUE;
+			for(Point p : tiles){
+				minY = Math.min(minY, p.y);
+			}
+			return (int)Math.ceil(minY/(float)WraithEngine.projectBitSize)+1;
 		}
-		return (int)Math.ceil(minY/(float)WraithEngine.projectBitSize)+1;
 	}
 }

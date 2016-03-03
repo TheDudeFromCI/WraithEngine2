@@ -159,7 +159,7 @@ public class EntityImporter extends JFrame{
 				y = 0;
 			}
 			if(x+w>=temp.getWidth()){
-				w = (temp.getWidth()-1)-x;
+				w = (temp.getWidth())-x;
 			}
 			if(x<0){
 				w += x;

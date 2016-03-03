@@ -126,6 +126,7 @@ public class EntityImporterImagePainter extends JPanel{
 	@Override
 	public void paintComponent(Graphics g1){
 		Graphics2D g = (Graphics2D)g1;
+		g.setClip(0, 0, width, height);
 		drawGrid(g, width, height);
 		Composite composite = null;
 		if(confirmed){

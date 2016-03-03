@@ -114,10 +114,11 @@ public class EntityImporterImagePainter extends JPanel{
 				repaint();
 			}
 			private void cursor(int x, int y){
+				y += WraithEngine.projectBitSize/4;
 				int tileX = (int)Math.floor((x/(float)(WraithEngine.projectBitSize/2)+(y/(float)(WraithEngine.projectBitSize/4)))/2);
 				int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
 				cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
-				cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4);
+				cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4)-WraithEngine.projectBitSize/4;
 				repaint();
 			}
 		};
@@ -180,9 +181,9 @@ public class EntityImporterImagePainter extends JPanel{
 			g.translate(-p.x, -p.y);
 		}
 		g.setColor(Color.gray);
-		boolean off = false;
-		for(y = 0; y<h; y += s/2){
-			for(x = off?-s:0; x<=w; x += s){
+		boolean off = true;
+		for(y = 0; y<h; y += s/4){
+			for(x = off?s/2:0; x<=w; x += s){
 				drawSquare(g, x, y);
 			}
 			off = !off;
@@ -202,11 +203,6 @@ public class EntityImporterImagePainter extends JPanel{
 					return p.x==x&&p.y==y;
 				}
 				return false;
-			}
-			@Override
-			public int hashCode(){
-				// Eh. Good enough for what we are using this for.
-				return super.hashCode();
 			}
 		};
 		if(tiles.contains(p)){

@@ -34,4 +34,8 @@ Yes, but not right now. Right now, as it is still very early in development, I w
 Please note, when public editing is available, I still may not accept every pull request, if it appears to damage the system, or create potential harm.
 
 # Help & Tutorials
-Coming soon!
+Coming soon! But you can read the changelog here:
+https://docs.google.com/document/d/11Tt__ZGXlEHRqi9y_ABUBbsqORJryuaY2eUL5cUShOA/edit?usp=sharing
+
+If you notice any issues, please list it in the issues list. (If it's not already there.)
+if you have any questions, ideas, or anything else, go ahead and email me at "linktheblademaster@yahoo.com". I'll respond as soon as possible!

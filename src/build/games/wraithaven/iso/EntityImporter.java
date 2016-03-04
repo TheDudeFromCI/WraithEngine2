@@ -151,15 +151,15 @@ public class EntityImporter extends JFrame{
 			}else{
 				y = t.y+s-h;
 			}
-			if(y+h>=temp.getHeight()){
-				h = (temp.getHeight()-1)-y;
+			if(y+h>temp.getHeight()){
+				h = temp.getHeight()-y;
 			}
 			if(y<0){
 				h += y;
 				y = 0;
 			}
-			if(x+w>=temp.getWidth()){
-				w = (temp.getWidth())-x;
+			if(x+w>temp.getWidth()){
+				w = temp.getWidth()-x;
 			}
 			if(x<0){
 				w += x;
@@ -196,15 +196,15 @@ public class EntityImporter extends JFrame{
 				}else{
 					y = t.y+s-h;
 				}
-				if(y+h>=temp.getHeight()){
-					h = (temp.getHeight()-1)-y;
+				if(y+h>temp.getHeight()){
+					h = temp.getHeight()-y;
 				}
 				if(y<0){
 					h += y;
 					y = 0;
 				}
-				if(x+w>=temp.getWidth()){
-					w = (temp.getWidth()-1)-x;
+				if(x+w>temp.getWidth()){
+					w = temp.getWidth()-x;
 				}
 				if(x<0){
 					w += x;

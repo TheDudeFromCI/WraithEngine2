@@ -462,7 +462,7 @@ public class MapEditorPainter extends JPanel{
 								continue;
 							}
 							entity = entities.get(layer);
-							entityHeight = entity.getHeight()>=0?(1-entity.getHeight())*tileSize:0;
+							entityHeight = entity.getHeight()>=0?(1-entity.getHeight())*tileSize:-2;
 							g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*Math.abs(entity.getHeight()), null);
 						}
 					}

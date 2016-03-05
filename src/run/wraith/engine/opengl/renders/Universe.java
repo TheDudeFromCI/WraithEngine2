@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
+import run.wraith.engine.mapstyles.iso.EntityModelInstance;
 
 /**
  * @author thedudefromci
@@ -63,6 +64,9 @@ public class Universe{
 			model.getPosition().get(buffer);
 			GL20.glUniformMatrix4fv(modelLocation, false, buffer);
 			model.render();
+			if(model instanceof EntityModelInstance){
+				// break;
+			}
 		}
 		flags.unbind();
 		shader.unbind();

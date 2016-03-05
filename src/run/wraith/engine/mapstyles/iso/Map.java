@@ -90,7 +90,8 @@ public class Map{
 							Tile[] references = new Tile[bin.getInt()];
 							String layer, cat, id;
 							int index, y, entityCount, i, j;
-							int u, v, r;
+							int u, v;
+							double r;
 							float s, t;
 							TileModelInstance mod;
 							EntityModelInstance mod2;
@@ -112,7 +113,7 @@ public class Map{
 								v = i/width; // Y
 								s = (u-v)*32-32;
 								t = (u+v)*16-y*8;
-								r = Math.max(u, v);
+								r = u+v;
 								tiles[i] = new TileInstance(references[index], y);
 								mod = new TileModelInstance(references[index].getModel());
 								mod.getPosition().translate(s, t, 0);
@@ -125,9 +126,9 @@ public class Map{
 									id = bin.getString();
 									entity = entityList.getEntity(cat, id, layer);
 									mod2 = new EntityModelInstance(entity.getModel());
-									y = entity.getHeight()>=0?(1-entity.getHeight())*64:-2;;
+									y = entity.getHeight()>=0?(1-entity.getHeight())*64:-2;
 									mod2.getPosition().translate(s, t+y, 0);
-									mod2.setRenderIndex(r+0.5);
+									mod2.setRenderIndex(r += 0.0000001);
 									universe.addModel(mod2);
 								}
 							}

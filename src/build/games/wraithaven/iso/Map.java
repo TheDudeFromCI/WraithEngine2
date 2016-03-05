@@ -12,7 +12,7 @@ import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * @author TheDudeFromCI
@@ -92,7 +92,7 @@ public class Map implements MapInterface{
 				}else{
 					bin.addInt(tileReferences.indexOf(t.getTile()));
 					bin.addInt(t.getHeight());
-					HashMap<Layer,EntityType> entities = t.getAllEntities();
+					TreeMap<Layer,EntityType> entities = t.getAllEntities();
 					bin.addInt(entities.size());
 					EntityType entity;
 					for(Layer layer : entities.keySet()){

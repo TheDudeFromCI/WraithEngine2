@@ -8,14 +8,14 @@
 package build.games.wraithaven.iso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * @author TheDudeFromCI
  */
 public class TileInstance{
 	private final Tile tile;
-	private final HashMap<Layer,EntityType> entities = new HashMap(1);
+	private final TreeMap<Layer,EntityType> entities = new TreeMap();
 	private int height;
 	public TileInstance(Tile tile){
 		this.tile = tile;
@@ -49,7 +49,7 @@ public class TileInstance{
 			entities.put(selectedLayer, entity);
 		}
 	}
-	public HashMap<Layer,EntityType> getAllEntities(){
+	public TreeMap<Layer,EntityType> getAllEntities(){
 		return entities;
 	}
 	public void removeEntity(EntityType entity){

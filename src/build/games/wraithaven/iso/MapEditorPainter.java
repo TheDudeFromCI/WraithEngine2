@@ -19,7 +19,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.HashMap;
+import java.util.TreeMap;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -429,7 +429,7 @@ public class MapEditorPainter extends JPanel{
 			int h = map.getHeight();
 			int a, b, i, x, y, u, v;
 			int maxA = w+h-1;
-			HashMap<Layer,EntityType> entities;
+			TreeMap<Layer,EntityType> entities;
 			EntityType entity;
 			int entityHeight;
 			for(a = 0; a<maxA; a++){

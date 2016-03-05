@@ -36,7 +36,7 @@ public class Map{
 				// Initalize scene.
 				universe = new Universe();
 				camera = new Camera();
-				camera.setOrthographic(0, 15*4/3f, 15, 0, -1, 1);
+				camera.setOrthographic(0, 800, 600, 0, -1, 1);
 				universe.setCamera(camera);
 				File vertexShader = new File("/home/thedudefromci/Documents/Vertex.txt");
 				File fragmentShader = new File("/home/thedudefromci/Documents/Fragment.txt");
@@ -110,8 +110,8 @@ public class Map{
 								y = bin.getInt();
 								u = i%width; // X
 								v = i/width; // Y
-								s = (u-v)*0.5f;
-								t = (u+v)*0.25f-y*0.125f;
+								s = (u-v)*32-32;
+								t = (u+v)*16-y*8;
 								r = Math.max(u, v);
 								tiles[i] = new TileInstance(references[index], y);
 								mod = new TileModelInstance(references[index].getModel());
@@ -125,7 +125,8 @@ public class Map{
 									id = bin.getString();
 									entity = entityList.getEntity(cat, id, layer);
 									mod2 = new EntityModelInstance(entity.getModel());
-									mod2.getPosition().translate(s, t+(entity.getHeight()>=0?(1-entity.getHeight())/2f:(1-entity.getHeight())/2f-1), 0);
+									y = entity.getHeight()>=0?(1-entity.getHeight())*64:-2;;
+									mod2.getPosition().translate(s, t+y, 0);
 									mod2.setRenderIndex(r+0.5);
 									universe.addModel(mod2);
 								}

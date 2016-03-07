@@ -13,7 +13,7 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author TheDudeFromCI
  */
-public class Layer{
+public class Layer implements Comparable<Layer>{
 	private final String uuid;
 	private final int[] nameBounds = new int[4];
 	private String name;
@@ -69,5 +69,9 @@ public class Layer{
 		nameBounds[1] = y;
 		nameBounds[2] = w;
 		nameBounds[3] = h;
+	}
+	@Override
+	public int compareTo(Layer o){
+		return 0;
 	}
 }

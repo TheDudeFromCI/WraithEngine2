@@ -146,7 +146,7 @@ public class SortedMap<K,V> implements Iterable<K>{
 			private int position;
 			@Override
 			public boolean hasNext(){
-				return position<size-1;
+				return position<size;
 			}
 			@Override
 			public K next(){

@@ -80,6 +80,7 @@ public class EntityLayers extends JPanel{
 							layers.set(i, layersAtDown[j++]);
 						}
 					}
+					updateIndices();
 					repaint();
 					// Because layers have changed, reference that on the map.
 					mapStyle.getMapEditor().getPainter().repaint();

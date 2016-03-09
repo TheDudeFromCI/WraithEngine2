@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.iso;
 
-import wraith.lib.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -22,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author TheDudeFromCI
@@ -118,6 +118,7 @@ public class ChipsetList extends JPanel{
 							}
 							Map map = mapStyle.getMapEditor().getPainter().getMap();
 							map.deleteLayer(layer);
+							mapStyle.getMapEditor().getPainter().updateNeedsSaving();
 							mapStyle.getMapEditor().getPainter().repaint();
 						}
 					});

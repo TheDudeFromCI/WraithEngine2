@@ -276,7 +276,6 @@ public class EntityLayers extends JPanel{
 		}
 		save(true);
 		updatePreferedSize();
-		save();
 		repaint();
 	}
 	public void save(){

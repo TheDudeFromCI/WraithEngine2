@@ -156,7 +156,7 @@ public class MapEditorPainter extends JPanel{
 									}
 									break;
 								case FILL:
-									if(!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+									if(cursorSelection.isEntityActive()&&!(cursorSelection.getSelectedEntity() instanceof EntityType)){
 										return;
 									}
 									IsoMapFillableEntities fillable =
@@ -238,7 +238,7 @@ public class MapEditorPainter extends JPanel{
 							fillable = new IsoMapFillable(map);
 							selected = cursorSelection.getSelectedTile();
 						}else{
-							if(cursorSelection.getSelectedEntity()!=null&&!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+							if(cursorSelection.isEntityActive()&&!(cursorSelection.getSelectedEntity() instanceof EntityType)){
 								dragging = false;
 								drawing = false;
 								repaint();

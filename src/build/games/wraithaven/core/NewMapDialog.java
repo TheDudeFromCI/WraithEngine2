@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import wraith.lib.util.Algorithms;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -22,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author TheDudeFromCI
@@ -141,6 +141,7 @@ public class NewMapDialog extends JFrame{
 			}
 		}
 		pack();
+		mapName.requestFocusInWindow();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}

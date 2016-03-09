@@ -238,7 +238,10 @@ public class MapEditorPainter extends JPanel{
 							fillable = new IsoMapFillable(map);
 							selected = cursorSelection.getSelectedTile();
 						}else{
-							if(!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+							if(cursorSelection.getSelectedEntity()!=null&&!(cursorSelection.getSelectedEntity() instanceof EntityType)){
+								dragging = false;
+								drawing = false;
+								repaint();
 								return;
 							}
 							fillable = new IsoMapFillableEntities(map, mapStyle.getChipsetList().getEntityLayers().getSelectedLayer());

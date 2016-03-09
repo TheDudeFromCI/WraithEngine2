@@ -8,7 +8,6 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.WraithEngine;
-import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,6 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author TheDudeFromCI
@@ -85,7 +85,7 @@ public class ChipsetImporter{
 					JPanel panel = new JPanel();
 					panel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 					sharpen = new JCheckBox("Sharpen");
-					sharpen.setSelected(true);
+					sharpen.setSelected(false);
 					sharpen.addActionListener(new ActionListener(){
 						@Override
 						public void actionPerformed(ActionEvent e){

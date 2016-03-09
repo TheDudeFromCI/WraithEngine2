@@ -39,7 +39,9 @@ public class MapPreviewProtocol implements RunProtocol{
 	@Override
 	public void preLoop(){
 		renderer.initalize();
-		renderer.setMap(new Map(mapId));
+		Map map = new Map(mapId);
+		renderer.setMap(map);
+		inputHandler.loadMap(map);
 	}
 	@Override
 	public void dispose(){

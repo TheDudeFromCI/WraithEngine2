@@ -7,18 +7,56 @@
  */
 package run.wraith.engine.mapstyles.iso.preview;
 
+import org.lwjgl.glfw.GLFW;
+import run.wraith.engine.mapstyles.iso.Map;
 import run.wraith.engine.opengl.loop.InputHandler;
 
 /**
  * @author thedudefromci
  */
 public class MapPreviewInputHandler implements InputHandler{
+	private Map map;
+	private boolean mouseDown;
+	private double mouseX;
+	private double mouseY;
+	private double downX;
+	private double downY;
+	private double scrollX;
+	private double scrollY;
+	private double scrollXStart;
+	private double scrollYStart;
+	public void loadMap(Map map){
+		this.map = map;
+	}
 	@Override
 	public void keyPressed(long window, int key, int action){}
 	@Override
-	public void mouseClicked(long window, int button, int action){}
+	public void mouseClicked(long window, int button, int action){
+		if(map==null){
+			return;
+		}
+		mouseDown = action==GLFW.GLFW_PRESS;
+		if(mouseDown){
+			downX = mouseX;
+			downY = mouseY;
+			scrollXStart = scrollX;
+			scrollYStart = scrollY;
+		}
+	}
 	@Override
-	public void mouseMove(long window, double x, double y){}
+	public void mouseMove(long window, double x, double y){
+		if(map==null){
+			return;
+		}
+		mouseX = x;
+		mouseY = y;
+		if(!mouseDown){
+			return;
+		}
+		scrollX = mouseX-downX+scrollXStart;
+		scrollY = mouseY-downY+scrollYStart;
+		map.getCamera().moveTo((float)(-scrollX), (float)(-scrollY), 0);
+	}
 	@Override
 	public void mouseWheel(long window, double x, double y){}
 }

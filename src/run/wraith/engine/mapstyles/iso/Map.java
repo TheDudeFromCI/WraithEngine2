@@ -164,4 +164,7 @@ public class Map{
 	public void dispose(){
 		universe.dispose();
 	}
+	public Camera getCamera(){
+		return camera;
+	}
 }

@@ -49,6 +49,7 @@ public class EntityLayers extends JPanel{
 	private Layer selectedLayer;
 	private TextEditor textEditor;
 	private Timer timer;
+	private Layer layerDown;
 	public EntityLayers(IsoMapStyle mapStyle){
 		this.mapStyle = mapStyle;
 		try{
@@ -59,7 +60,6 @@ public class EntityLayers extends JPanel{
 		}
 		updatePreferedSize();
 		InputAdapter ia = new InputAdapter(){
-			private Layer layerDown;
 			private Layer[] layersAtDown;
 			private boolean click;
 			@Override
@@ -81,7 +81,6 @@ public class EntityLayers extends JPanel{
 						}
 					}
 					if(updateIndices()){
-						repaint();
 						// Because layers have changed, reference that on the map.
 						// Also note that the map now needs to be saved.
 						mapStyle.getMapEditor().getPainter().repaint();
@@ -89,15 +88,20 @@ public class EntityLayers extends JPanel{
 						mapStyle.getMapEditor().getPainter().updateNeedsSaving();
 					}
 				}
+				repaint();
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
 				updateIndices();
 				layerDown = null;
 				layersAtDown = null;
+				repaint();
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
+				if(textEditor!=null){
+					textEditor.end();
+				}
 				click = false;
 				int y = event.getY();
 				int h = 0;
@@ -316,28 +320,35 @@ public class EntityLayers extends JPanel{
 		g.setFont(font);
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D r;
+		int x;
 		int y = 0;
 		int u, v;
 		for(Layer layer : layers){
+			if(layer==layerDown){
+				x = 25;
+			}else{
+				x = 0;
+			}
 			g.setColor(layer==selectedLayer?Color.blue:Color.white);
-			g.fillRect(0, y, width, LAYER_HEIGHT);
+			g.fillRect(x, y, width, LAYER_HEIGHT);
 			g.setColor(Color.black);
-			g.drawRect(0, y, width, LAYER_HEIGHT);
+			g.drawRect(x, y, width, LAYER_HEIGHT);
 			r = fm.getStringBounds(textEditor!=null&&selectedLayer==layer?textEditor.getText():layer.getName(), g);
+			r.setRect(x+r.getX(), r.getY(), r.getWidth(), r.getHeight());
 			u = EYE_ICON_SIZE+5;
 			v = (int)((LAYER_HEIGHT-(float)r.getHeight())/2f+fm.getAscent()+y);
-			layer.setNameBounds(u, v-fm.getAscent(), (int)r.getWidth(), (int)r.getHeight());
+			layer.setNameBounds(u+x, v-fm.getAscent(), (int)r.getWidth(), (int)r.getHeight());
 			if(textEditor!=null&&selectedLayer==layer){
 				g.setColor(Color.white);
-				g.fillRect(u-3, v-fm.getAscent(), (int)r.getWidth()+6, (int)r.getHeight());
+				g.fillRect(u-3+x, v-fm.getAscent(), (int)r.getWidth()+12, (int)r.getHeight());
 				g.setColor(Color.black);
-				g.drawRect(u-3, v-fm.getAscent(), (int)r.getWidth()+6, (int)r.getHeight());
-				textEditor.draw(g1, u, v);
+				g.drawRect(u-3+x, v-fm.getAscent(), (int)r.getWidth()+12, (int)r.getHeight());
+				textEditor.draw(g1, u+x, v);
 			}else{
-				g.drawString(layer.getName(), u, v);
+				g.drawString(layer.getName(), u+x, v);
 			}
-			g.drawImage(layer.isVisible()?eyeOpen:eyeClosed, EYE_POS, y+EYE_POS, null);
-			g.drawRect(EYE_POS, EYE_POS+y, EYE_ICON_IMAGE_SIZE, EYE_ICON_IMAGE_SIZE);
+			g.drawImage(layer.isVisible()?eyeOpen:eyeClosed, EYE_POS+x, y+EYE_POS, null);
+			g.drawRect(EYE_POS+x, EYE_POS+y, EYE_ICON_IMAGE_SIZE, EYE_ICON_IMAGE_SIZE);
 			y += LAYER_HEIGHT;
 		}
 		g.dispose();

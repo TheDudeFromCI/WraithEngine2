@@ -7,8 +7,6 @@
  */
 package build.games.wraithaven.iso;
 
-import wraith.lib.util.Algorithms;
-import wraith.lib.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.TextEditor;
 import java.awt.Color;
@@ -30,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author TheDudeFromCI
@@ -59,8 +59,63 @@ public class EntityLayers extends JPanel{
 		}
 		updatePreferedSize();
 		InputAdapter ia = new InputAdapter(){
+			private Layer layerDown;
+			private Layer[] layersAtDown;
+			private boolean click;
+			@Override
+			public void mouseDragged(MouseEvent event){
+				if(!click&&layerDown!=null){
+					int y = Math.round(event.getY()/(float)LAYER_HEIGHT);
+					if(y<0){
+						y = 0;
+					}
+					if(y>=layers.size()){
+						y = layers.size()-1;
+					}
+					int j = 0;
+					for(int i = 0; i<layers.size(); i++){
+						if(i==y){
+							layers.set(i, layerDown);
+						}else{
+							layers.set(i, layersAtDown[j++]);
+						}
+					}
+					repaint();
+				}
+			}
+			@Override
+			public void mouseReleased(MouseEvent event){
+				updateIndices();
+				layerDown = null;
+				layersAtDown = null;
+			}
+			@Override
+			public void mousePressed(MouseEvent event){
+				click = false;
+				int y = event.getY();
+				int h = 0;
+				for(Layer l : layers){
+					if(y>=h&&y-h<LAYER_HEIGHT){
+						layerDown = l;
+						layersAtDown = new Layer[layers.size()-1];
+						int j = 0;
+						for(Layer a : layers){
+							if(a==l){
+								continue;
+							}
+							layersAtDown[j++] = a;
+						}
+						return;
+					}
+					h += LAYER_HEIGHT;
+				}
+				layerDown = null;
+			}
 			@Override
 			public void mouseClicked(MouseEvent event){
+				click = true;
+				layerDown = null;
+				layersAtDown = null;
 				if(textEditor!=null){
 					textEditor.end();
 				}
@@ -138,6 +193,7 @@ public class EntityLayers extends JPanel{
 			public void ancestorMoved(AncestorEvent event){}
 		});
 		addMouseListener(ia);
+		addMouseMotionListener(ia);
 		setFocusable(true);
 	}
 	public void loadMap(String uuid){
@@ -153,6 +209,7 @@ public class EntityLayers extends JPanel{
 		if(!file.exists()){
 			selectedLayer = new Layer("Layer 1");
 			layers.add(selectedLayer);
+			updateIndices();
 			save();
 			updatePreferedSize();
 			repaint();
@@ -194,6 +251,7 @@ public class EntityLayers extends JPanel{
 		save(true);
 		updatePreferedSize();
 		repaint();
+		updateIndices();
 	}
 	public void removeLayer(Layer layer){
 		layers.remove(layer);
@@ -229,6 +287,12 @@ public class EntityLayers extends JPanel{
 	}
 	private void updatePreferedSize(){
 		setPreferredSize(new Dimension(LAYER_WIDTH, Math.max(layers.size()*LAYER_HEIGHT, 10)));
+	}
+	private void updateIndices(){
+		int i = 0;
+		for(Layer l : layers){
+			l.setIndex(i++);
+		}
 	}
 	@Override
 	public void paintComponent(Graphics g1){

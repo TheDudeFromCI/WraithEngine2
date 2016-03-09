@@ -19,9 +19,9 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.util.TreeMap;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import wraith.lib.util.SortedMap;
 
 /**
  * @author TheDudeFromCI
@@ -429,7 +429,7 @@ public class MapEditorPainter extends JPanel{
 			int h = map.getHeight();
 			int a, b, i, x, y, u, v;
 			int maxA = w+h-1;
-			TreeMap<Layer,EntityType> entities;
+			SortedMap<Layer,EntityType> entities;
 			EntityType entity;
 			int entityHeight;
 			for(a = 0; a<maxA; a++){
@@ -457,7 +457,8 @@ public class MapEditorPainter extends JPanel{
 							g.setComposite(com);
 						}
 						entities = tiles[i].getAllEntities();
-						for(Layer layer : entities.keySet()){
+						entities.sort(null);
+						for(Layer layer : entities){
 							if(!layer.isVisible()){
 								continue;
 							}

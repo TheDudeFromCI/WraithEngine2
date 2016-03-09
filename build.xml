@@ -1,5 +1,7 @@
 <project name="WraithEngine2" basedir="." default="main">
-    <target name="clean">
+	<import file="nbproject/build-impl.xml"/>
+	<import file="nbproject/build-native.xml"/>
+	<target name="clean">
         <delete dir="build"/>
         <delete dir="dist"/>
     </target>

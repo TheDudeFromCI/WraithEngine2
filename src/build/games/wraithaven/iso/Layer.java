@@ -19,6 +19,7 @@ public class Layer implements Comparable<Layer>{
 	private String name;
 	private boolean visible;
 	private boolean needsSaving;
+	private int index;
 	public Layer(String name){
 		uuid = Algorithms.randomUUID();
 		this.name = name;
@@ -72,6 +73,9 @@ public class Layer implements Comparable<Layer>{
 	}
 	@Override
 	public int compareTo(Layer o){
-		return 0;
+		return Integer.compare(index, o.index);
+	}
+	public void setIndex(int index){
+		this.index = index;
 	}
 }

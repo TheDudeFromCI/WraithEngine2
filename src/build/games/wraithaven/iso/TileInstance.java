@@ -7,15 +7,14 @@
  */
 package build.games.wraithaven.iso;
 
-import java.util.ArrayList;
-import java.util.TreeMap;
+import wraith.lib.util.SortedMap;
 
 /**
  * @author TheDudeFromCI
  */
 public class TileInstance{
 	private final Tile tile;
-	private final TreeMap<Layer,EntityType> entities = new TreeMap();
+	private final SortedMap<Layer,EntityType> entities = new SortedMap(2);
 	private int height;
 	public TileInstance(Tile tile){
 		this.tile = tile;
@@ -34,33 +33,22 @@ public class TileInstance{
 		this.height = height;
 	}
 	public EntityType getEntity(Layer selectedLayer){
-		if(entities.containsKey(selectedLayer)){
-			return entities.get(selectedLayer);
+		if(selectedLayer==null){
+			return null;
 		}
-		return null;
+		return entities.get(selectedLayer);
 	}
 	public void setEntity(EntityType entity, Layer selectedLayer){
-		if(selectedLayer==null){
-			return;
-		}
 		if(entity==null){
 			entities.remove(selectedLayer);
 		}else{
 			entities.put(selectedLayer, entity);
 		}
 	}
-	public TreeMap<Layer,EntityType> getAllEntities(){
+	public SortedMap<Layer,EntityType> getAllEntities(){
 		return entities;
 	}
 	public void removeEntity(EntityType entity){
-		ArrayList<Layer> toRemove = new ArrayList(1);
-		for(Layer layer : entities.keySet()){
-			if(entities.get(layer)==entity){
-				toRemove.add(layer);
-			}
-		}
-		for(Layer layer : toRemove){
-			entities.remove(layer);
-		}
+		entities.removeValue(entity);
 	}
 }

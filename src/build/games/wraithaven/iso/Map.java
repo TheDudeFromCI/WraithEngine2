@@ -8,11 +8,11 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.MapInterface;
-import wraith.lib.util.Algorithms;
-import wraith.lib.util.BinaryFile;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
+import wraith.lib.util.SortedMap;
 
 /**
  * @author TheDudeFromCI
@@ -92,12 +92,12 @@ public class Map implements MapInterface{
 				}else{
 					bin.addInt(tileReferences.indexOf(t.getTile()));
 					bin.addInt(t.getHeight());
-					TreeMap<Layer,EntityType> entities = t.getAllEntities();
-					bin.addInt(entities.size());
+					SortedMap<Layer,EntityType> entities = t.getAllEntities();
+					bin.addInt(entities.getSize());
 					EntityType entity;
-					for(Layer layer : entities.keySet()){
-						bin.addStringAllocated(layer.getUUID());
+					for(Layer layer : entities){
 						entity = entities.get(layer);
+						bin.addStringAllocated(layer.getUUID());
 						bin.addStringAllocated(entity.getCategory().getUUID());
 						bin.addStringAllocated(entity.getUUID());
 					}

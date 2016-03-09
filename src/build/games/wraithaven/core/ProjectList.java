@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.core;
 
+import build.games.wraithaven.util.InputDialog;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -136,8 +137,15 @@ public class ProjectList extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e){
 				NewProjectDialog dialog = new NewProjectDialog();
-				int response = JOptionPane.showConfirmDialog(null, dialog, "New Project", JOptionPane.OK_CANCEL_OPTION);
-				if(response!=JOptionPane.OK_OPTION){
+				InputDialog pane = new InputDialog();
+				pane.setTitle("New Project");
+				pane.setData(dialog);
+				pane.setDefaultFocus(dialog.getDefaultFocus());
+				pane.setOkButton(true);
+				pane.setCancelButton(true);
+				pane.show();
+				int response = pane.getResponse();
+				if(response!=InputDialog.OK){
 					return;
 				}
 				String name = dialog.getProjectName();

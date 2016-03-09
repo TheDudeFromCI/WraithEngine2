@@ -12,6 +12,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -84,5 +85,8 @@ public class NewProjectDialog extends JPanel{
 	}
 	public int getBitSize(){
 		return (int)bitSize.getValue();
+	}
+	public JComponent getDefaultFocus(){
+		return projectName;
 	}
 }

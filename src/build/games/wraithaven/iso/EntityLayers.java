@@ -80,10 +80,14 @@ public class EntityLayers extends JPanel{
 							layers.set(i, layersAtDown[j++]);
 						}
 					}
-					updateIndices();
-					repaint();
-					// Because layers have changed, reference that on the map.
-					mapStyle.getMapEditor().getPainter().repaint();
+					if(updateIndices()){
+						repaint();
+						// Because layers have changed, reference that on the map.
+						// Also note that the map now needs to be saved.
+						mapStyle.getMapEditor().getPainter().repaint();
+						mapStyle.getMapEditor().getSelectedMap().setNeedsSaving();
+						mapStyle.getMapEditor().getPainter().updateNeedsSaving();
+					}
 				}
 			}
 			@Override
@@ -292,11 +296,14 @@ public class EntityLayers extends JPanel{
 	private void updatePreferedSize(){
 		setPreferredSize(new Dimension(LAYER_WIDTH, Math.max(layers.size()*LAYER_HEIGHT, 10)));
 	}
-	private void updateIndices(){
+	private boolean updateIndices(){
+		boolean changed = false;
 		int i = 0;
 		for(Layer l : layers){
+			changed = changed||l.getIndex()!=i;
 			l.setIndex(i++);
 		}
+		return changed;
 	}
 	@Override
 	public void paintComponent(Graphics g1){

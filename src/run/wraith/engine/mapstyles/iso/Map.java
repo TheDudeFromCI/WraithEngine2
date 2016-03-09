@@ -128,7 +128,7 @@ public class Map{
 									mod2 = new EntityModelInstance(entity.getModel());
 									y = entity.getHeight()>=0?(1-entity.getHeight())*64:-2;
 									mod2.getPosition().translate(s, t+y, 0);
-									mod2.setRenderIndex(r += 0.0000001);
+									mod2.setRenderIndex(r += 0.0001);
 									universe.addModel(mod2);
 								}
 							}

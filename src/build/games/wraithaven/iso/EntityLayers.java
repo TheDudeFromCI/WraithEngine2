@@ -81,6 +81,8 @@ public class EntityLayers extends JPanel{
 						}
 					}
 					repaint();
+					// Because layers have changed, reference that on the map.
+					mapStyle.getMapEditor().getPainter().repaint();
 				}
 			}
 			@Override

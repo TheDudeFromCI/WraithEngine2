@@ -93,6 +93,7 @@ public class Map implements MapInterface{
 					bin.addInt(tileReferences.indexOf(t.getTile()));
 					bin.addInt(t.getHeight());
 					SortedMap<Layer,EntityType> entities = t.getAllEntities();
+					entities.sort(null);
 					bin.addInt(entities.getSize());
 					EntityType entity;
 					for(Layer layer : entities){

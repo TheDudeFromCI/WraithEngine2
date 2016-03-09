@@ -229,6 +229,7 @@ public class EntityLayers extends JPanel{
 		}else{
 			selectedLayer = layers.get(0);
 		}
+		updateIndices();
 		updatePreferedSize();
 		repaint();
 	}

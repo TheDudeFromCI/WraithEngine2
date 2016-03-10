@@ -1,7 +1,7 @@
 <project name="WraithEngine2" basedir="." default="main">
-	<import file="nbproject/build-impl.xml"/>
-	<import file="nbproject/build-native.xml"/>
-	<target name="clean">
+    <import file="nbproject/build-impl.xml"/>
+    <import file="nbproject/build-native.xml"/>
+    <target name="clean">
         <delete dir="build"/>
         <delete dir="dist"/>
     </target>
@@ -45,7 +45,7 @@
             </manifest>
         </jar>
     </target>
-    <target name="run" depends="jar">
+    <target name="run" depends="clean-build">
         <java jar="dist/WraithEngine.jar" fork="true"/>
     </target>
     <target name="clean-build" depends="clean,jar"/>

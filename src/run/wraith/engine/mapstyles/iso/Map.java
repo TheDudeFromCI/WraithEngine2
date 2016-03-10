@@ -21,6 +21,7 @@ import wraith.lib.util.BinaryFile;
  * @author thedudefromci
  */
 public class Map{
+	public static final float PIXELS = 64;
 	private final int width;
 	private final int height;
 	private final TileInstance[] tiles;
@@ -111,8 +112,8 @@ public class Map{
 								y = bin.getInt();
 								u = i%width; // X
 								v = i/width; // Y
-								s = (u-v)*32-32;
-								t = (u+v)*16-y*8;
+								s = (u-v)*(PIXELS/2)-(PIXELS/2);
+								t = (u+v)*(PIXELS/4)-y*(PIXELS/8);
 								r = u+v;
 								tiles[i] = new TileInstance(references[index], y);
 								mod = new TileModelInstance(references[index].getModel());
@@ -126,8 +127,7 @@ public class Map{
 									id = bin.getString();
 									entity = entityList.getEntity(cat, id, layer);
 									mod2 = new EntityModelInstance(entity.getModel());
-									y = entity.getHeight()>=0?(1-entity.getHeight())*64:-2;
-									mod2.getPosition().translate(s, t+y, 0);
+									mod2.getPosition().translate(s, t+(entity.getHeight()>=0?(1-entity.getHeight())*PIXELS:0), 0);
 									mod2.setRenderIndex(r += 0.0001);
 									universe.addModel(mod2);
 								}

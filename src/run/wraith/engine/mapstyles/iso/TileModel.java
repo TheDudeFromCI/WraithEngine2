@@ -21,7 +21,7 @@ public class TileModel extends Model{
 	private static VAO generateVAO(Tile tile){
 		// TODO Optimize algorithm to cut out transparency.
 		PrimitiveFlags flags = new PrimitiveFlags(true, true);
-		VertexBuildData data = PrimitiveGenerator.generateSquare(64, 64, flags);
+		VertexBuildData data = PrimitiveGenerator.generateSquare(Map.PIXELS, Map.PIXELS, flags);
 		VAO vao = PrimitiveGenerator.convertToVAO(data, flags);
 		return vao;
 	}

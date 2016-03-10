@@ -449,6 +449,18 @@ public class MapEditorPainter extends JPanel{
 					u = (x-y)*tileWidth+scrollX-tileWidth;
 					v = (x+y)*tileHeight+scrollY-tiles[i].getHeight()*tileSize/8;
 					if(isOnScreen(u, v, width, height)){
+						entities = tiles[i].getAllEntities();
+						entities.sort(null);
+						for(Layer layer : entities){
+							if(!layer.isVisible()){
+								continue;
+							}
+							entity = entities.get(layer);
+							if(entity.getHeight()<0){
+								entityHeight = 1;
+								g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*-entity.getHeight(), null);
+							}
+						}
 						g.drawImage(imageStorage.getImage(tiles[i].getTile()), u, v, tileSize, tileSize, null);
 						if(x==cursorSelection.getTileX()&&y==cursorSelection.getTileY()){
 							Composite com = g.getComposite();
@@ -459,15 +471,15 @@ public class MapEditorPainter extends JPanel{
 							g.translate(-u-tileWidth, -v-tileWidth);
 							g.setComposite(com);
 						}
-						entities = tiles[i].getAllEntities();
-						entities.sort(null);
 						for(Layer layer : entities){
 							if(!layer.isVisible()){
 								continue;
 							}
 							entity = entities.get(layer);
-							entityHeight = entity.getHeight()>=0?(1-entity.getHeight())*tileSize:-2;
-							g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*Math.abs(entity.getHeight()), null);
+							if(entity.getHeight()>=0){
+								entityHeight = (1-entity.getHeight())*tileSize;
+								g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*entity.getHeight(), null);
+							}
 						}
 					}
 				}

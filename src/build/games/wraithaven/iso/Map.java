@@ -8,8 +8,11 @@
 package build.games.wraithaven.iso;
 
 import build.games.wraithaven.core.MapInterface;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 import wraith.lib.util.SortedMap;
@@ -30,6 +33,7 @@ public class Map implements MapInterface{
 	private boolean loaded;
 	private boolean needsSaving;
 	private String parent;
+	private BufferedImage backgroundImage;
 	public Map(IsoMapStyle iso, String uuid){
 		this.iso = iso;
 		this.uuid = uuid;
@@ -114,11 +118,38 @@ public class Map implements MapInterface{
 	public void setNeedsSaving(){
 		needsSaving = true;
 	}
+	public void setBackgroundImage(BufferedImage image){
+		if(!loaded){
+			throw new RuntimeException();
+		}
+		backgroundImage = image;
+		try{
+			ImageIO.write(backgroundImage, "png", Algorithms.getFile("Worlds", "Backgrounds", uuid+".png"));
+		}catch(Exception exception){
+			JOptionPane.showMessageDialog(null, "There has been an error trying to save this background image.", "Error", JOptionPane.ERROR_MESSAGE);
+			exception.printStackTrace();
+			backgroundImage = null;
+		}
+	}
 	public void load(){
 		if(loaded){
 			throw new RuntimeException();
 		}
 		loaded = true;
+		{
+			// Attempt to load the background image.
+			File file = Algorithms.getFile("Worlds", "Backgrounds", uuid+".png");
+			if(file.exists()){
+				try{
+					backgroundImage = ImageIO.read(file);
+				}catch(Exception exception){
+					JOptionPane.showMessageDialog(null, "There has been an error trying to load the background image for this map.", "Error",
+						JOptionPane.ERROR_MESSAGE);
+					exception.printStackTrace();
+					backgroundImage = null;
+				}
+			}
+		}
 		File file = Algorithms.getFile("Worlds", "Tiles", uuid+".dat");
 		if(!file.exists()){
 			tiles = new TileInstance[width*height];
@@ -163,6 +194,7 @@ public class Map implements MapInterface{
 		loaded = false;
 		tiles = null;
 		needsSaving = false;
+		backgroundImage = null;
 	}
 	private void saveProperties(){
 		BinaryFile bin = new BinaryFile(4+8+1+2);
@@ -270,5 +302,11 @@ public class Map implements MapInterface{
 	}
 	public boolean isLoaded(){
 		return loaded;
+	}
+	public boolean hasBackgroundImage(){
+		return backgroundImage!=null;
+	}
+	public BufferedImage getBackgroundImage(){
+		return backgroundImage;
 	}
 }

@@ -427,6 +427,9 @@ public class MapEditorPainter extends JPanel{
 		int height = getHeight();
 		g.fillRect(0, 0, width, height);
 		if(map!=null){
+			if(map.hasBackgroundImage()){
+				g.drawImage(map.getBackgroundImage(), 0, 0, width, height, null);
+			}
 			TileInstance[] tiles = map.getAllTiles();
 			int w = map.getWidth();
 			int h = map.getHeight();

@@ -124,7 +124,14 @@ public class Map implements MapInterface{
 		}
 		backgroundImage = image;
 		try{
-			ImageIO.write(backgroundImage, "png", Algorithms.getFile("Worlds", "Backgrounds", uuid+".png"));
+			if(image==null){
+				File file = Algorithms.getFile("Worlds", "Backgrounds", uuid+".png");
+				if(file.exists()){
+					file.delete();
+				}
+			}else{
+				ImageIO.write(image, "png", Algorithms.getFile("Worlds", "Backgrounds", uuid+".png"));
+			}
 		}catch(Exception exception){
 			JOptionPane.showMessageDialog(null, "There has been an error trying to save this background image.", "Error", JOptionPane.ERROR_MESSAGE);
 			exception.printStackTrace();

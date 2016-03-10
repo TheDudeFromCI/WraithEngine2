@@ -143,7 +143,6 @@ public class IsoMapStyle implements MapStyle{
 								TileCategory cat = chipsetList.getSelectedCategory();
 								Tile tile = new Tile(Algorithms.randomUUID(), image, cat);
 								cat.addTile(tile);
-								JOptionPane.showMessageDialog(null, "Tile imported.");
 							}
 						});
 						mnFile.add(mntmImportNewChipset);
@@ -207,12 +206,28 @@ public class IsoMapStyle implements MapStyle{
 									BufferedImage i = ImageIO.read(image);
 									map.setBackgroundImage(i);
 									getMapEditor().getPainter().repaint();
-									JOptionPane.showMessageDialog(null, "Background imported.", "Imported", JOptionPane.PLAIN_MESSAGE);
 								}catch(Exception exception){
 									exception.printStackTrace();
 									JOptionPane.showMessageDialog(null, "There has been an error loading this image.", "Error",
 										JOptionPane.ERROR_MESSAGE);
 								}
+							}
+						});
+						menu.add(item);
+					}
+					{
+						// Clear background.
+						JMenuItem item = new JMenuItem("Clear Map Background");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								Map map = getMapEditor().getSelectedMap();
+								if(map==null){
+									JOptionPane.showMessageDialog(null, "You do not have a map selected!", "Warning", JOptionPane.WARNING_MESSAGE);
+									return;
+								}
+								map.setBackgroundImage(null);
+								getMapEditor().getPainter().repaint();
 							}
 						});
 						menu.add(item);

@@ -8,6 +8,7 @@
 package run.wraith.engine.opengl.renders;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -22,6 +23,7 @@ public class Camera{
 	private final Matrix4f mat;
 	private final Matrix4f proMat;
 	private final FloatBuffer buf;
+	private final ArrayList<CameraListener> listeners = new ArrayList(0);
 	private float x;
 	private float y;
 	private float z;
@@ -62,12 +64,18 @@ public class Camera{
 		this.y += y;
 		this.z += z;
 		updateMatrix();
+		for(CameraListener l : listeners){
+			l.cameraMoved(this.x, this.y, this.z);
+		}
 	}
 	public void moveTo(float x, float y, float z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		updateMatrix();
+		for(CameraListener l : listeners){
+			l.cameraMoved(this.x, this.y, this.z);
+		}
 	}
 	public void rotateTo(float rx, float ry){
 		this.rx = rx;
@@ -85,5 +93,11 @@ public class Camera{
 		mat.translate(-x, -y, -z);
 		mat.rotate((float)Math.toRadians(-rx), X_AXIS);
 		mat.rotate((float)Math.toRadians(-ry), Y_AXIS);
+	}
+	public void addListener(CameraListener listener){
+		listeners.add(listener);
+	}
+	public void removeListener(CameraListener listener){
+		listeners.remove(listener);
 	}
 }

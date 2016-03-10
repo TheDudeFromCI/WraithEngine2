@@ -22,6 +22,8 @@ import wraith.lib.util.BinaryFile;
  */
 public class Map{
 	public static final float PIXELS = 64;
+	public static final int WIDTH = 800;
+	public static final int HEIGHT = 600;
 	private final int width;
 	private final int height;
 	private final TileInstance[] tiles;
@@ -37,7 +39,7 @@ public class Map{
 				// Initalize scene.
 				universe = new Universe();
 				camera = new Camera();
-				camera.setOrthographic(0, 800, 600, 0, -1, 1);
+				camera.setOrthographic(0, WIDTH, HEIGHT, 0, -1, 1);
 				universe.setCamera(camera);
 				File vertexShader = new File("/home/thedudefromci/Documents/Vertex.txt");
 				File fragmentShader = new File("/home/thedudefromci/Documents/Fragment.txt");
@@ -72,6 +74,18 @@ public class Map{
 						break;
 					default:
 						throw new RuntimeException("Error loading map file!");
+				}
+			}
+			{
+				// Load background, if we have one.
+				BackgroundImage image;
+				try{
+					image = new BackgroundImage(uuid);
+					BackgroundImageModelInstance mod = new BackgroundImageModelInstance(image.getModel(), camera);
+					mod.setRenderIndex(-1);
+					universe.addModel(mod);
+				}catch(Exception exception){
+					// We don't. Continue.
 				}
 			}
 			{

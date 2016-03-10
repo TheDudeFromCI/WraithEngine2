@@ -11,24 +11,22 @@ import run.wraith.engine.opengl.renders.Model;
 import run.wraith.engine.opengl.renders.Texture;
 import run.wraith.engine.opengl.renders.VAO;
 import run.wraith.engine.opengl.utils.PrimitiveGenerator;
-import run.wraith.engine.opengl.utils.PrimitiveGenerator.PrimitiveFlags;
 import run.wraith.engine.opengl.utils.VertexBuildData;
 
 /**
  * @author thedudefromci
  */
-public class EntityModel extends Model{
-	private static VAO generateVAO(Entity entity){
-		// TODO Optimize algorithm to cut out transparency.
-		PrimitiveFlags flags = new PrimitiveFlags(true, true);
-		VertexBuildData data = PrimitiveGenerator.generateSquare(Map.PIXELS, Map.PIXELS*Math.abs(entity.getHeight()), flags);
+public class BackgroundImageModel extends Model{
+	private static VAO generateVAO(BackgroundImage image){
+		PrimitiveGenerator.PrimitiveFlags flags = new PrimitiveGenerator.PrimitiveFlags(true, true);
+		VertexBuildData data = PrimitiveGenerator.generateSquare(Map.WIDTH, Map.HEIGHT, flags);
 		VAO vao = PrimitiveGenerator.convertToVAO(data, flags);
 		return vao;
 	}
 	private final Texture texture;
-	public EntityModel(Entity entity){
-		super(generateVAO(entity));
-		texture = new Texture(entity.getImage(), false);
+	public BackgroundImageModel(BackgroundImage image){
+		super(generateVAO(image));
+		texture = new Texture(image.getImage(), true);
 	}
 	@Override
 	public void render(){

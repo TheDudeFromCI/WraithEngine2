@@ -7,6 +7,7 @@
  */
 package run.wraith.engine;
 
+import java.io.File;
 import run.wraith.engine.core.GameProgramContraints;
 import run.wraith.engine.core.MapStyle;
 import run.wraith.engine.core.RunProtocol;
@@ -40,7 +41,7 @@ public class WraithGame{
 				}
 				dataSet = true;
 				String dataFolder = s.substring(DATA.length());
-				Algorithms.initalize(dataFolder, null);
+				Algorithms.initalize(dataFolder, new File(".").getAbsolutePath());
 				System.out.println("Program data folder set.\n  '"+dataFolder+"'");
 			}else if(s.startsWith(MAP_PREVIEW)){
 				gpc.mapPreviewMode = true;

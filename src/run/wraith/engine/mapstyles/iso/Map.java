@@ -41,8 +41,8 @@ public class Map{
 				camera = new Camera();
 				camera.setOrthographic(0, WIDTH, HEIGHT, 0, -1, 1);
 				universe.setCamera(camera);
-				File vertexShader = new File("/home/thedudefromci/Documents/Vertex.txt");
-				File fragmentShader = new File("/home/thedudefromci/Documents/Fragment.txt");
+				File vertexShader = Algorithms.getAsset("Vertex.txt");
+				File fragmentShader = Algorithms.getAsset("Fragment.txt");
 				shader = new ShaderProgram(vertexShader, null, fragmentShader);
 				shader.loadUniforms("projectionMatrix", "viewMatrix", "modelMatrix");
 				universe.setShader(shader, 0, 1, 2);

@@ -164,7 +164,7 @@ public class Algorithms{
 		}
 		BufferedImage out = new BufferedImage(maxX-minX+1, maxY-minY+1, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = out.createGraphics();
-		g.drawImage(in, minX, minY, null);
+		g.drawImage(in, 0, 0, out.getWidth(), out.getHeight(), minX, minY, maxX, maxY, null);
 		g.dispose();
 		return out;
 	}

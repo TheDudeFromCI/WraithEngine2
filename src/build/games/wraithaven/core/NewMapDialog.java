@@ -128,6 +128,7 @@ public class NewMapDialog extends JFrame{
 							worldList.addMap(map);
 						}else{
 							parentMap.addChild(map);
+							map.setParent(parentMap);
 						}
 						worldList.updateTreeModel();
 					}

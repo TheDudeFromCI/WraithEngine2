@@ -124,4 +124,8 @@ public class MapEditor extends JPanel implements MapContainer{
 		save();
 		painter.repaint();
 	}
+	@Override
+	public void closeMapNoSave(){
+		painter.closeMapNoSave();
+	}
 }

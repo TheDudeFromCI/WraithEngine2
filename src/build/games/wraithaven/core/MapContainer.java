@@ -12,6 +12,7 @@ package build.games.wraithaven.core;
  */
 public interface MapContainer{
 	public void selectMap(MapInterface map);
+	public void closeMapNoSave();
 	public MapInterface getSelectedMap();
 	public MapInterface loadMap(String uuid);
 	public MapInterface generateMap(String uuid, String name, int width, int height);

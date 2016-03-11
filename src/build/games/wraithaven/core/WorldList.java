@@ -209,7 +209,7 @@ public class WorldList extends JPanel{
 		map.delete();
 		updateTreeModel();
 		if(mapContainer.getSelectedMap()==map){
-			mapContainer.selectMap(null);
+			mapContainer.closeMapNoSave();
 		}
 	}
 	private void load(){

@@ -7,9 +7,8 @@
  */
 package build.games.wraithaven.topdown;
 
-import build.games.wraithaven.core.tools.Tool;
 import build.games.wraithaven.core.WraithEngine;
-import wraith.lib.util.Algorithms;
+import build.games.wraithaven.core.tools.Tool;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,6 +24,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import wraith.lib.util.Algorithms;
 
 @SuppressWarnings("serial")
 public class WorldScreen extends JPanel{
@@ -430,6 +430,14 @@ public class WorldScreen extends JPanel{
 			mapSectionWidth = pixelSize*map.getWidth();
 			mapSectionHeight = pixelSize*map.getHeight();
 		}
+		repaint();
+		updateNeedsSaving(); // Mostly, this is just to disable the star. This should never say 'unsaved'.
+	}
+	public void closeMapNoSave(){
+		if(loadedMap!=null){
+			loadedMap.dispose();
+		}
+		loadedMap = null;
 		repaint();
 		updateNeedsSaving(); // Mostly, this is just to disable the star. This should never say 'unsaved'.
 	}

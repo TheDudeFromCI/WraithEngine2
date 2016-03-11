@@ -58,4 +58,8 @@ public class MapEditor extends JPanel implements MapContainer{
 	public MapInterface generateMap(String uuid, String name, int width, int height){
 		return new Map(mapStyle, uuid, name, width, height);
 	}
+	@Override
+	public void closeMapNoSave(){
+		worldScreen.closeMapNoSave();
+	}
 }

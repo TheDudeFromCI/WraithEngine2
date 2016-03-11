@@ -416,6 +416,17 @@ public class MapEditorPainter extends JPanel{
 		updateNeedsSaving();
 		repaint();
 	}
+	public void closeMapNoSave(){
+		mapStyle.getChipsetList().getEntityLayers().loadMap(null);
+		if(map!=null){
+			map.dispose();
+			imageStorage.clear();
+		}
+		map = null;
+		cursorSelection.setMapSize(0, 0);
+		updateNeedsSaving();
+		repaint();
+	}
 	private boolean isOnScreen(int x, int y, int w, int h){
 		return x<w&&x+tileSize>=0&&y<h&&y+tileSize>=0;
 	}

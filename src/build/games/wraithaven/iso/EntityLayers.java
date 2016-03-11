@@ -328,7 +328,7 @@ public class EntityLayers extends JPanel{
 			}else{
 				x = 0;
 			}
-			g.setColor(layer==selectedLayer?Color.blue:Color.white);
+			g.setColor(layer==selectedLayer?new Color(113, 184, 201):Color.white);
 			g.fillRect(x, y, width, LAYER_HEIGHT);
 			g.setColor(Color.black);
 			g.drawRect(x, y, width, LAYER_HEIGHT);

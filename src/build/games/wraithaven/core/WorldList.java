@@ -7,8 +7,6 @@
  */
 package build.games.wraithaven.core;
 
-import wraith.lib.util.Algorithms;
-import wraith.lib.util.BinaryFile;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -28,6 +26,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author TheDudeFromCI
@@ -106,6 +106,9 @@ public class WorldList extends JPanel{
 							Object selected = selPath.getLastPathComponent();
 							tree.setSelectionPath(selPath);
 							if(selected instanceof MapInterface){
+								if(mapContainer.getSelectedMap()==(MapInterface)selected){
+									return;
+								}
 								mapContainer.selectMap((MapInterface)selected);
 							}
 						}

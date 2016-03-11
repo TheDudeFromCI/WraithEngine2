@@ -12,6 +12,7 @@ import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.core.gameprep.GameBuilder;
+import build.games.wraithaven.core.gameprep.SaveHandler;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -244,7 +245,7 @@ public class IsoMapStyle implements MapStyle{
 							@Override
 							public void actionPerformed(ActionEvent e){
 								try{
-									GameBuilder builder = new GameBuilder();
+									GameBuilder builder = new GameBuilder(IsoMapStyle.this);
 									builder.compile();
 									builder.run("-mapStyle:iso");
 								}catch(IOException ex){
@@ -269,7 +270,7 @@ public class IsoMapStyle implements MapStyle{
 											JOptionPane.WARNING_MESSAGE);
 										return;
 									}
-									GameBuilder builder = new GameBuilder();
+									GameBuilder builder = new GameBuilder(IsoMapStyle.this);
 									builder.compile();
 									builder.run("-mapStyle:iso", "-mapPreview:"+map.getUUID());
 								}catch(IOException ex){
@@ -314,5 +315,24 @@ public class IsoMapStyle implements MapStyle{
 			// Fails if not finished loading.
 			// Not a problem.
 		}
+	}
+	@Override
+	public SaveHandler getSaveHandler(){
+		return new SaveHandler(){
+			@Override
+			public boolean needsSaving(){
+				return getMapEditor().needsSaving();
+			}
+			@Override
+			public boolean requestSave(){
+				int response = JOptionPane.showConfirmDialog(null, "You must save this project before you can run it. Save now?", "Confirm Save",
+					JOptionPane.YES_NO_OPTION);
+				if(response==JOptionPane.YES_OPTION){
+					mapEditor.save();
+					return true;
+				}
+				return false;
+			}
+		};
 	}
 }

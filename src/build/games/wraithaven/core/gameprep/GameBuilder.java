@@ -7,13 +7,14 @@
  */
 package build.games.wraithaven.core.gameprep;
 
-import wraith.lib.util.Algorithms;
+import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.util.ResourceUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
@@ -21,11 +22,23 @@ import java.util.Arrays;
 public class GameBuilder{
 	private final File outFolder;
 	private final File gameProperties;
-	public GameBuilder(){
+	private final MapStyle mapStyle;
+	public GameBuilder(MapStyle mapStyle){
+		this.mapStyle = mapStyle;
 		outFolder = Algorithms.getFile("Compiled");
 		gameProperties = Algorithms.getFile(); // Get data folder.
 	}
 	public void compile(){
+		{
+			// Request map save.
+			SaveHandler save = mapStyle.getSaveHandler();
+			if(save.needsSaving()){
+				if(!save.requestSave()){
+					// If they won't save, we can't run.
+					return;
+				}
+			}
+		}
 		try{
 			if(outFolder.exists()){
 				// This is just to clean up any old resources.

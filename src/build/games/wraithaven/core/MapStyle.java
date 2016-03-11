@@ -7,9 +7,12 @@
  */
 package build.games.wraithaven.core;
 
+import build.games.wraithaven.core.gameprep.SaveHandler;
+
 /**
  * @author TheDudeFromCI
  */
 public interface MapStyle{
 	public void buildWindow();
+	public SaveHandler getSaveHandler();
 }

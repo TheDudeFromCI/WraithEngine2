@@ -11,7 +11,7 @@ import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
-import wraith.lib.util.Algorithms;
+import build.games.wraithaven.core.gameprep.SaveHandler;
 import build.games.wraithaven.util.WrongImageSizeException;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -27,6 +27,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author TheDudeFromCI
@@ -140,5 +141,24 @@ public class TopDownMapStyle implements MapStyle{
 			return true;
 		}
 		return response==JOptionPane.NO_OPTION;
+	}
+	@Override
+	public SaveHandler getSaveHandler(){
+		return new SaveHandler(){
+			@Override
+			public boolean needsSaving(){
+				return mapEditor.needsSaving();
+			}
+			@Override
+			public boolean requestSave(){
+				int response = JOptionPane.showConfirmDialog(null, "You must save this project before you can run it. Save now?", "Confirm Save",
+					JOptionPane.YES_NO_OPTION);
+				if(response==JOptionPane.YES_OPTION){
+					mapEditor.save();
+					return true;
+				}
+				return false;
+			}
+		};
 	}
 }

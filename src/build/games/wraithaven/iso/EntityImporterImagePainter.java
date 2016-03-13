@@ -119,6 +119,10 @@ public class EntityImporterImagePainter extends JPanel{
 				int tileY = (int)Math.floor((y/(float)(WraithEngine.projectBitSize/4)-(x/(float)(WraithEngine.projectBitSize/2)))/2);
 				cursorX = (tileX-tileY)*(WraithEngine.projectBitSize/2);
 				cursorY = (tileX+tileY)*(WraithEngine.projectBitSize/4)-WraithEngine.projectBitSize/4;
+				if(cursorX==0||cursorX==width){
+					cursorX = -100;
+					cursorY = -100;
+				}
 				repaint();
 			}
 		};
@@ -126,6 +130,8 @@ public class EntityImporterImagePainter extends JPanel{
 	@Override
 	public void paintComponent(Graphics g1){
 		Graphics2D g = (Graphics2D)g1;
+		g.setColor(Color.lightGray);
+		g.fillRect(0, 0, getWidth(), getHeight());
 		g.setClip(0, 0, width, height);
 		drawGrid(g, width, height);
 		Composite composite = null;
@@ -164,8 +170,6 @@ public class EntityImporterImagePainter extends JPanel{
 		return image;
 	}
 	public void drawGrid(Graphics2D g, int w, int h){
-		g.setColor(Color.lightGray);
-		g.fillRect(0, 0, w, h);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		int s = WraithEngine.projectBitSize;
 		int x, y;
@@ -196,6 +200,10 @@ public class EntityImporterImagePainter extends JPanel{
 		g.translate(-x, -y);
 	}
 	private void cursorClick(){
+		if(cursorX==-100&&cursorY==-100){
+			// We don't want to add a click for partial tiles.
+			return;
+		}
 		Point p = new Point(cursorX, cursorY){
 			@Override
 			public boolean equals(Object o){

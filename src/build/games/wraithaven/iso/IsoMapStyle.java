@@ -144,6 +144,7 @@ public class IsoMapStyle implements MapStyle{
 								TileCategory cat = chipsetList.getSelectedCategory();
 								Tile tile = new Tile(Algorithms.randomUUID(), image, cat);
 								cat.addTile(tile);
+								JOptionPane.showMessageDialog(null, "Raw tile imported.", "Info", JOptionPane.PLAIN_MESSAGE);
 							}
 						});
 						mnFile.add(mntmImportNewChipset);

@@ -141,10 +141,14 @@ public class IsoMapStyle implements MapStyle{
 									exception.printStackTrace();
 									return;
 								}
+								int response = JOptionPane.showConfirmDialog(null, new RawTileImporter(image), "Confirm Import",
+									JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+								if(response!=JOptionPane.OK_OPTION){
+									return;
+								}
 								TileCategory cat = chipsetList.getSelectedCategory();
 								Tile tile = new Tile(Algorithms.randomUUID(), image, cat);
 								cat.addTile(tile);
-								JOptionPane.showMessageDialog(null, "Raw tile imported.", "Info", JOptionPane.PLAIN_MESSAGE);
 							}
 						});
 						mnFile.add(mntmImportNewChipset);

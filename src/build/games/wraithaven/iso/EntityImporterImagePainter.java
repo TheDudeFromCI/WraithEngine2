@@ -60,8 +60,8 @@ public class EntityImporterImagePainter extends JPanel{
 	private int cursorY;
 	public EntityImporterImagePainter(BufferedImage image){
 		this.image = image;
-		width = nextMultiple(image.getWidth());
-		height = nextMultiple(image.getHeight());
+		width = nextMultiple(image.getWidth())+WraithEngine.projectBitSize;
+		height = nextMultiple(image.getHeight())+WraithEngine.projectBitSize;
 		isoSquare = generateIsoSquare();
 		setPreferredSize(new Dimension(width, height));
 		drag = new InputAdapter(){

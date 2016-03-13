@@ -427,8 +427,8 @@ public class MapEditorPainter extends JPanel{
 		updateNeedsSaving();
 		repaint();
 	}
-	private boolean isOnScreen(int x, int y, int w, int h){
-		return x<w&&x+tileSize>=0&&y<h&&y+tileSize>=0;
+	private boolean isOnScreen(int x, int y, int w, int h, int width, int height){
+		return x<width&&x+w>=0&&y<height&&y+h>=0;
 	}
 	@Override
 	public void paintComponent(Graphics g1){
@@ -462,7 +462,7 @@ public class MapEditorPainter extends JPanel{
 					}
 					u = (x-y)*tileWidth+scrollX-tileWidth;
 					v = (x+y)*tileHeight+scrollY-tiles[i].getHeight()*tileSize/8;
-					if(isOnScreen(u, v, width, height)){
+					{
 						entities = tiles[i].getAllEntities();
 						entities.sort(null);
 						for(Layer layer : entities){
@@ -472,10 +472,14 @@ public class MapEditorPainter extends JPanel{
 							entity = entities.get(layer);
 							if(entity.getHeight()<0){
 								entityHeight = 1;
-								g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*-entity.getHeight(), null);
+								if(isOnScreen(u, v+entityHeight, tileSize, tileSize*-entity.getHeight(), width, height)){
+									g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*-entity.getHeight(), null);
+								}
 							}
 						}
-						g.drawImage(imageStorage.getImage(tiles[i].getTile()), u, v, tileSize, tileSize, null);
+						if(isOnScreen(u, v, tileSize, tileSize, width, height)){
+							g.drawImage(imageStorage.getImage(tiles[i].getTile()), u, v, tileSize, tileSize, null);
+						}
 						if(x==cursorSelection.getTileX()&&y==cursorSelection.getTileY()){
 							Composite com = g.getComposite();
 							g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
@@ -492,7 +496,9 @@ public class MapEditorPainter extends JPanel{
 							entity = entities.get(layer);
 							if(entity.getHeight()>=0){
 								entityHeight = (1-entity.getHeight())*tileSize;
-								g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*entity.getHeight(), null);
+								if(isOnScreen(u, v+entityHeight, tileSize, tileSize*entity.getHeight(), width, height)){
+									g.drawImage(imageStorage.getImage(entity), u, v+entityHeight, tileSize, tileSize*entity.getHeight(), null);
+								}
 							}
 						}
 					}

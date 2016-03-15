@@ -236,7 +236,7 @@ public class EntityImporterImagePainter extends JPanel{
 			for(Point p : tiles){
 				minY = Math.min(minY, p.y);
 			}
-			return (int)Math.ceil(minY/(float)WraithEngine.projectBitSize)+1;
+			return (int)Math.ceil((minY-posY)/(float)WraithEngine.projectBitSize)+1;
 		}
 	}
 }

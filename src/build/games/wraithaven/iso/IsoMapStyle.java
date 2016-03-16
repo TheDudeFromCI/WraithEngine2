@@ -13,6 +13,7 @@ import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.core.gameprep.GameBuilder;
 import build.games.wraithaven.core.gameprep.SaveHandler;
+import build.games.wraithaven.gui.GuiEditor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -194,46 +195,62 @@ public class IsoMapStyle implements MapStyle{
 					JMenu menu = new JMenu("Edit");
 					menuBar.add(menu);
 					{
-						// Set background.
-						JMenuItem item = new JMenuItem("Set Map Background");
-						item.addActionListener(new ActionListener(){
-							@Override
-							public void actionPerformed(ActionEvent e){
-								Map map = getMapEditor().getSelectedMap();
-								if(map==null){
-									JOptionPane.showMessageDialog(null, "You do not have a map selected!", "Warning", JOptionPane.WARNING_MESSAGE);
-									return;
+						// Backgrounds
+						JMenu menu2 = new JMenu("Background");
+						menu.add(menu2);
+						{
+							// Set background.
+							JMenuItem item = new JMenuItem("Set Map Background");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									Map map = getMapEditor().getSelectedMap();
+									if(map==null){
+										JOptionPane.showMessageDialog(null, "You do not have a map selected!", "Warning", JOptionPane.WARNING_MESSAGE);
+										return;
+									}
+									File image = Algorithms.userChooseImage("Import Background", "Import");
+									if(image==null){
+										return;
+									}
+									try{
+										BufferedImage i = ImageIO.read(image);
+										map.setBackgroundImage(i);
+										getMapEditor().getPainter().repaint();
+									}catch(Exception exception){
+										exception.printStackTrace();
+										JOptionPane.showMessageDialog(null, "There has been an error loading this image.", "Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
 								}
-								File image = Algorithms.userChooseImage("Import Background", "Import");
-								if(image==null){
-									return;
-								}
-								try{
-									BufferedImage i = ImageIO.read(image);
-									map.setBackgroundImage(i);
+							});
+							menu2.add(item);
+						}
+						{
+							// Clear background.
+							JMenuItem item = new JMenuItem("Clear Map Background");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									Map map = getMapEditor().getSelectedMap();
+									if(map==null){
+										JOptionPane.showMessageDialog(null, "You do not have a map selected!", "Warning", JOptionPane.WARNING_MESSAGE);
+										return;
+									}
+									map.setBackgroundImage(null);
 									getMapEditor().getPainter().repaint();
-								}catch(Exception exception){
-									exception.printStackTrace();
-									JOptionPane.showMessageDialog(null, "There has been an error loading this image.", "Error",
-										JOptionPane.ERROR_MESSAGE);
 								}
-							}
-						});
-						menu.add(item);
+							});
+							menu2.add(item);
+						}
 					}
 					{
-						// Clear background.
-						JMenuItem item = new JMenuItem("Clear Map Background");
+						// Gui
+						JMenuItem item = new JMenuItem("Menus");
 						item.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent e){
-								Map map = getMapEditor().getSelectedMap();
-								if(map==null){
-									JOptionPane.showMessageDialog(null, "You do not have a map selected!", "Warning", JOptionPane.WARNING_MESSAGE);
-									return;
-								}
-								map.setBackgroundImage(null);
-								getMapEditor().getPainter().repaint();
+								GuiEditor.launch();
 							}
 						});
 						menu.add(item);

@@ -7,35 +7,21 @@
  */
 package build.games.wraithaven.gui;
 
-import java.awt.Color;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 
 /**
  * @author thedudefromci
  */
-public class MenuComponentList extends JPanel{
-	private Menu menu;
-	public MenuComponentList(){
+public class MenuList extends JPanel{
+	public MenuList(){
 		setMinimumSize(new Dimension(100, 200));
-	}
-	public Menu getMenu(){
-		return menu;
-	}
-	public void setMenu(Menu menu){
-		this.menu = menu;
-		repaint();
-	}
-	@Override
-	public void paintComponent(Graphics g1){
-		Graphics2D g = (Graphics2D)g1;
-		g.setColor(Color.lightGray);
-		int width = getWidth();
-		int height = getHeight();
-		g.fillRect(0, 0, width, height);
-		if(menu!=null){}
-		g.dispose();
+		JList list = new JList();
+		setLayout(new BorderLayout());
+		add(list, BorderLayout.CENTER);
+		list.setModel(new DefaultComboBoxModel(new String[]{}));
 	}
 }

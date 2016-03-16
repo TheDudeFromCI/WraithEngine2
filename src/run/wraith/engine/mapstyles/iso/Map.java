@@ -44,7 +44,10 @@ public class Map{
 				File vertexShader = Algorithms.getAsset("Vertex.txt");
 				File fragmentShader = Algorithms.getAsset("Fragment.txt");
 				shader = new ShaderProgram(vertexShader, null, fragmentShader);
-				shader.loadUniforms("projectionMatrix", "viewMatrix", "modelMatrix");
+				shader.loadUniforms("projection", "view", "model", "diffuse");
+				shader.bind();
+				shader.setUniform1I(3, 0);
+				shader.unbind();
 				universe.setShader(shader, 0, 1, 2);
 				universe.getFlags().setTexture2D(true);
 				universe.getFlags().setBlending(true);

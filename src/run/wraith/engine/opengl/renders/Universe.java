@@ -89,4 +89,7 @@ public class Universe{
 	public void sortModels(Comparator<ModelInstance> compare){
 		models.sort(compare);
 	}
+	public ShaderProgram getShader(){
+		return shader;
+	}
 }

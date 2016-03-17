@@ -38,6 +38,9 @@ public class NewMenuDialog extends JPanel{
 		menu.setName(nameInput.getText());
 		return menu;
 	}
+	public void edit(Menu menu){
+		menu.setName(nameInput.getText());
+	}
 	public JComponent getDefaultFocus(){
 		return nameInput;
 	}

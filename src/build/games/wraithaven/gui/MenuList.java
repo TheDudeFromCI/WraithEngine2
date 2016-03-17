@@ -10,16 +10,18 @@ package build.games.wraithaven.gui;
 import build.games.wraithaven.util.InputDialog;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
@@ -39,72 +41,123 @@ public class MenuList extends JPanel{
 		add(list, BorderLayout.CENTER);
 		list.setModel(new DefaultComboBoxModel(menus.toArray()));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		JPanel panel = new JPanel();
-		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
-		add(panel, BorderLayout.SOUTH);
-		JButton newButton = new JButton("New");
-		JButton deleteButton = new JButton("Delete");
-		newButton.addActionListener(new ActionListener(){
+		list.addMouseListener(new MouseAdapter(){
 			@Override
-			public void actionPerformed(ActionEvent e){
-				NewMenuDialog dialog = new NewMenuDialog();
-				InputDialog d = new InputDialog();
-				d.setCancelButton(true);
-				d.setOkButton(true);
-				d.setData(dialog);
-				d.setTitle("Create New Menu");
-				d.setDefaultFocus(dialog.getDefaultFocus());
-				d.show();
-				int response = d.getResponse();
-				if(response!=InputDialog.OK){
+			public void mouseClicked(MouseEvent e){
+				if(e.getButton()!=MouseEvent.BUTTON3){
 					return;
 				}
-				addMenu(dialog.build());
+				{
+					// Menu
+					JPopupMenu menu = new JPopupMenu();
+					{
+						// New
+						JMenuItem item = new JMenuItem("New Menu");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								NewMenuDialog dialog = new NewMenuDialog();
+								InputDialog d = new InputDialog();
+								d.setCancelButton(true);
+								d.setOkButton(true);
+								d.setData(dialog);
+								d.setTitle("Create New Menu");
+								d.setDefaultFocus(dialog.getDefaultFocus());
+								d.show();
+								int response = d.getResponse();
+								if(response!=InputDialog.OK){
+									return;
+								}
+								addMenu(dialog.build());
+							}
+						});
+						menu.add(item);
+					}
+					if(list.getSelectedIndex()!=-1){
+						{
+							// Delete
+							JMenuItem item = new JMenuItem("Delete Menu");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this menu?", "Confirm Delete",
+										JOptionPane.OK_CANCEL_OPTION);
+									if(response!=JOptionPane.OK_OPTION){
+										return;
+									}
+									removeMenu((Menu)list.getSelectedValue());
+								}
+							});
+							menu.add(item);
+						}
+						{
+							// Edit
+							JMenuItem item = new JMenuItem("Edit Menu");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									NewMenuDialog dialog = new NewMenuDialog();
+									InputDialog d = new InputDialog();
+									d.setCancelButton(true);
+									d.setOkButton(true);
+									d.setData(dialog);
+									d.setTitle("Edit Menu");
+									d.setDefaultFocus(dialog.getDefaultFocus());
+									d.show();
+									int response = d.getResponse();
+									if(response!=InputDialog.OK){
+										return;
+									}
+									dialog.edit((Menu)list.getSelectedValue());
+									save();
+									repaint();
+								}
+							});
+							menu.add(item);
+						}
+					}
+					menu.show(list, e.getX(), e.getY());
+				}
 			}
 		});
-		deleteButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e){
-				if(list.getSelectedIndex()==-1){
-					return;
-				}
-				int response =
-					JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this menu?", "Confirm Delete", JOptionPane.OK_CANCEL_OPTION);
-				if(response!=JOptionPane.OK_OPTION){
-					return;
-				}
-				removeMenu((Menu)list.getSelectedValue());
-			}
-		});
-		panel.add(newButton);
-		panel.add(deleteButton);
 	}
 	private void load(){
 		File file = Algorithms.getFile("Menus.dat");
 		if(!file.exists()){
 			return;
 		}
-		BinaryFile bin = new BinaryFile(file);
-		bin.decompress(true);
-		short version = bin.getShort();
-		switch(version){
-			case 0:{
-				int menuCount = bin.getInt();
-				menus.ensureCapacity(menuCount);
-				Menu menu;
-				for(int i = 0; i<menuCount; i++){
-					menu = new Menu();
-					menu.setName(bin.getString());
-					menus.add(menu);
+		try{
+			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(true);
+			short version = bin.getShort();
+			switch(version){
+				case 0:{
+					int menuCount = bin.getInt();
+					menus.ensureCapacity(menuCount);
+					Menu menu;
+					for(int i = 0; i<menuCount; i++){
+						menu = new Menu();
+						menu.setName(bin.getString());
+						menus.add(menu);
+					}
+					break;
 				}
-				break;
+				default:
+					throw new RuntimeException();
 			}
-			default:
-				throw new RuntimeException();
+		}catch(Exception exception){
+			exception.printStackTrace();
+			int response = JOptionPane.showConfirmDialog(null, "There has been an error attempting to load this file. Delete this file?", "Error",
+				JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+			if(response==JOptionPane.YES_OPTION){
+				file.delete();
+			}
+			// And clean up.
+			menus.clear();
 		}
 	}
 	private void save(){
-		BinaryFile bin = new BinaryFile(2);
+		BinaryFile bin = new BinaryFile(6);
 		bin.addShort(FILE_VERSION);
 		bin.addInt(menus.size());
 		for(Menu menu : menus){

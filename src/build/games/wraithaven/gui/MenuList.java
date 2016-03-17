@@ -7,13 +7,20 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.util.InputDialog;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
@@ -23,13 +30,53 @@ import wraith.lib.util.BinaryFile;
 public class MenuList extends JPanel{
 	private static final short FILE_VERSION = 0;
 	private final ArrayList<Menu> menus = new ArrayList(16);
+	private final JList list;
 	public MenuList(){
 		load();
 		setMinimumSize(new Dimension(100, 200));
-		JList list = new JList();
+		list = new JList();
 		setLayout(new BorderLayout());
 		add(list, BorderLayout.CENTER);
-		list.setModel(new DefaultComboBoxModel(new String[]{}));
+		list.setModel(new DefaultComboBoxModel(menus.toArray()));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JPanel panel = new JPanel();
+		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		add(panel, BorderLayout.SOUTH);
+		JButton newButton = new JButton("New");
+		JButton deleteButton = new JButton("Delete");
+		newButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				NewMenuDialog dialog = new NewMenuDialog();
+				InputDialog d = new InputDialog();
+				d.setCancelButton(true);
+				d.setOkButton(true);
+				d.setData(dialog);
+				d.setTitle("Create New Menu");
+				d.show();
+				int response = d.getResponse();
+				if(response!=InputDialog.OK){
+					return;
+				}
+				addMenu(dialog.build());
+			}
+		});
+		deleteButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				if(list.getSelectedIndex()==-1){
+					return;
+				}
+				int response =
+					JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this menu?", "Confirm Delete", JOptionPane.OK_CANCEL_OPTION);
+				if(response!=JOptionPane.OK_OPTION){
+					return;
+				}
+				removeMenu((Menu)list.getSelectedValue());
+			}
+		});
+		panel.add(newButton);
+		panel.add(deleteButton);
 	}
 	private void load(){
 		File file = Algorithms.getFile("Menus.dat");
@@ -51,5 +98,15 @@ public class MenuList extends JPanel{
 		bin.addShort(FILE_VERSION);
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus.dat"));
+	}
+	public void addMenu(Menu menu){
+		menus.add(menu);
+		save();
+		list.setModel(new DefaultComboBoxModel(menus.toArray()));
+	}
+	public void removeMenu(Menu menu){
+		menus.remove(menu);
+		save();
+		list.setModel(new DefaultComboBoxModel(menus.toArray()));
 	}
 }

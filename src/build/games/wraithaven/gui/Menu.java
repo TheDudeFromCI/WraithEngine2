@@ -13,7 +13,7 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public class Menu{
+public class Menu implements MenuComponentHeirarchy{
 	private final ArrayList<MenuComponent> components = new ArrayList(8);
 	private String name;
 	public void setName(String name){
@@ -44,5 +44,13 @@ public class Menu{
 			bin.addInt(com.getId());
 			com.save(bin);
 		}
+	}
+	@Override
+	public ArrayList<MenuComponent> getChildren(){
+		return components;
+	}
+	@Override
+	public void addChild(MenuComponent com){
+		components.add(com);
 	}
 }

@@ -7,13 +7,12 @@
  */
 package build.games.wraithaven.gui;
 
-import wraith.lib.util.BinaryFile;
+import java.util.ArrayList;
 
 /**
  * @author thedudefromci
  */
-public interface MenuComponent extends MenuComponentHeirarchy{
-	public void load(BinaryFile bin);
-	public void save(BinaryFile bin);
-	public int getId();
+public interface MenuComponentHeirarchy{
+	public ArrayList<MenuComponent> getChildren();
+	public void addChild(MenuComponent com);
 }

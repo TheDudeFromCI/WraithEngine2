@@ -16,9 +16,6 @@ public class MenuEditor{
 		return menu;
 	}
 	public void loadMenu(Menu menu){
-		if(this.menu!=null){
-			this.menu.dispose();
-		}
 		this.menu = menu;
 	}
 }

@@ -15,18 +15,7 @@ import wraith.lib.util.BinaryFile;
  */
 public class Menu{
 	private final ArrayList<MenuComponent> components = new ArrayList(8);
-	private Theme theme;
 	private String name;
-	public Theme getTheme(){
-		return theme;
-	}
-	public void setTheme(Theme theme){
-		this.theme = theme;
-	}
-	public void dispose(){
-		// This may not even be needed, but just in case.
-		// TODO
-	}
 	public void setName(String name){
 		this.name = name;
 	}

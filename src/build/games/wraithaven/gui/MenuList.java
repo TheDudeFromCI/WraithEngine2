@@ -53,6 +53,7 @@ public class MenuList extends JPanel{
 				d.setOkButton(true);
 				d.setData(dialog);
 				d.setTitle("Create New Menu");
+				d.setDefaultFocus(dialog.getDefaultFocus());
 				d.show();
 				int response = d.getResponse();
 				if(response!=InputDialog.OK){
@@ -87,8 +88,17 @@ public class MenuList extends JPanel{
 		bin.decompress(true);
 		short version = bin.getShort();
 		switch(version){
-			case 0:
+			case 0:{
+				int menuCount = bin.getInt();
+				menus.ensureCapacity(menuCount);
+				Menu menu;
+				for(int i = 0; i<menuCount; i++){
+					menu = new Menu();
+					menu.setName(bin.getString());
+					menus.add(menu);
+				}
 				break;
+			}
 			default:
 				throw new RuntimeException();
 		}
@@ -96,6 +106,10 @@ public class MenuList extends JPanel{
 	private void save(){
 		BinaryFile bin = new BinaryFile(2);
 		bin.addShort(FILE_VERSION);
+		bin.addInt(menus.size());
+		for(Menu menu : menus){
+			bin.addStringAllocated(menu.getName());
+		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus.dat"));
 	}

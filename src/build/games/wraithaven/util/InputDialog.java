@@ -84,6 +84,10 @@ public class InputDialog{
 		}
 		int r = JOptionPane.showOptionDialog(null, data, title, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, focus);
 		{
+			if(r==-1){
+				response = EXIT;
+				return;
+			}
 			// Assign response
 			String n = (String)options[r];
 			switch(n){

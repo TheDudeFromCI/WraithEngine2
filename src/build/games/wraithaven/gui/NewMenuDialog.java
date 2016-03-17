@@ -7,14 +7,38 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.util.VerticalFlowLayout;
+import java.awt.BorderLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * @author thedudefromci
  */
 public class NewMenuDialog extends JPanel{
+	private final JTextField nameInput;
+	public NewMenuDialog(){
+		setLayout(new VerticalFlowLayout(0, 5));
+		{
+			// Name
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
+			JLabel label = new JLabel("Name: ");
+			panel.add(label, BorderLayout.WEST);
+			nameInput = new JTextField();
+			nameInput.setColumns(20);
+			panel.add(nameInput, BorderLayout.CENTER);
+			add(panel);
+		}
+	}
 	public Menu build(){
-		// TODO
-		return new Menu();
+		Menu menu = new Menu();
+		menu.setName(nameInput.getText());
+		return menu;
+	}
+	public JComponent getDefaultFocus(){
+		return nameInput;
 	}
 }

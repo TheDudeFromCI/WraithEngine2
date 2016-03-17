@@ -12,6 +12,7 @@ package build.games.wraithaven.gui;
  */
 public class Menu{
 	private Theme theme;
+	private String name;
 	public Theme getTheme(){
 		return theme;
 	}
@@ -19,6 +20,17 @@ public class Menu{
 		this.theme = theme;
 	}
 	public void dispose(){
+		// This may not even be needed, but just in case.
 		// TODO
+	}
+	public void setName(String name){
+		this.name = name;
+	}
+	public String getName(){
+		return name;
+	}
+	@Override
+	public String toString(){
+		return name;
 	}
 }

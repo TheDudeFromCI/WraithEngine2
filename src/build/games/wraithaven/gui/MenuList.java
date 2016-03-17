@@ -33,7 +33,9 @@ public class MenuList extends JPanel{
 	private static final short FILE_VERSION = 0;
 	private final ArrayList<Menu> menus = new ArrayList(16);
 	private final JList list;
-	public MenuList(){
+	private final MenuComponentList componentList;
+	public MenuList(MenuComponentList componentList){
+		this.componentList = componentList;
 		load();
 		setMinimumSize(new Dimension(100, 200));
 		list = new JList();
@@ -44,10 +46,17 @@ public class MenuList extends JPanel{
 		list.addMouseListener(new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e){
-				if(e.getButton()!=MouseEvent.BUTTON3){
-					return;
+				int button = e.getButton();
+				if(button==MouseEvent.BUTTON1){
+					if(e.getClickCount()==2){
+						int index = list.locationToIndex(e.getPoint());
+						if(index==-1){
+							return;
+						}
+						selectedMenu(menus.get(index));
+					}
 				}
-				{
+				if(button==MouseEvent.BUTTON3){
 					// Menu
 					JPopupMenu menu = new JPopupMenu();
 					{
@@ -121,6 +130,9 @@ public class MenuList extends JPanel{
 			}
 		});
 	}
+	private void selectedMenu(Menu menu){
+		componentList.setMenu(menu);
+	}
 	private void load(){
 		File file = Algorithms.getFile("Menus.dat");
 		if(!file.exists()){
@@ -174,6 +186,9 @@ public class MenuList extends JPanel{
 	public void removeMenu(Menu menu){
 		menus.remove(menu);
 		save();
+		if((Menu)list.getSelectedValue()==menu){
+			componentList.setMenu(null);
+		}
 		list.setModel(new DefaultComboBoxModel(menus.toArray()));
 	}
 }

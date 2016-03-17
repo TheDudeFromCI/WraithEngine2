@@ -15,4 +15,8 @@ import java.util.ArrayList;
 public interface MenuComponentHeirarchy{
 	public ArrayList<MenuComponent> getChildren();
 	public void addChild(MenuComponent com);
+	public boolean isCollapsed();
+	public void setCollapsed(boolean collapsed);
+	public boolean isMousedOver();
+	public void setMousedOver(boolean mousedOver);
 }

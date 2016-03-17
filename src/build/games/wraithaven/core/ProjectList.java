@@ -59,6 +59,9 @@ public class ProjectList extends JFrame{
 				JList list = (JList)evt.getSource();
 				if(evt.getClickCount()==2){
 					int index = list.locationToIndex(evt.getPoint());
+					if(index==-1){
+						return;
+					}
 					loadProject(projects[index]);
 					dispose();
 				}

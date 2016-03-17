@@ -16,6 +16,8 @@ import wraith.lib.util.BinaryFile;
 public class Menu implements MenuComponentHeirarchy{
 	private final ArrayList<MenuComponent> components = new ArrayList(8);
 	private String name;
+	private boolean collapsed;
+	private boolean mousedOver;
 	public void setName(String name){
 		this.name = name;
 	}
@@ -52,5 +54,21 @@ public class Menu implements MenuComponentHeirarchy{
 	@Override
 	public void addChild(MenuComponent com){
 		components.add(com);
+	}
+	@Override
+	public boolean isCollapsed(){
+		return collapsed;
+	}
+	@Override
+	public void setCollapsed(boolean collapsed){
+		this.collapsed = collapsed;
+	}
+	@Override
+	public boolean isMousedOver(){
+		return mousedOver;
+	}
+	@Override
+	public void setMousedOver(boolean mousedOver){
+		this.mousedOver = mousedOver;
 	}
 }

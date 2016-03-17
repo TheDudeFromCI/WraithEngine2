@@ -7,10 +7,14 @@
  */
 package build.games.wraithaven.gui;
 
+import java.util.ArrayList;
+import wraith.lib.util.BinaryFile;
+
 /**
  * @author thedudefromci
  */
 public class Menu{
+	private final ArrayList<MenuComponent> components = new ArrayList(8);
 	private Theme theme;
 	private String name;
 	public Theme getTheme(){
@@ -32,5 +36,24 @@ public class Menu{
 	@Override
 	public String toString(){
 		return name;
+	}
+	public void load(BinaryFile bin){
+		name = bin.getString();
+		components.clear();
+		int componentCount = bin.getInt();
+		for(int i = 0; i<componentCount; i++){
+			MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
+			com.load(bin);
+			components.add(com);
+		}
+	}
+	public void save(BinaryFile bin){
+		bin.addStringAllocated(name);
+		bin.allocateBytes(4+4*components.size());
+		bin.addInt(components.size());
+		for(MenuComponent com : components){
+			bin.addInt(com.getId());
+			com.save(bin);
+		}
 	}
 }

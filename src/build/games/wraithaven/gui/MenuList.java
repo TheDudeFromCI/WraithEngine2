@@ -9,19 +9,47 @@ package build.games.wraithaven.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.File;
+import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public class MenuList extends JPanel{
+	private static final short FILE_VERSION = 0;
+	private final ArrayList<Menu> menus = new ArrayList(16);
 	public MenuList(){
+		load();
 		setMinimumSize(new Dimension(100, 200));
 		JList list = new JList();
 		setLayout(new BorderLayout());
 		add(list, BorderLayout.CENTER);
 		list.setModel(new DefaultComboBoxModel(new String[]{}));
+	}
+	private void load(){
+		File file = Algorithms.getFile("Menus.dat");
+		if(!file.exists()){
+			return;
+		}
+		BinaryFile bin = new BinaryFile(file);
+		bin.decompress(true);
+		short version = bin.getShort();
+		switch(version){
+			case 0:
+				break;
+			default:
+				throw new RuntimeException();
+		}
+	}
+	private void save(){
+		BinaryFile bin = new BinaryFile(2);
+		bin.addShort(FILE_VERSION);
+		bin.compress(true);
+		bin.compile(Algorithms.getFile("Menus.dat"));
 	}
 }

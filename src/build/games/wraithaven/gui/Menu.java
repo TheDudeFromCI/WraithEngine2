@@ -38,6 +38,7 @@ public class Menu implements MenuComponentHeirarchy{
 		return name;
 	}
 	public void load(){
+		String previousName = name;
 		File file = Algorithms.getFile("Menus", uuid+".dat");
 		if(!file.exists()){
 			// Under most conditions, this file should exist.
@@ -56,6 +57,7 @@ public class Menu implements MenuComponentHeirarchy{
 						MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
 						com.load(bin, version);
 						components.add(com);
+						loadChildren(bin, com, version);
 					}
 					break;
 				}
@@ -70,21 +72,38 @@ public class Menu implements MenuComponentHeirarchy{
 				file.delete();
 			}
 			// And clean up.
-			name = null;
+			name = previousName;
 			components.clear();
 		}
 	}
+	private void loadChildren(BinaryFile bin, MenuComponent parent, short version){
+		int childCount = bin.getInt();
+		for(int i = 0; i<childCount; i++){
+			MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
+			com.load(bin, version);
+			parent.addChild(com);
+			loadChildren(bin, com, version);
+		}
+	}
 	public void save(){
-		BinaryFile bin = new BinaryFile(6+4*components.size());
+		BinaryFile bin = new BinaryFile(6);
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
 		bin.addInt(components.size());
 		for(MenuComponent com : components){
-			bin.addInt(com.getId());
-			com.save(bin);
+			saveHeirarchy(bin, com);
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus", uuid+".dat"));
+	}
+	private void saveHeirarchy(BinaryFile bin, MenuComponent com){
+		bin.allocateBytes(8);
+		bin.addInt(com.getId());
+		com.save(bin);
+		bin.addInt(com.getChildren().size());
+		for(MenuComponent c : com.getChildren()){
+			saveHeirarchy(bin, c);
+		}
 	}
 	public void dispose(){
 		components.clear();

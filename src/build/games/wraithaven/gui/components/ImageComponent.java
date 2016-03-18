@@ -27,9 +27,20 @@ public class ImageComponent implements MenuComponent{
 	private MenuComponentHeirarchy parent;
 	private String name = "Image Component";
 	@Override
-	public void load(BinaryFile bin, short version){}
+	public void load(BinaryFile bin, short version){
+		switch(version){
+			case 0:{
+				name = bin.getString();
+				break;
+			}
+			default:
+				throw new RuntimeException();
+		}
+	}
 	@Override
-	public void save(BinaryFile bin){}
+	public void save(BinaryFile bin){
+		bin.addStringAllocated(name);
+	}
 	@Override
 	public int getId(){
 		return ID;
@@ -80,6 +91,7 @@ public class ImageComponent implements MenuComponent{
 				{
 					// Name
 					nameInput = new JTextField();
+					nameInput.setColumns(20);
 					add(nameInput);
 				}
 			}

@@ -7,12 +7,16 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.gui.components.ImageComponent;
+
 /**
  * @author thedudefromci
  */
 public class MenuComponentFactory{
 	public static MenuComponent newInstance(int id){
 		switch(id){
+			case 0:
+				return new ImageComponent();
 			default:
 				throw new RuntimeException();
 		}

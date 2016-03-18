@@ -7,9 +7,11 @@
  */
 package build.games.wraithaven.gui.components;
 
+import build.games.wraithaven.core.InputDialogBuilder;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
 import java.util.ArrayList;
+import javax.swing.JComponent;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -20,7 +22,8 @@ public class ImageComponent implements MenuComponent{
 	private final ArrayList<MenuComponent> children = new ArrayList(4);
 	private boolean collapsed;
 	private boolean mousedOver;
-	private MenuComponent parent;
+	private MenuComponentHeirarchy parent;
+	private String name = "Image Component";
 	@Override
 	public void load(BinaryFile bin, short version){}
 	@Override
@@ -62,7 +65,23 @@ public class ImageComponent implements MenuComponent{
 		children.remove(com);
 	}
 	@Override
-	public void setParent(MenuComponent com){
+	public void setParent(MenuComponentHeirarchy com){
 		parent = com;
+	}
+	@Override
+	public InputDialogBuilder getCreationDialog(){
+		return new InputDialogBuilder(){
+			{
+				// Builder
+			}
+			@Override
+			public JComponent getDefaultFocus(){
+				return null;
+			}
+		};
+	}
+	@Override
+	public String getName(){
+		return name;
 	}
 }

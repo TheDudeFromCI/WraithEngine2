@@ -125,5 +125,5 @@ public class Menu implements MenuComponentHeirarchy{
 		components.remove(com);
 	}
 	@Override
-	public void setParent(MenuComponent com){}
+	public void setParent(MenuComponentHeirarchy com){}
 }

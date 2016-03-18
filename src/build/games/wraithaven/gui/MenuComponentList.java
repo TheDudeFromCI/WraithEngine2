@@ -7,7 +7,10 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.core.InputDialogBuilder;
+import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.util.InputAdapter;
+import build.games.wraithaven.util.InputDialog;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -52,7 +55,6 @@ public class MenuComponentList extends JPanel{
 	private final BufferedImage arrow4;
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
-	private MenuList menuList;
 	public MenuComponentList(){
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
@@ -86,7 +88,17 @@ public class MenuComponentList extends JPanel{
 						{
 							// New Component
 							JMenu menu2 = new JMenu("New");
-							// TODO
+							{
+								// Image Component
+								JMenuItem item = new JMenuItem("Image");
+								item.addActionListener(new ActionListener(){
+									@Override
+									public void actionPerformed(ActionEvent e){
+										attemptCreateComponet(selectedComponent, new ImageComponent());
+									}
+								});
+								menu2.add(item);
+							}
 							menu.add(menu2);
 						}
 						{
@@ -102,7 +114,7 @@ public class MenuComponentList extends JPanel{
 									}
 									selectedComponent.getParent().removeChild((MenuComponent)selectedComponent);
 									selectedComponent = null;
-									menuList.save();
+									MenuComponentList.this.menu.save();
 									repaint();
 								}
 							});
@@ -124,18 +136,16 @@ public class MenuComponentList extends JPanel{
 					repaint();
 					return -1;
 				}
+				h += TEXT_HEIGHT;
 				if(!com.isCollapsed()){
 					w += TEXT_INDENT;
-					int r;
 					for(MenuComponentHeirarchy c : com.getChildren()){
-						r = checkForToggleCollapse(x, y, h, w, c);
-						if(r==-1){
+						h = checkForToggleCollapse(x, y, h, w, c);
+						if(h==-1){
 							return -1;
 						}
-						h += r;
 					}
 				}
-				h += TEXT_HEIGHT;
 				return h;
 			}
 			private int checkForMouseOver(int x, int y, int h, int w, MenuComponentHeirarchy com){
@@ -149,13 +159,11 @@ public class MenuComponentList extends JPanel{
 				}
 				if(!com.isCollapsed()){
 					w += TEXT_INDENT;
-					int r;
 					for(MenuComponentHeirarchy c : com.getChildren()){
-						r = checkForToggleCollapse(x, y, h, w, c);
-						if(r==-1){
+						h = checkForMouseOver(x, y, h, w, c);
+						if(h==-1){
 							return -1;
 						}
-						h += r;
 					}
 				}
 				h += TEXT_HEIGHT;
@@ -181,9 +189,6 @@ public class MenuComponentList extends JPanel{
 		};
 		addMouseListener(ia);
 		addMouseMotionListener(ia);
-	}
-	public void setMenuList(MenuList menuList){
-		this.menuList = menuList;
 	}
 	public Menu getMenu(){
 		return menu;
@@ -245,9 +250,26 @@ public class MenuComponentList extends JPanel{
 		if(!com.isCollapsed()){
 			x += TEXT_INDENT;
 			for(MenuComponentHeirarchy c : com.getChildren()){
-				y += drawComponentHeirarchy(g, c, x, y, fm);
+				y = drawComponentHeirarchy(g, c, x, y, fm);
 			}
 		}
 		return y;
+	}
+	private void attemptCreateComponet(MenuComponentHeirarchy parent, MenuComponent child){
+		InputDialog dialog = new InputDialog();
+		InputDialogBuilder builder = child.getCreationDialog();
+		dialog.setData(builder);
+		dialog.setOkButton(true);
+		dialog.setCancelButton(true);
+		dialog.setDefaultFocus(builder.getDefaultFocus());
+		dialog.setTitle(child.getName());
+		dialog.show();
+		if(dialog.getResponse()!=InputDialog.OK){
+			return;
+		}
+		parent.addChild(child);
+		child.setParent(parent);
+		menu.save();
+		repaint();
 	}
 }

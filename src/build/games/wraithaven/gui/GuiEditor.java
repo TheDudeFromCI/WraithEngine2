@@ -27,7 +27,7 @@ public class GuiEditor{
 		ALIVE = true;
 		JFrame frame = new JFrame();
 		frame.setTitle("GUI Editor");
-		frame.setSize(800, 600);
+		frame.setSize(700, 525);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(true);
 		frame.addWindowListener(new WindowAdapter(){
@@ -45,7 +45,6 @@ public class GuiEditor{
 		MenuComponentList menuComponentList = new MenuComponentList();
 		JScrollPane scrollPane = new JScrollPane(menuComponentList);
 		MenuList menuList = new MenuList(menuComponentList);
-		menuComponentList.setMenuList(menuList);
 		JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, menuList);
 		leftPanel.setResizeWeight(0.7);
 		JPanel centerPanel = new JPanel();

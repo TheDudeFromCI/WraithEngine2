@@ -5,18 +5,14 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.gui;
+package build.games.wraithaven.core;
 
-import build.games.wraithaven.core.InputDialogBuilder;
-import wraith.lib.util.BinaryFile;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
  * @author thedudefromci
  */
-public interface MenuComponent extends MenuComponentHeirarchy{
-	public void load(BinaryFile bin, short version);
-	public void save(BinaryFile bin);
-	public int getId();
-	public InputDialogBuilder getCreationDialog();
-	public String getName();
+public abstract class InputDialogBuilder extends JPanel{
+	public abstract JComponent getDefaultFocus();
 }

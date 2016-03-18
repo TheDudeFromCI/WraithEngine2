@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -14,6 +15,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -49,6 +51,84 @@ public class MenuComponentList extends JPanel{
 		arrow3 = attemptLoadImage("Arrow3.png");
 		arrow4 = attemptLoadImage("Arrow4.png");
 		setMinimumSize(new Dimension(100, 200));
+		InputAdapter ia = new InputAdapter(){
+			private MenuComponentHeirarchy mousedOver;
+			@Override
+			public void mousePressed(MouseEvent event){
+				if(menu==null){
+					return;
+				}
+				if(event.getButton()!=MouseEvent.BUTTON1){
+					return;
+				}
+				int x = event.getX();
+				int y = event.getY();
+				checkForToggleCollapse(x, y, 0, 0, menu);
+			}
+			private int checkForToggleCollapse(int x, int y, int h, int w, MenuComponentHeirarchy com){
+				int a = (TEXT_INDENT-ARROW_SIZE)/2+h;
+				int b = (TEXT_HEIGHT-ARROW_SIZE)/2+w;
+				if(x>=a&&x<a+ARROW_SIZE&&y>=b&&y<b+ARROW_SIZE){
+					com.setCollapsed(!com.isCollapsed());
+					repaint();
+					return -1;
+				}
+				if(!com.isCollapsed()){
+					w += TEXT_INDENT;
+					int r;
+					for(MenuComponentHeirarchy c : com.getChildren()){
+						r = checkForToggleCollapse(x, y, h, w, c);
+						if(r==-1){
+							return -1;
+						}
+						h += r;
+					}
+				}
+				h += TEXT_HEIGHT;
+				return h;
+			}
+			private int checkForMouseOver(int x, int y, int h, int w, MenuComponentHeirarchy com){
+				int a = (TEXT_INDENT-ARROW_SIZE)/2+h;
+				int b = (TEXT_HEIGHT-ARROW_SIZE)/2+w;
+				if(x>=a&&x<a+ARROW_SIZE&&y>=b&&y<b+ARROW_SIZE){
+					com.setMousedOver(true);
+					repaint();
+					return -1;
+				}
+				if(!com.isCollapsed()){
+					w += TEXT_INDENT;
+					int r;
+					for(MenuComponentHeirarchy c : com.getChildren()){
+						r = checkForToggleCollapse(x, y, h, w, c);
+						if(r==-1){
+							return -1;
+						}
+						h += r;
+					}
+				}
+				h += TEXT_HEIGHT;
+				return h;
+			}
+			@Override
+			public void mouseMoved(MouseEvent event){
+				if(menu==null){
+					return;
+				}
+				if(mousedOver!=null){
+					mousedOver.setMousedOver(false);
+					mousedOver = null;
+				}
+				int x = event.getX();
+				int y = event.getY();
+				int r = checkForMouseOver(x, y, 0, 0, menu);
+				if(r!=-1){
+					// No object is moused over.
+					repaint();
+				}
+			}
+		};
+		addMouseListener(ia);
+		addMouseMotionListener(ia);
 	}
 	public Menu getMenu(){
 		return menu;
@@ -93,10 +173,12 @@ public class MenuComponentList extends JPanel{
 		}
 		g.drawImage(arrowIcon, (TEXT_INDENT-ARROW_SIZE)/2+x, (TEXT_HEIGHT-ARROW_SIZE)/2+y, ARROW_SIZE, ARROW_SIZE, null);
 		// Draw children.
-		x += TEXT_INDENT;
 		y += TEXT_HEIGHT;
-		for(MenuComponentHeirarchy c : com.getChildren()){
-			y += drawComponentHeirarchy(g, c, x, y, fm);
+		if(!com.isCollapsed()){
+			x += TEXT_INDENT;
+			for(MenuComponentHeirarchy c : com.getChildren()){
+				y += drawComponentHeirarchy(g, c, x, y, fm);
+			}
 		}
 		return y;
 	}

@@ -35,8 +35,7 @@ public class NewMenuDialog extends JPanel{
 		}
 	}
 	public Menu build(){
-		Menu menu = new Menu(Algorithms.randomUUID());
-		menu.setName(nameInput.getText());
+		Menu menu = new Menu(Algorithms.randomUUID(), nameInput.getText());
 		menu.save();
 		return menu;
 	}

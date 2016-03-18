@@ -23,8 +23,9 @@ public class Menu implements MenuComponentHeirarchy{
 	private String name;
 	private boolean collapsed;
 	private boolean mousedOver;
-	public Menu(String uuid){
+	public Menu(String uuid, String name){
 		this.uuid = uuid;
+		this.name = name;
 	}
 	public void setName(String name){
 		this.name = name;

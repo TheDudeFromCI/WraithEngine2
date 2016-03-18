@@ -147,8 +147,11 @@ public class MenuList extends JPanel{
 					int menuCount = bin.getInt();
 					menus.ensureCapacity(menuCount);
 					Menu menu;
+					String uuid, name;
 					for(int i = 0; i<menuCount; i++){
-						menu = new Menu(bin.getString());
+						uuid = bin.getString();
+						name = bin.getString();
+						menu = new Menu(uuid, name);
 						menus.add(menu);
 					}
 					break;
@@ -173,6 +176,7 @@ public class MenuList extends JPanel{
 		bin.addInt(menus.size());
 		for(Menu menu : menus){
 			bin.addStringAllocated(menu.getUUID());
+			bin.addStringAllocated(menu.getName());
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus.dat"));

@@ -71,4 +71,12 @@ public class Menu implements MenuComponentHeirarchy{
 	public void setMousedOver(boolean mousedOver){
 		this.mousedOver = mousedOver;
 	}
+	@Override
+	public MenuComponentHeirarchy getParent(){
+		return null;
+	}
+	@Override
+	public void removeChild(MenuComponent com){
+		components.remove(com);
+	}
 }

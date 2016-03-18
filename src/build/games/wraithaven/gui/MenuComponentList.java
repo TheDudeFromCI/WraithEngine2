@@ -52,6 +52,7 @@ public class MenuComponentList extends JPanel{
 	private final BufferedImage arrow4;
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
+	private MenuList menuList;
 	public MenuComponentList(){
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
@@ -76,6 +77,9 @@ public class MenuComponentList extends JPanel{
 				}else if(button==MouseEvent.BUTTON3){
 					int x = event.getX();
 					int y = event.getY();
+					if(selectedComponent==null){
+						return;
+					}
 					JPopupMenu menu = new JPopupMenu();
 					{
 						// Build menu
@@ -91,10 +95,19 @@ public class MenuComponentList extends JPanel{
 							item.addActionListener(new ActionListener(){
 								@Override
 								public void actionPerformed(ActionEvent e){
-									// TODO
+									int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this component?",
+										"Confirm Delete", JOptionPane.YES_NO_OPTION);
+									if(response!=JOptionPane.YES_OPTION){
+										return;
+									}
+									selectedComponent.getParent().removeChild((MenuComponent)selectedComponent);
+									selectedComponent = null;
+									menuList.save();
+									repaint();
 								}
 							});
 							menu.add(item);
+							item.setEnabled(selectedComponent!=menu);
 						}
 					}
 					menu.show(MenuComponentList.this, x, y);
@@ -168,6 +181,9 @@ public class MenuComponentList extends JPanel{
 		};
 		addMouseListener(ia);
 		addMouseMotionListener(ia);
+	}
+	public void setMenuList(MenuList menuList){
+		this.menuList = menuList;
 	}
 	public Menu getMenu(){
 		return menu;

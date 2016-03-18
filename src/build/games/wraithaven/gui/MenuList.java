@@ -168,7 +168,7 @@ public class MenuList extends JPanel{
 			menus.clear();
 		}
 	}
-	private void save(){
+	public void save(){
 		BinaryFile bin = new BinaryFile(6);
 		bin.addShort(FILE_VERSION);
 		bin.addInt(menus.size());

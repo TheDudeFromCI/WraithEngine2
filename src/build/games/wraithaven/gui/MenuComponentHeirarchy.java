@@ -19,4 +19,6 @@ public interface MenuComponentHeirarchy{
 	public void setCollapsed(boolean collapsed);
 	public boolean isMousedOver();
 	public void setMousedOver(boolean mousedOver);
+	public MenuComponentHeirarchy getParent();
+	public void removeChild(MenuComponent com);
 }

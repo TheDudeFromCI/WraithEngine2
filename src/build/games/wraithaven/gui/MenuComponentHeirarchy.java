@@ -21,4 +21,5 @@ public interface MenuComponentHeirarchy{
 	public void setMousedOver(boolean mousedOver);
 	public MenuComponentHeirarchy getParent();
 	public void removeChild(MenuComponent com);
+	public void setParent(MenuComponent com);
 }

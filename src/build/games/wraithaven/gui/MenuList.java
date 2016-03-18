@@ -53,7 +53,7 @@ public class MenuList extends JPanel{
 						if(index==-1){
 							return;
 						}
-						selectedMenu(menus.get(index));
+						selectMenu(menus.get(index));
 					}
 				}
 				if(button==MouseEvent.BUTTON3){
@@ -130,7 +130,7 @@ public class MenuList extends JPanel{
 			}
 		});
 	}
-	private void selectedMenu(Menu menu){
+	private void selectMenu(Menu menu){
 		componentList.setMenu(menu);
 	}
 	private void load(){
@@ -148,8 +148,7 @@ public class MenuList extends JPanel{
 					menus.ensureCapacity(menuCount);
 					Menu menu;
 					for(int i = 0; i<menuCount; i++){
-						menu = new Menu();
-						menu.load(bin);
+						menu = new Menu(bin.getString());
 						menus.add(menu);
 					}
 					break;
@@ -173,7 +172,7 @@ public class MenuList extends JPanel{
 		bin.addShort(FILE_VERSION);
 		bin.addInt(menus.size());
 		for(Menu menu : menus){
-			menu.save(bin);
+			bin.addStringAllocated(menu.getUUID());
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus.dat"));

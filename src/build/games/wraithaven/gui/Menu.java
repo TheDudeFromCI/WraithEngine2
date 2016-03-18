@@ -7,17 +7,25 @@
  */
 package build.games.wraithaven.gui;
 
+import java.io.File;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public class Menu implements MenuComponentHeirarchy{
+	private static final short FILE_VERSION = 0;
 	private final ArrayList<MenuComponent> components = new ArrayList(8);
+	private final String uuid;
 	private String name;
 	private boolean collapsed;
 	private boolean mousedOver;
+	public Menu(String uuid){
+		this.uuid = uuid;
+	}
 	public void setName(String name){
 		this.name = name;
 	}
@@ -28,24 +36,57 @@ public class Menu implements MenuComponentHeirarchy{
 	public String toString(){
 		return name;
 	}
-	public void load(BinaryFile bin){
-		name = bin.getString();
-		components.clear();
-		int componentCount = bin.getInt();
-		for(int i = 0; i<componentCount; i++){
-			MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
-			com.load(bin);
-			components.add(com);
+	public void load(){
+		File file = Algorithms.getFile("Menus", uuid+".dat");
+		if(!file.exists()){
+			// Under most conditions, this file should exist.
+			return;
+		}
+		try{
+			BinaryFile bin = new BinaryFile(file);
+			bin.decompress(true);
+			short version = bin.getShort();
+			switch(version){
+				case 0:{
+					name = bin.getString();
+					components.clear();
+					int componentCount = bin.getInt();
+					for(int i = 0; i<componentCount; i++){
+						MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
+						com.load(bin, version);
+						components.add(com);
+					}
+					break;
+				}
+				default:
+					throw new RuntimeException();
+			}
+		}catch(Exception exception){
+			exception.printStackTrace();
+			int response = JOptionPane.showConfirmDialog(null, "There has been an error attempting to load this file. Delete this file?", "Error",
+				JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE);
+			if(response==JOptionPane.YES_OPTION){
+				file.delete();
+			}
+			// And clean up.
+			name = null;
+			components.clear();
 		}
 	}
-	public void save(BinaryFile bin){
+	public void save(){
+		BinaryFile bin = new BinaryFile(6+4*components.size());
+		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
-		bin.allocateBytes(4+4*components.size());
 		bin.addInt(components.size());
 		for(MenuComponent com : components){
 			bin.addInt(com.getId());
 			com.save(bin);
 		}
+		bin.compress(true);
+		bin.compile(Algorithms.getFile("Menus", uuid+".dat"));
+	}
+	public String getUUID(){
+		return uuid;
 	}
 	@Override
 	public ArrayList<MenuComponent> getChildren(){
@@ -79,4 +120,6 @@ public class Menu implements MenuComponentHeirarchy{
 	public void removeChild(MenuComponent com){
 		components.remove(com);
 	}
+	@Override
+	public void setParent(MenuComponent com){}
 }

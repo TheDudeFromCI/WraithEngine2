@@ -189,7 +189,13 @@ public class MenuComponentList extends JPanel{
 		return menu;
 	}
 	public void setMenu(Menu menu){
+		if(this.menu!=null){
+			menu.save();
+		}
 		this.menu = menu;
+		if(this.menu!=null){
+			menu.load();
+		}
 		selectedComponent = null;
 		repaint();
 	}

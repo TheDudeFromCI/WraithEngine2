@@ -13,6 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
@@ -34,12 +35,14 @@ public class NewMenuDialog extends JPanel{
 		}
 	}
 	public Menu build(){
-		Menu menu = new Menu();
+		Menu menu = new Menu(Algorithms.randomUUID());
 		menu.setName(nameInput.getText());
+		menu.save();
 		return menu;
 	}
 	public void edit(Menu menu){
 		menu.setName(nameInput.getText());
+		menu.save();
 	}
 	public JComponent getDefaultFocus(){
 		return nameInput;

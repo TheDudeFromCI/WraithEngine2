@@ -45,11 +45,13 @@ public class MenuComponentList extends JPanel{
 	private static final int TEXT_HEIGHT = 15;
 	private static final int TEXT_INDENT = 10;
 	private static final int ARROW_SIZE = 12;
+	private static final Color SELECTED_COLOR = new Color(113, 184, 201);
 	private final BufferedImage arrow1;
 	private final BufferedImage arrow2;
 	private final BufferedImage arrow3;
 	private final BufferedImage arrow4;
 	private Menu menu;
+	private MenuComponentHeirarchy selectedComponent;
 	public MenuComponentList(){
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
@@ -67,7 +69,10 @@ public class MenuComponentList extends JPanel{
 				if(button==MouseEvent.BUTTON1){
 					int x = event.getX();
 					int y = event.getY();
-					checkForToggleCollapse(x, y, 0, 0, menu);
+					int r = checkForToggleCollapse(x, y, 0, 0, menu);
+					if(r!=-1){
+						selectedComponent = null;
+					}
 				}else if(button==MouseEvent.BUTTON3){
 					int x = event.getX();
 					int y = event.getY();
@@ -96,10 +101,13 @@ public class MenuComponentList extends JPanel{
 				}
 			}
 			private int checkForToggleCollapse(int x, int y, int h, int w, MenuComponentHeirarchy com){
-				int a = (TEXT_INDENT-ARROW_SIZE)/2+h;
-				int b = (TEXT_HEIGHT-ARROW_SIZE)/2+w;
-				if(x>=a&&x<a+ARROW_SIZE&&y>=b&&y<b+ARROW_SIZE){
+				if(x>=w&&x<w+TEXT_INDENT&&y>=h&&y<h+TEXT_HEIGHT){
 					com.setCollapsed(!com.isCollapsed());
+					repaint();
+					return -1;
+				}
+				if(y>=h&&y<h+TEXT_HEIGHT){
+					selectedComponent = com;
 					repaint();
 					return -1;
 				}
@@ -122,6 +130,7 @@ public class MenuComponentList extends JPanel{
 				int b = (TEXT_HEIGHT-ARROW_SIZE)/2+w;
 				if(x>=a&&x<a+ARROW_SIZE&&y>=b&&y<b+ARROW_SIZE){
 					com.setMousedOver(true);
+					mousedOver = com;
 					repaint();
 					return -1;
 				}
@@ -165,6 +174,7 @@ public class MenuComponentList extends JPanel{
 	}
 	public void setMenu(Menu menu){
 		this.menu = menu;
+		selectedComponent = null;
 		repaint();
 	}
 	@Override
@@ -188,6 +198,11 @@ public class MenuComponentList extends JPanel{
 	}
 	private int drawComponentHeirarchy(Graphics2D g, MenuComponentHeirarchy com, int x, int y, FontMetrics fm){
 		// Draw
+		if(com==selectedComponent){
+			g.setColor(SELECTED_COLOR);
+			g.fillRect(0, y, getWidth(), TEXT_HEIGHT);
+			g.setColor(Color.black);
+		}
 		g.drawString(com.toString(), ARROW_SIZE+x, (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y);
 		BufferedImage arrowIcon;
 		if(com.isCollapsed()){

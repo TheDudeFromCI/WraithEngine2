@@ -15,11 +15,16 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import wraith.lib.util.Algorithms;
 
 /**
@@ -58,12 +63,37 @@ public class MenuComponentList extends JPanel{
 				if(menu==null){
 					return;
 				}
-				if(event.getButton()!=MouseEvent.BUTTON1){
-					return;
+				int button = event.getButton();
+				if(button==MouseEvent.BUTTON1){
+					int x = event.getX();
+					int y = event.getY();
+					checkForToggleCollapse(x, y, 0, 0, menu);
+				}else if(button==MouseEvent.BUTTON3){
+					int x = event.getX();
+					int y = event.getY();
+					JPopupMenu menu = new JPopupMenu();
+					{
+						// Build menu
+						{
+							// New Component
+							JMenu menu2 = new JMenu("New");
+							// TODO
+							menu.add(menu2);
+						}
+						{
+							// Delete
+							JMenuItem item = new JMenuItem("Delete");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									// TODO
+								}
+							});
+							menu.add(item);
+						}
+					}
+					menu.show(MenuComponentList.this, x, y);
 				}
-				int x = event.getX();
-				int y = event.getY();
-				checkForToggleCollapse(x, y, 0, 0, menu);
 			}
 			private int checkForToggleCollapse(int x, int y, int h, int w, MenuComponentHeirarchy com){
 				int a = (TEXT_INDENT-ARROW_SIZE)/2+h;

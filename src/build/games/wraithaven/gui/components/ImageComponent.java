@@ -7,11 +7,13 @@
  */
 package build.games.wraithaven.gui.components;
 
-import build.games.wraithaven.core.InputDialogBuilder;
 import build.games.wraithaven.gui.MenuComponent;
+import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
+import build.games.wraithaven.util.VerticalFlowLayout;
 import java.util.ArrayList;
 import javax.swing.JComponent;
+import javax.swing.JTextField;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -69,19 +71,35 @@ public class ImageComponent implements MenuComponent{
 		parent = com;
 	}
 	@Override
-	public InputDialogBuilder getCreationDialog(){
-		return new InputDialogBuilder(){
+	public MenuComponentDialog getCreationDialog(){
+		return new MenuComponentDialog(){
+			private final JTextField nameInput;
 			{
 				// Builder
+				setLayout(new VerticalFlowLayout(0, 5));
+				{
+					// Name
+					nameInput = new JTextField();
+					add(nameInput);
+				}
 			}
 			@Override
 			public JComponent getDefaultFocus(){
-				return null;
+				return nameInput;
+			}
+			@Override
+			public void build(MenuComponent component){
+				ImageComponent c = (ImageComponent)component;
+				c.name = nameInput.getText();
 			}
 		};
 	}
 	@Override
 	public String getName(){
+		return name;
+	}
+	@Override
+	public String toString(){
 		return name;
 	}
 }

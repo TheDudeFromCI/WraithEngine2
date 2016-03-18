@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.gui;
 
-import build.games.wraithaven.core.InputDialogBuilder;
 import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
@@ -257,7 +256,7 @@ public class MenuComponentList extends JPanel{
 	}
 	private void attemptCreateComponet(MenuComponentHeirarchy parent, MenuComponent child){
 		InputDialog dialog = new InputDialog();
-		InputDialogBuilder builder = child.getCreationDialog();
+		MenuComponentDialog builder = child.getCreationDialog();
 		dialog.setData(builder);
 		dialog.setOkButton(true);
 		dialog.setCancelButton(true);
@@ -267,6 +266,7 @@ public class MenuComponentList extends JPanel{
 		if(dialog.getResponse()!=InputDialog.OK){
 			return;
 		}
+		builder.build(child);
 		parent.addChild(child);
 		child.setParent(parent);
 		menu.save();

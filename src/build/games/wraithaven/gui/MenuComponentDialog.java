@@ -7,15 +7,11 @@
  */
 package build.games.wraithaven.gui;
 
-import wraith.lib.util.BinaryFile;
+import build.games.wraithaven.core.InputDialogBuilder;
 
 /**
  * @author thedudefromci
  */
-public interface MenuComponent extends MenuComponentHeirarchy{
-	public void load(BinaryFile bin, short version);
-	public void save(BinaryFile bin);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
-	public String getName();
+public abstract class MenuComponentDialog extends InputDialogBuilder{
+	public abstract void build(MenuComponent component);
 }

@@ -86,6 +86,9 @@ public class Menu implements MenuComponentHeirarchy{
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus", uuid+".dat"));
 	}
+	public void dispose(){
+		components.clear();
+	}
 	public String getUUID(){
 		return uuid;
 	}

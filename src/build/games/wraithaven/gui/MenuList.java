@@ -120,6 +120,7 @@ public class MenuList extends JPanel{
 									dialog.edit((Menu)list.getSelectedValue());
 									save();
 									repaint();
+									componentList.repaint();
 								}
 							});
 							menu.add(item);

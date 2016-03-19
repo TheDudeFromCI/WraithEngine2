@@ -39,6 +39,15 @@ public class ImageComponent implements MenuComponent{
 	private MenuComponentHeirarchy parent;
 	private String name = "Image Component";
 	private BufferedImage image;
+	public ImageComponent(){
+		try{
+			image = ImageIO.read(Algorithms.getAsset("No Image.png"));
+		}catch(Exception exception){
+			exception.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+			image = null;
+		}
+	}
 	@Override
 	public void load(BinaryFile bin, short version){
 		switch(version){
@@ -118,14 +127,8 @@ public class ImageComponent implements MenuComponent{
 					JButton button = new JButton("Select Image");
 					panel2.add(button);
 					panel.add(panel2, BorderLayout.EAST);
-					try{
-						image = ImageIO.read(Algorithms.getAsset("No Image.png"));
-					}catch(Exception exception){
-						exception.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
-						image = null;
-					}
-					ImagePanel imagePanel = new ImagePanel(image, 320, 240);
+					image = ImageComponent.this.image;
+					ImagePanel imagePanel = new ImagePanel(image, 256, 256);
 					panel.add(imagePanel, BorderLayout.CENTER);
 					add(panel);
 					button.addActionListener(new ActionListener(){
@@ -152,6 +155,7 @@ public class ImageComponent implements MenuComponent{
 			public void build(MenuComponent component){
 				ImageComponent c = (ImageComponent)component;
 				c.name = nameInput.getText();
+				c.image = image;
 			}
 		};
 	}

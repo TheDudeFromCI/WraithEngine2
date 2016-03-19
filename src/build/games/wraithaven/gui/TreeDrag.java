@@ -12,10 +12,12 @@ package build.games.wraithaven.gui;
  */
 public class TreeDrag{
 	private final MenuComponentHeirarchy object;
+	private final int originalLocation;
 	private int currentLocation;
 	private boolean sibiling;
 	public TreeDrag(MenuComponentHeirarchy object, int originalLocation){
 		this.object = object;
+		this.originalLocation = originalLocation;
 		currentLocation = originalLocation;
 	}
 	public void setCurrentLocation(int location, boolean sibiling){
@@ -30,5 +32,8 @@ public class TreeDrag{
 	}
 	public boolean isSibiling(){
 		return sibiling;
+	}
+	public boolean isOriginalLocation(){
+		return currentLocation==originalLocation;
 	}
 }

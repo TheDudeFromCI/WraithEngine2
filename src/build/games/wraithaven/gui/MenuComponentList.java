@@ -237,6 +237,11 @@ public class MenuComponentList extends JPanel{
 			@Override
 			public void mouseReleased(MouseEvent event){
 				if(treeDrag!=null){
+					if(treeDrag.isOriginalLocation()){
+						treeDrag = null;
+						repaint();
+						return;
+					}
 					MenuComponentHeirarchy comp;
 					{
 						// Get drop target.
@@ -246,15 +251,15 @@ public class MenuComponentList extends JPanel{
 					}
 					if(isChildOf(treeDrag.getObject(), comp)){
 						// Cancel the event.
-						repaint();
 						treeDrag = null;
+						repaint();
 						return;
 					}
 					if(treeDrag.isSibiling()){
 						if(comp.getParent()==null){
 							// Can't have a sibiling, without parents.
-							repaint();
 							treeDrag = null;
+							repaint();
 							return;
 						}
 						MenuComponentHeirarchy tar = treeDrag.getObject();

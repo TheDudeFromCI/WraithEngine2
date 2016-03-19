@@ -59,6 +59,7 @@ public class MenuComponentList extends JPanel{
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
 	private TreeDrag treeDrag;
+	private MenuComponentHeirarchy mousedOver;
 	public MenuComponentList(){
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
@@ -68,7 +69,6 @@ public class MenuComponentList extends JPanel{
 		arrow6 = attemptLoadImage("Arrow6.png");
 		setMinimumSize(new Dimension(100, 200));
 		InputAdapter ia = new InputAdapter(){
-			private MenuComponentHeirarchy mousedOver;
 			@Override
 			public void mousePressed(MouseEvent event){
 				if(menu==null){
@@ -293,6 +293,12 @@ public class MenuComponentList extends JPanel{
 		return menu;
 	}
 	public void setMenu(Menu menu){
+		if(this.menu==menu){
+			return;
+		}
+		selectedComponent = null;
+		treeDrag = null;
+		mousedOver = null;
 		if(this.menu!=null){
 			menu.save();
 			menu.dispose();
@@ -416,7 +422,7 @@ public class MenuComponentList extends JPanel{
 		}
 		return i;
 	}
-	public int getByIndex(MenuComponentHeirarchy root, int index, int pos, MenuComponentHeirarchy[] out){
+	private int getByIndex(MenuComponentHeirarchy root, int index, int pos, MenuComponentHeirarchy[] out){
 		if(index==pos){
 			out[0] = root;
 			return -1;
@@ -432,7 +438,7 @@ public class MenuComponentList extends JPanel{
 		}
 		return pos;
 	}
-	public boolean isChildOf(MenuComponentHeirarchy parent, MenuComponentHeirarchy child){
+	private boolean isChildOf(MenuComponentHeirarchy parent, MenuComponentHeirarchy child){
 		if(parent==child){
 			return true;
 		}
@@ -442,26 +448,5 @@ public class MenuComponentList extends JPanel{
 			}
 		}
 		return false;
-	}
-	public int getIndexOf(MenuComponentHeirarchy comp){
-		int[] out = new int[1];
-		getIndexOf(menu, comp, 0, out);
-		return out[0];
-	}
-	private int getIndexOf(MenuComponentHeirarchy root, MenuComponentHeirarchy comp, int i, int[] out){
-		if(root==comp){
-			out[0] = i;
-			return -1;
-		}
-		i++;
-		if(!root.isCollapsed()){
-			for(MenuComponentHeirarchy c : root.getChildren()){
-				i = getIndexOf(c, comp, i, out);
-				if(i==-1){
-					return -1;
-				}
-			}
-		}
-		return i;
 	}
 }

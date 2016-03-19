@@ -300,8 +300,8 @@ public class MenuComponentList extends JPanel{
 		treeDrag = null;
 		mousedOver = null;
 		if(this.menu!=null){
-			menu.save();
-			menu.dispose();
+			this.menu.save();
+			this.menu.dispose();
 		}
 		this.menu = menu;
 		if(this.menu!=null){

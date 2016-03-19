@@ -18,7 +18,7 @@ import wraith.lib.util.BinaryFile;
  */
 public class Menu implements MenuComponentHeirarchy{
 	private static final short FILE_VERSION = 0;
-	private final ArrayList<MenuComponent> components = new ArrayList(8);
+	private final ArrayList<MenuComponentHeirarchy> components = new ArrayList(8);
 	private final String uuid;
 	private String name;
 	private boolean collapsed;
@@ -57,6 +57,7 @@ public class Menu implements MenuComponentHeirarchy{
 						MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
 						com.load(bin, version);
 						components.add(com);
+						com.setParent(this);
 						loadChildren(bin, com, version);
 					}
 					break;
@@ -82,6 +83,7 @@ public class Menu implements MenuComponentHeirarchy{
 			MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
 			com.load(bin, version);
 			parent.addChild(com);
+			com.setParent(parent);
 			loadChildren(bin, com, version);
 		}
 	}
@@ -90,8 +92,8 @@ public class Menu implements MenuComponentHeirarchy{
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
 		bin.addInt(components.size());
-		for(MenuComponent com : components){
-			saveHeirarchy(bin, com);
+		for(MenuComponentHeirarchy com : components){
+			saveHeirarchy(bin, (MenuComponent)com);
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("Menus", uuid+".dat"));
@@ -101,8 +103,8 @@ public class Menu implements MenuComponentHeirarchy{
 		bin.addInt(com.getId());
 		com.save(bin);
 		bin.addInt(com.getChildren().size());
-		for(MenuComponent c : com.getChildren()){
-			saveHeirarchy(bin, c);
+		for(MenuComponentHeirarchy c : com.getChildren()){
+			saveHeirarchy(bin, (MenuComponent)c);
 		}
 	}
 	public void dispose(){
@@ -112,11 +114,11 @@ public class Menu implements MenuComponentHeirarchy{
 		return uuid;
 	}
 	@Override
-	public ArrayList<MenuComponent> getChildren(){
+	public ArrayList<MenuComponentHeirarchy> getChildren(){
 		return components;
 	}
 	@Override
-	public void addChild(MenuComponent com){
+	public void addChild(MenuComponentHeirarchy com){
 		components.add(com);
 	}
 	@Override
@@ -140,7 +142,7 @@ public class Menu implements MenuComponentHeirarchy{
 		return null;
 	}
 	@Override
-	public void removeChild(MenuComponent com){
+	public void removeChild(MenuComponentHeirarchy com){
 		components.remove(com);
 	}
 	@Override

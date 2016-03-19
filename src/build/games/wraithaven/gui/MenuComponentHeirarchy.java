@@ -13,13 +13,13 @@ import java.util.ArrayList;
  * @author thedudefromci
  */
 public interface MenuComponentHeirarchy{
-	public ArrayList<MenuComponent> getChildren();
-	public void addChild(MenuComponent com);
+	public ArrayList<MenuComponentHeirarchy> getChildren();
+	public void addChild(MenuComponentHeirarchy com);
 	public boolean isCollapsed();
 	public void setCollapsed(boolean collapsed);
 	public boolean isMousedOver();
 	public void setMousedOver(boolean mousedOver);
 	public MenuComponentHeirarchy getParent();
-	public void removeChild(MenuComponent com);
+	public void removeChild(MenuComponentHeirarchy com);
 	public void setParent(MenuComponentHeirarchy com);
 }

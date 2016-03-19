@@ -21,7 +21,7 @@ import wraith.lib.util.BinaryFile;
  */
 public class ImageComponent implements MenuComponent{
 	private static final int ID = 0;
-	private final ArrayList<MenuComponent> children = new ArrayList(4);
+	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
 	private boolean collapsed;
 	private boolean mousedOver;
 	private MenuComponentHeirarchy parent;
@@ -46,11 +46,11 @@ public class ImageComponent implements MenuComponent{
 		return ID;
 	}
 	@Override
-	public ArrayList<MenuComponent> getChildren(){
+	public ArrayList<MenuComponentHeirarchy> getChildren(){
 		return children;
 	}
 	@Override
-	public void addChild(MenuComponent com){
+	public void addChild(MenuComponentHeirarchy com){
 		children.add(com);
 	}
 	@Override
@@ -74,7 +74,7 @@ public class ImageComponent implements MenuComponent{
 		return parent;
 	}
 	@Override
-	public void removeChild(MenuComponent com){
+	public void removeChild(MenuComponentHeirarchy com){
 		children.remove(com);
 	}
 	@Override

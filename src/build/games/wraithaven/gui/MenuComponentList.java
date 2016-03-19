@@ -10,6 +10,7 @@ package build.games.wraithaven.gui;
 import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -17,6 +18,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -82,9 +84,7 @@ public class MenuComponentList extends JPanel{
 					}
 					if(selectedComponent!=null&&selectedComponent.getParent()!=null){
 						// Make sure we have a parent, otherwise we couldn't exactly drag stuff.
-						int[] out = new int[1];
-						getIndexOf(selectedComponent, selectedComponent, 0, out);
-						treeDrag = new TreeDrag(selectedComponent, out[0]);
+						treeDrag = new TreeDrag(selectedComponent, y/TEXT_HEIGHT);
 						repaint();
 					}
 				}else if(button==MouseEvent.BUTTON3){
@@ -227,16 +227,52 @@ public class MenuComponentList extends JPanel{
 				if(treeDrag==null){
 					return;
 				}
+				int x = event.getX();
 				int y = event.getY();
 				int ideal = y/TEXT_HEIGHT;
-				ideal = Math.min(ideal, getMaxComponentIndex(menu, 0));
-				treeDrag.setCurrentLocation(ideal);
+				ideal = Math.min(ideal, getMaxComponentIndex(menu, -1));
+				treeDrag.setCurrentLocation(ideal, x<=getWidth()/2);
 				repaint();
 			}
 			@Override
 			public void mouseReleased(MouseEvent event){
-				treeDrag = null;
-				repaint();
+				if(treeDrag!=null){
+					MenuComponentHeirarchy comp;
+					{
+						// Get drop target.
+						MenuComponentHeirarchy[] h = new MenuComponentHeirarchy[1];
+						getByIndex(menu, treeDrag.getCurrentLocation(), 0, h);
+						comp = h[0];
+					}
+					if(isChildOf(treeDrag.getObject(), comp)){
+						// Cancel the event.
+						repaint();
+						treeDrag = null;
+						return;
+					}
+					if(treeDrag.isSibiling()){
+						if(comp.getParent()==null){
+							// Can't have a sibiling, without parents.
+							repaint();
+							treeDrag = null;
+							return;
+						}
+						MenuComponentHeirarchy tar = treeDrag.getObject();
+						tar.getParent().removeChild(tar);
+						comp.getParent().addChild(tar);
+						tar.setParent(comp.getParent());
+						menu.save();
+						// TODO Rearrange Order.
+					}else{
+						MenuComponentHeirarchy tar = treeDrag.getObject();
+						tar.getParent().removeChild(tar);
+						comp.addChild(tar);
+						tar.setParent(comp);
+						menu.save();
+					}
+					treeDrag = null;
+					repaint();
+				}
 			}
 		};
 		addMouseListener(ia);
@@ -283,11 +319,20 @@ public class MenuComponentList extends JPanel{
 			g.fillRect(0, y, getWidth(), TEXT_HEIGHT);
 			g.setColor(Color.black);
 		}
-		// "out" is a debug line.
-		int[] out = new int[1];
-		getIndexOf(menu, com, 0, out);
-		g.drawString(com.toString()+"   ["+out[0]+"]", ARROW_SIZE+x, (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y);
-		g.drawString(treeDrag==null?"null":String.valueOf(treeDrag.getCurrentLocation()), 5, 100);
+		int textPosition = (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y;
+		g.drawString(com.toString(), ARROW_SIZE+x, textPosition);
+		if(treeDrag!=null&&y/TEXT_HEIGHT==treeDrag.getCurrentLocation()){
+			g.setColor(Color.gray);
+			Stroke s = g.getStroke();
+			g.setStroke(new BasicStroke(2));
+			int xStart = ARROW_SIZE+x;
+			if(!treeDrag.isSibiling()){
+				xStart += TEXT_INDENT;
+			}
+			g.drawLine(xStart, textPosition+3, xStart+fm.stringWidth(com.toString()), textPosition+3);
+			g.setStroke(s);
+			g.setColor(Color.black);
+		}
 		BufferedImage arrowIcon;
 		if(com.getChildren().isEmpty()){
 			if(com.isMousedOver()){
@@ -351,22 +396,6 @@ public class MenuComponentList extends JPanel{
 		menu.save();
 		repaint();
 	}
-	private int getIndexOf(MenuComponentHeirarchy parent, MenuComponentHeirarchy comp, int i, int[] out){
-		if(parent==comp){
-			out[0] = i;
-			return -1;
-		}
-		i++;
-		if(!parent.isCollapsed()){
-			for(MenuComponentHeirarchy c : parent.getChildren()){
-				i = getIndexOf(c, comp, i, out);
-				if(i==-1){
-					return -1;
-				}
-			}
-		}
-		return i;
-	}
 	private int getMaxComponentIndex(MenuComponentHeirarchy parent, int i){
 		i++;
 		if(!parent.isCollapsed()){
@@ -375,5 +404,32 @@ public class MenuComponentList extends JPanel{
 			}
 		}
 		return i;
+	}
+	public int getByIndex(MenuComponentHeirarchy root, int index, int pos, MenuComponentHeirarchy[] out){
+		if(index==pos){
+			out[0] = root;
+			return -1;
+		}
+		pos++;
+		if(!root.isCollapsed()){
+			for(MenuComponentHeirarchy c : root.getChildren()){
+				pos = getByIndex(c, index, pos, out);
+				if(pos==-1){
+					return -1;
+				}
+			}
+		}
+		return pos;
+	}
+	public boolean isChildOf(MenuComponentHeirarchy parent, MenuComponentHeirarchy child){
+		if(parent==child){
+			return true;
+		}
+		for(MenuComponentHeirarchy c : parent.getChildren()){
+			if(isChildOf(c, child)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

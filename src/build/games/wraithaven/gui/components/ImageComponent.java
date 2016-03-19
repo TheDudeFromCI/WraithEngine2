@@ -10,10 +10,22 @@ package build.games.wraithaven.gui.components;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
+import build.games.wraithaven.util.ImagePanel;
 import build.games.wraithaven.util.VerticalFlowLayout;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -26,6 +38,7 @@ public class ImageComponent implements MenuComponent{
 	private boolean mousedOver;
 	private MenuComponentHeirarchy parent;
 	private String name = "Image Component";
+	private BufferedImage image;
 	@Override
 	public void load(BinaryFile bin, short version){
 		switch(version){
@@ -85,6 +98,7 @@ public class ImageComponent implements MenuComponent{
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final JTextField nameInput;
+			private BufferedImage image;
 			{
 				// Builder
 				setLayout(new VerticalFlowLayout(0, 5));
@@ -94,6 +108,40 @@ public class ImageComponent implements MenuComponent{
 					nameInput.setColumns(20);
 					nameInput.setText(name);
 					add(nameInput);
+				}
+				{
+					// Picture Importer
+					JPanel panel = new JPanel();
+					panel.setLayout(new BorderLayout());
+					JPanel panel2 = new JPanel();
+					panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+					JButton button = new JButton("Select Image");
+					panel2.add(button);
+					panel.add(panel2, BorderLayout.EAST);
+					try{
+						image = ImageIO.read(Algorithms.getAsset("No Image.png"));
+					}catch(Exception exception){
+						exception.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+						image = null;
+					}
+					ImagePanel imagePanel = new ImagePanel(image, 320, 240);
+					panel.add(imagePanel, BorderLayout.CENTER);
+					add(panel);
+					button.addActionListener(new ActionListener(){
+						@Override
+						public void actionPerformed(ActionEvent e){
+							File file = Algorithms.userChooseImage("Select Image", "Select");
+							try{
+								image = ImageIO.read(file);
+								imagePanel.setImage(image);
+							}catch(Exception exception){
+								exception.printStackTrace();
+								JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+								image = null;
+							}
+						}
+					});
 				}
 			}
 			@Override

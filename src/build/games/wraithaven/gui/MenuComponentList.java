@@ -115,7 +115,12 @@ public class MenuComponentList extends JPanel{
 									if(response!=JOptionPane.YES_OPTION){
 										return;
 									}
-									selectedComponent.getParent().removeChild((MenuComponent)selectedComponent);
+									MenuComponentHeirarchy parent = selectedComponent.getParent();
+									parent.removeChild((MenuComponent)selectedComponent);
+									if(parent.getChildren().isEmpty()){
+										// Just in case it is for some reason...
+										parent.setCollapsed(false);
+									}
 									selectedComponent = null;
 									MenuComponentList.this.menu.save();
 									repaint();
@@ -130,7 +135,11 @@ public class MenuComponentList extends JPanel{
 			}
 			private int checkForToggleCollapse(int x, int y, int h, int w, MenuComponentHeirarchy com){
 				if(x>=w&&x<w+TEXT_INDENT&&y>=h&&y<h+TEXT_HEIGHT){
-					com.setCollapsed(!com.isCollapsed());
+					if(com.getChildren().isEmpty()){
+						com.setCollapsed(false);
+					}else{
+						com.setCollapsed(!com.isCollapsed());
+					}
 					repaint();
 					return -1;
 				}

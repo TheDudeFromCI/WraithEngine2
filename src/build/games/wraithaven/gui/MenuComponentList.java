@@ -109,6 +109,20 @@ public class MenuComponentList extends JPanel{
 							menu.add(menu2);
 						}
 						{
+							// Edit
+							if(selectedComponent instanceof MenuComponent){
+								// Is not root.
+								JMenuItem item = new JMenuItem("Edit");
+								item.addActionListener(new ActionListener(){
+									@Override
+									public void actionPerformed(ActionEvent e){
+										attemptEditComponet((MenuComponent)selectedComponent);
+									}
+								});
+								menu.add(item);
+							}
+						}
+						{
 							// Delete
 							JMenuItem item = new JMenuItem("Delete");
 							item.addActionListener(new ActionListener(){
@@ -290,6 +304,22 @@ public class MenuComponentList extends JPanel{
 		builder.build(child);
 		parent.addChild(child);
 		child.setParent(parent);
+		menu.save();
+		repaint();
+	}
+	private void attemptEditComponet(MenuComponent com){
+		InputDialog dialog = new InputDialog();
+		MenuComponentDialog builder = com.getCreationDialog();
+		dialog.setData(builder);
+		dialog.setOkButton(true);
+		dialog.setCancelButton(true);
+		dialog.setDefaultFocus(builder.getDefaultFocus());
+		dialog.setTitle(com.getName());
+		dialog.show();
+		if(dialog.getResponse()!=InputDialog.OK){
+			return;
+		}
+		builder.build(com);
 		menu.save();
 		repaint();
 	}

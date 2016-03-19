@@ -92,6 +92,7 @@ public class ImageComponent implements MenuComponent{
 					// Name
 					nameInput = new JTextField();
 					nameInput.setColumns(20);
+					nameInput.setText(name);
 					add(nameInput);
 				}
 			}

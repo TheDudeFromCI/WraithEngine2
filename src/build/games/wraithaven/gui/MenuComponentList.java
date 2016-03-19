@@ -82,7 +82,11 @@ public class MenuComponentList extends JPanel{
 				}else if(button==MouseEvent.BUTTON3){
 					int x = event.getX();
 					int y = event.getY();
-					if(selectedComponent==null){
+					// first check to see if we are selecting anything.
+					int r = checkForToggleCollapse(x, y, 0, 0, menu);
+					if(r!=-1){
+						// Nah, just clicking void. Go ahead and return.
+						selectedComponent = null;
 						return;
 					}
 					JPopupMenu menu = new JPopupMenu();

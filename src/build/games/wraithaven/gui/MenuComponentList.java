@@ -56,6 +56,7 @@ public class MenuComponentList extends JPanel{
 	private final BufferedImage arrow6;
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
+	private TreeDrag treeDrag;
 	public MenuComponentList(){
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
@@ -75,15 +76,22 @@ public class MenuComponentList extends JPanel{
 				if(button==MouseEvent.BUTTON1){
 					int x = event.getX();
 					int y = event.getY();
-					int r = checkForToggleCollapse(x, y, 0, 0, menu);
+					int r = checkForToggleCollapse(x, y, 0, 0, menu, true);
 					if(r!=-1){
 						selectedComponent = null;
+					}
+					if(selectedComponent!=null&&selectedComponent.getParent()!=null){
+						// Make sure we have a parent, otherwise we couldn't exactly drag stuff.
+						int[] out = new int[1];
+						getIndexOf(selectedComponent, selectedComponent, 0, out);
+						treeDrag = new TreeDrag(selectedComponent, out[0]);
+						repaint();
 					}
 				}else if(button==MouseEvent.BUTTON3){
 					int x = event.getX();
 					int y = event.getY();
 					// first check to see if we are selecting anything.
-					int r = checkForToggleCollapse(x, y, 0, 0, menu);
+					int r = checkForToggleCollapse(x, y, 0, 0, menu, false);
 					if(r!=-1){
 						// Nah, just clicking void. Go ahead and return.
 						selectedComponent = null;
@@ -151,8 +159,8 @@ public class MenuComponentList extends JPanel{
 					menu.show(MenuComponentList.this, x, y);
 				}
 			}
-			private int checkForToggleCollapse(int x, int y, int h, int w, MenuComponentHeirarchy com){
-				if(x>=w&&x<w+TEXT_INDENT&&y>=h&&y<h+TEXT_HEIGHT){
+			private int checkForToggleCollapse(int x, int y, int h, int w, MenuComponentHeirarchy com, boolean full){
+				if(full&&x>=w&&x<w+TEXT_INDENT&&y>=h&&y<h+TEXT_HEIGHT){
 					if(com.getChildren().isEmpty()){
 						com.setCollapsed(false);
 					}else{
@@ -170,7 +178,7 @@ public class MenuComponentList extends JPanel{
 				if(!com.isCollapsed()){
 					w += TEXT_INDENT;
 					for(MenuComponentHeirarchy c : com.getChildren()){
-						h = checkForToggleCollapse(x, y, h, w, c);
+						h = checkForToggleCollapse(x, y, h, w, c, full);
 						if(h==-1){
 							return -1;
 						}
@@ -213,6 +221,22 @@ public class MenuComponentList extends JPanel{
 					// No object is moused over.
 					repaint();
 				}
+			}
+			@Override
+			public void mouseDragged(MouseEvent event){
+				if(treeDrag==null){
+					return;
+				}
+				int y = event.getY();
+				int ideal = y/TEXT_HEIGHT;
+				ideal = Math.min(ideal, getMaxComponentIndex(menu, 0));
+				treeDrag.setCurrentLocation(ideal);
+				repaint();
+			}
+			@Override
+			public void mouseReleased(MouseEvent event){
+				treeDrag = null;
+				repaint();
 			}
 		};
 		addMouseListener(ia);
@@ -259,7 +283,11 @@ public class MenuComponentList extends JPanel{
 			g.fillRect(0, y, getWidth(), TEXT_HEIGHT);
 			g.setColor(Color.black);
 		}
-		g.drawString(com.toString(), ARROW_SIZE+x, (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y);
+		// "out" is a debug line.
+		int[] out = new int[1];
+		getIndexOf(menu, com, 0, out);
+		g.drawString(com.toString()+"   ["+out[0]+"]", ARROW_SIZE+x, (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y);
+		g.drawString(treeDrag==null?"null":String.valueOf(treeDrag.getCurrentLocation()), 5, 100);
 		BufferedImage arrowIcon;
 		if(com.getChildren().isEmpty()){
 			if(com.isMousedOver()){
@@ -322,5 +350,30 @@ public class MenuComponentList extends JPanel{
 		builder.build(com);
 		menu.save();
 		repaint();
+	}
+	private int getIndexOf(MenuComponentHeirarchy parent, MenuComponentHeirarchy comp, int i, int[] out){
+		if(parent==comp){
+			out[0] = i;
+			return -1;
+		}
+		i++;
+		if(!parent.isCollapsed()){
+			for(MenuComponentHeirarchy c : parent.getChildren()){
+				i = getIndexOf(c, comp, i, out);
+				if(i==-1){
+					return -1;
+				}
+			}
+		}
+		return i;
+	}
+	private int getMaxComponentIndex(MenuComponentHeirarchy parent, int i){
+		i++;
+		if(!parent.isCollapsed()){
+			for(MenuComponentHeirarchy com : parent.getChildren()){
+				i = getMaxComponentIndex(com, i);
+			}
+		}
+		return i;
 	}
 }

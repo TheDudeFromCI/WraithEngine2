@@ -54,8 +54,10 @@ public class Menu implements MenuComponentHeirarchy{
 					components.clear();
 					int componentCount = bin.getInt();
 					for(int i = 0; i<componentCount; i++){
-						MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
-						com.load(bin, version);
+						int componentId = bin.getInt();
+						String comUuid = bin.getString();
+						MenuComponent com = MenuComponentFactory.newInstance(componentId, comUuid);
+						com.load(this, bin, version);
 						components.add(com);
 						com.setParent(this);
 						loadChildren(bin, com, version);
@@ -80,8 +82,10 @@ public class Menu implements MenuComponentHeirarchy{
 	private void loadChildren(BinaryFile bin, MenuComponent parent, short version){
 		int childCount = bin.getInt();
 		for(int i = 0; i<childCount; i++){
-			MenuComponent com = MenuComponentFactory.newInstance(bin.getInt());
-			com.load(bin, version);
+			int componentId = bin.getInt();
+			String comUuid = bin.getString();
+			MenuComponent com = MenuComponentFactory.newInstance(componentId, comUuid);
+			com.load(this, bin, version);
 			parent.addChild(com);
 			com.setParent(parent);
 			loadChildren(bin, com, version);
@@ -101,7 +105,8 @@ public class Menu implements MenuComponentHeirarchy{
 	private void saveHeirarchy(BinaryFile bin, MenuComponent com){
 		bin.allocateBytes(8);
 		bin.addInt(com.getId());
-		com.save(bin);
+		bin.addStringAllocated(com.getUUID());
+		com.save(this, bin);
 		bin.addInt(com.getChildren().size());
 		for(MenuComponentHeirarchy c : com.getChildren()){
 			saveHeirarchy(bin, (MenuComponent)c);

@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui.components;
 
+import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
@@ -34,12 +35,15 @@ import wraith.lib.util.BinaryFile;
 public class ImageComponent implements MenuComponent{
 	private static final int ID = 0;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
+	private final String uuid;
 	private boolean collapsed;
 	private boolean mousedOver;
 	private MenuComponentHeirarchy parent;
 	private String name = "Image Component";
 	private BufferedImage image;
-	public ImageComponent(){
+	boolean saveImage;
+	public ImageComponent(String uuid){
+		this.uuid = uuid;
 		try{
 			image = ImageIO.read(Algorithms.getAsset("No Image.png"));
 		}catch(Exception exception){
@@ -49,10 +53,27 @@ public class ImageComponent implements MenuComponent{
 		}
 	}
 	@Override
-	public void load(BinaryFile bin, short version){
+	public void load(Menu menu, BinaryFile bin, short version){
 		switch(version){
 			case 0:{
 				name = bin.getString();
+				if(bin.getBoolean()){
+					try{
+						image = ImageIO.read(Algorithms.getFile("Menus", menu.getUUID(), uuid+".png"));
+					}catch(Exception exception){
+						exception.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Image component image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+						image = null;
+					}
+				}else{
+					try{
+						image = ImageIO.read(Algorithms.getAsset("No Image.png"));
+					}catch(Exception exception){
+						exception.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+						image = null;
+					}
+				}
 				break;
 			}
 			default:
@@ -60,8 +81,19 @@ public class ImageComponent implements MenuComponent{
 		}
 	}
 	@Override
-	public void save(BinaryFile bin){
+	public void save(Menu menu, BinaryFile bin){
 		bin.addStringAllocated(name);
+		bin.allocateBytes(1);
+		bin.addBoolean(image!=null);
+		if(saveImage){
+			saveImage = false;
+			try{
+				ImageIO.write(image, "png", Algorithms.getFile("Menus", menu.getUUID(), uuid+".png"));
+			}catch(Exception exception){
+				exception.printStackTrace();
+				JOptionPane.showMessageDialog(null, "Image component image failed to save!", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
 	@Override
 	public int getId(){
@@ -156,6 +188,7 @@ public class ImageComponent implements MenuComponent{
 				ImageComponent c = (ImageComponent)component;
 				c.name = nameInput.getText();
 				c.image = image;
+				c.saveImage = true;
 			}
 		};
 	}
@@ -171,5 +204,9 @@ public class ImageComponent implements MenuComponent{
 	public void move(MenuComponentHeirarchy com, int index){
 		children.remove(com);
 		children.add(index, com);
+	}
+	@Override
+	public String getUUID(){
+		return uuid;
 	}
 }

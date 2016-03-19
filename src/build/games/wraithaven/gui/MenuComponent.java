@@ -13,9 +13,10 @@ import wraith.lib.util.BinaryFile;
  * @author thedudefromci
  */
 public interface MenuComponent extends MenuComponentHeirarchy{
-	public void load(BinaryFile bin, short version);
-	public void save(BinaryFile bin);
+	public void load(Menu menu, BinaryFile bin, short version);
+	public void save(Menu menu, BinaryFile bin);
 	public int getId();
 	public MenuComponentDialog getCreationDialog();
 	public String getName();
+	public String getUUID();
 }

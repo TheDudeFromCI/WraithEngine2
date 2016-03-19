@@ -13,10 +13,10 @@ import build.games.wraithaven.gui.components.ImageComponent;
  * @author thedudefromci
  */
 public class MenuComponentFactory{
-	public static MenuComponent newInstance(int id){
+	public static MenuComponent newInstance(int id, String uuid){
 		switch(id){
 			case 0:
-				return new ImageComponent();
+				return new ImageComponent(uuid);
 			default:
 				throw new RuntimeException();
 		}

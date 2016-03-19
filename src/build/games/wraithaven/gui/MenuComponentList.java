@@ -109,7 +109,7 @@ public class MenuComponentList extends JPanel{
 								item.addActionListener(new ActionListener(){
 									@Override
 									public void actionPerformed(ActionEvent e){
-										attemptCreateComponet(selectedComponent, new ImageComponent());
+										attemptCreateComponet(selectedComponent, new ImageComponent(Algorithms.randomUUID()));
 									}
 								});
 								menu2.add(item);

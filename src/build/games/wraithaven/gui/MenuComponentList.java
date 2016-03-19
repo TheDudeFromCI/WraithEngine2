@@ -52,6 +52,8 @@ public class MenuComponentList extends JPanel{
 	private final BufferedImage arrow2;
 	private final BufferedImage arrow3;
 	private final BufferedImage arrow4;
+	private final BufferedImage arrow5;
+	private final BufferedImage arrow6;
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
 	public MenuComponentList(){
@@ -59,6 +61,8 @@ public class MenuComponentList extends JPanel{
 		arrow2 = attemptLoadImage("Arrow2.png");
 		arrow3 = attemptLoadImage("Arrow3.png");
 		arrow4 = attemptLoadImage("Arrow4.png");
+		arrow5 = attemptLoadImage("Arrow5.png");
+		arrow6 = attemptLoadImage("Arrow6.png");
 		setMinimumSize(new Dimension(100, 200));
 		InputAdapter ia = new InputAdapter(){
 			private MenuComponentHeirarchy mousedOver;
@@ -230,7 +234,13 @@ public class MenuComponentList extends JPanel{
 		}
 		g.drawString(com.toString(), ARROW_SIZE+x, (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y);
 		BufferedImage arrowIcon;
-		if(com.isCollapsed()){
+		if(com.getChildren().isEmpty()){
+			if(com.isMousedOver()){
+				arrowIcon = arrow6;
+			}else{
+				arrowIcon = arrow5;
+			}
+		}else if(com.isCollapsed()){
 			if(com.isMousedOver()){
 				arrowIcon = arrow2;
 			}else{

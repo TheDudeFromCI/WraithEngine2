@@ -115,4 +115,9 @@ public class ImageComponent implements MenuComponent{
 	public String toString(){
 		return name;
 	}
+	@Override
+	public void move(MenuComponentHeirarchy com, int index){
+		children.remove(com);
+		children.add(index, com);
+	}
 }

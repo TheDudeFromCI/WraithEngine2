@@ -22,4 +22,5 @@ public interface MenuComponentHeirarchy{
 	public MenuComponentHeirarchy getParent();
 	public void removeChild(MenuComponentHeirarchy com);
 	public void setParent(MenuComponentHeirarchy com);
+	public void move(MenuComponentHeirarchy com, int index);
 }

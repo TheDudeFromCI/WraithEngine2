@@ -258,16 +258,22 @@ public class MenuComponentList extends JPanel{
 							return;
 						}
 						MenuComponentHeirarchy tar = treeDrag.getObject();
-						tar.getParent().removeChild(tar);
-						comp.getParent().addChild(tar);
-						tar.setParent(comp.getParent());
+						if(tar.getParent()==comp.getParent()){
+							int index = tar.getParent().getChildren().indexOf(comp);
+							tar.getParent().move(tar, index);
+						}else{
+							tar.getParent().removeChild(tar);
+							comp.getParent().addChild(tar);
+							tar.setParent(comp.getParent());
+							comp.getParent().move(tar, tar.getParent().getChildren().indexOf(comp));
+						}
 						menu.save();
-						// TODO Rearrange Order.
 					}else{
 						MenuComponentHeirarchy tar = treeDrag.getObject();
 						tar.getParent().removeChild(tar);
 						comp.addChild(tar);
 						tar.setParent(comp);
+						comp.move(tar, 0);
 						menu.save();
 					}
 					treeDrag = null;
@@ -431,5 +437,26 @@ public class MenuComponentList extends JPanel{
 			}
 		}
 		return false;
+	}
+	public int getIndexOf(MenuComponentHeirarchy comp){
+		int[] out = new int[1];
+		getIndexOf(menu, comp, 0, out);
+		return out[0];
+	}
+	private int getIndexOf(MenuComponentHeirarchy root, MenuComponentHeirarchy comp, int i, int[] out){
+		if(root==comp){
+			out[0] = i;
+			return -1;
+		}
+		i++;
+		if(!root.isCollapsed()){
+			for(MenuComponentHeirarchy c : root.getChildren()){
+				i = getIndexOf(c, comp, i, out);
+				if(i==-1){
+					return -1;
+				}
+			}
+		}
+		return i;
 	}
 }

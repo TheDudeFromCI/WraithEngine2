@@ -147,4 +147,9 @@ public class Menu implements MenuComponentHeirarchy{
 	}
 	@Override
 	public void setParent(MenuComponentHeirarchy com){}
+	@Override
+	public void move(MenuComponentHeirarchy com, int index){
+		components.remove(com);
+		components.add(index, com);
+	}
 }

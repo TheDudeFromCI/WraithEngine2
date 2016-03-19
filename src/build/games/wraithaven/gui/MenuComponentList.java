@@ -148,14 +148,13 @@ public class MenuComponentList extends JPanel{
 				return h;
 			}
 			private int checkForMouseOver(int x, int y, int h, int w, MenuComponentHeirarchy com){
-				int a = (TEXT_INDENT-ARROW_SIZE)/2+h;
-				int b = (TEXT_HEIGHT-ARROW_SIZE)/2+w;
-				if(x>=a&&x<a+ARROW_SIZE&&y>=b&&y<b+ARROW_SIZE){
+				if(x>=w&&x<w+TEXT_INDENT&&y>=h&&y<h+TEXT_HEIGHT){
 					com.setMousedOver(true);
 					mousedOver = com;
 					repaint();
 					return -1;
 				}
+				h += TEXT_HEIGHT;
 				if(!com.isCollapsed()){
 					w += TEXT_INDENT;
 					for(MenuComponentHeirarchy c : com.getChildren()){
@@ -165,7 +164,6 @@ public class MenuComponentList extends JPanel{
 						}
 					}
 				}
-				h += TEXT_HEIGHT;
 				return h;
 			}
 			@Override

@@ -12,72 +12,36 @@ import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
-import build.games.wraithaven.util.ImagePanel;
 import build.games.wraithaven.util.VerticalFlowLayout;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
-import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class ImageComponent implements MenuComponent{
-	private static final int ID = 0;
+public class EmptyComponent implements MenuComponent{
+	private static final int ID = 1;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
 	private final String uuid;
 	private final Anchor anchor;
 	private boolean collapsed;
 	private boolean mousedOver;
 	private MenuComponentHeirarchy parent;
-	private String name = "Image Component";
-	private BufferedImage image;
-	boolean saveImage;
-	public ImageComponent(String uuid){
+	private String name = "Empty Component";
+	public EmptyComponent(String uuid){
 		this.uuid = uuid;
 		anchor = new Anchor();
-		try{
-			image = ImageIO.read(Algorithms.getAsset("No Image.png"));
-		}catch(Exception exception){
-			exception.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
-			image = null;
-		}
+		anchor.setSize(100, 100);
 	}
 	@Override
 	public void load(Menu menu, BinaryFile bin, short version){
 		switch(version){
 			case 0:{
 				name = bin.getString();
-				if(bin.getBoolean()){
-					try{
-						image = ImageIO.read(Algorithms.getFile("Menus", menu.getUUID(), uuid+".png"));
-					}catch(Exception exception){
-						exception.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Image component image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
-						image = null;
-					}
-				}else{
-					try{
-						image = ImageIO.read(Algorithms.getAsset("No Image.png"));
-					}catch(Exception exception){
-						exception.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
-						image = null;
-					}
-				}
 				anchor.load(bin);
 				break;
 			}
@@ -88,18 +52,7 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public void save(Menu menu, BinaryFile bin){
 		bin.addStringAllocated(name);
-		bin.allocateBytes(1);
-		bin.addBoolean(image!=null);
 		anchor.save(bin);
-		if(saveImage){
-			saveImage = false;
-			try{
-				ImageIO.write(image, "png", Algorithms.getFile("Menus", menu.getUUID(), uuid+".png"));
-			}catch(Exception exception){
-				exception.printStackTrace();
-				JOptionPane.showMessageDialog(null, "Image component image failed to save!", "Error", JOptionPane.ERROR_MESSAGE);
-			}
-		}
 	}
 	@Override
 	public int getId(){
@@ -145,7 +98,6 @@ public class ImageComponent implements MenuComponent{
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final JTextField nameInput;
-			private BufferedImage image;
 			{
 				// Builder
 				setLayout(new VerticalFlowLayout(0, 5));
@@ -156,37 +108,6 @@ public class ImageComponent implements MenuComponent{
 					nameInput.setText(name);
 					add(nameInput);
 				}
-				{
-					// Picture Importer
-					JPanel panel = new JPanel();
-					panel.setLayout(new BorderLayout());
-					JPanel panel2 = new JPanel();
-					panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
-					JButton button = new JButton("Select Image");
-					panel2.add(button);
-					panel.add(panel2, BorderLayout.EAST);
-					image = ImageComponent.this.image;
-					ImagePanel imagePanel = new ImagePanel(image, 256, 256);
-					panel.add(imagePanel, BorderLayout.CENTER);
-					add(panel);
-					button.addActionListener(new ActionListener(){
-						@Override
-						public void actionPerformed(ActionEvent e){
-							File file = Algorithms.userChooseImage("Select Image", "Select");
-							if(file==null){
-								return;
-							}
-							try{
-								image = ImageIO.read(file);
-								imagePanel.setImage(image);
-							}catch(Exception exception){
-								exception.printStackTrace();
-								JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
-								image = null;
-							}
-						}
-					});
-				}
 			}
 			@Override
 			public JComponent getDefaultFocus(){
@@ -194,10 +115,8 @@ public class ImageComponent implements MenuComponent{
 			}
 			@Override
 			public void build(MenuComponent component){
-				ImageComponent c = (ImageComponent)component;
+				EmptyComponent c = (EmptyComponent)component;
 				c.name = nameInput.getText();
-				c.image = image;
-				c.saveImage = true;
 			}
 		};
 	}
@@ -224,6 +143,9 @@ public class ImageComponent implements MenuComponent{
 	}
 	@Override
 	public void draw(Graphics2D g, float x, float y, float w, float h){
-		g.drawImage(image, Math.round(x), Math.round(y), Math.round(w), Math.round(h), null);
+		g.setColor(Color.blue);
+		g.drawLine(Math.round(x), Math.round(y+h/2), Math.round(x+w), Math.round(y+h/2));
+		g.setColor(Color.red);
+		g.drawLine(Math.round(x+w/2), Math.round(y), Math.round(x+w/2), Math.round(y+h));
 	}
 }

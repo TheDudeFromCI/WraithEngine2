@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
@@ -23,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -106,15 +108,9 @@ public class MenuComponentList extends JPanel{
 							// New Component
 							JMenu menu2 = new JMenu("New");
 							{
-								// Image Component
-								JMenuItem item = new JMenuItem("Image");
-								item.addActionListener(new ActionListener(){
-									@Override
-									public void actionPerformed(ActionEvent e){
-										attemptCreateComponet(selectedComponent, new ImageComponent(Algorithms.randomUUID()));
-									}
-								});
-								menu2.add(item);
+								// Components
+								menu2.add(addComponentToList("Empty", EmptyComponent.class));
+								menu2.add(addComponentToList("Image", ImageComponent.class));
 							}
 							menu.add(menu2);
 						}
@@ -455,5 +451,22 @@ public class MenuComponentList extends JPanel{
 	}
 	public MenuComponentHeirarchy getSelectedComponent(){
 		return selectedComponent;
+	}
+	public JMenuItem addComponentToList(String simpleName, Class<? extends MenuComponent> component){
+		JMenuItem item = new JMenuItem(simpleName);
+		item.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				try{
+					MenuComponent com = component.getDeclaredConstructor(String.class).newInstance(Algorithms.randomUUID());
+					attemptCreateComponet(selectedComponent, com);
+				}catch(NoSuchMethodException|SecurityException|InstantiationException|IllegalAccessException|IllegalArgumentException
+					|InvocationTargetException ex){
+					// I'm sure this will never get called. But whatever. :P
+					ex.printStackTrace();
+				}
+			}
+		});
+		return item;
 	}
 }

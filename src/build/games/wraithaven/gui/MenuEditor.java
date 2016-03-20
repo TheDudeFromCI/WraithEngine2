@@ -41,7 +41,21 @@ public class MenuEditor extends JPanel{
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.setColor(Color.white);
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING*2, height-BORDER_SPACING*2);
+			drawHeirachry(g, menu, 0, 0, width, height);
 		}
 		g.dispose();
+	}
+	private void drawHeirachry(Graphics2D g, MenuComponentHeirarchy h, float x, float y, float width, float height){
+		if(h instanceof MenuComponent){
+			Anchor a = ((MenuComponent)h).getAnchor();
+			x = x+width*a.getParentX()-a.getWidth()*a.getChildX();
+			y = y+height*a.getParentY()-a.getHeight()*a.getChildY();
+			width = a.getWidth();
+			height = a.getHeight();
+			((MenuComponent)h).draw(g, x, y, width, height);
+		}
+		for(MenuComponentHeirarchy com : h.getChildren()){
+			drawHeirachry(g, com, x, y, width, height);
+		}
 	}
 }

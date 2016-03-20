@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui.components;
 
+import build.games.wraithaven.gui.Anchor;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
@@ -15,6 +16,7 @@ import build.games.wraithaven.util.ImagePanel;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -36,6 +38,7 @@ public class ImageComponent implements MenuComponent{
 	private static final int ID = 0;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
 	private final String uuid;
+	private final Anchor anchor;
 	private boolean collapsed;
 	private boolean mousedOver;
 	private MenuComponentHeirarchy parent;
@@ -46,6 +49,7 @@ public class ImageComponent implements MenuComponent{
 	private float y;
 	public ImageComponent(String uuid){
 		this.uuid = uuid;
+		anchor = new Anchor();
 		try{
 			image = ImageIO.read(Algorithms.getAsset("No Image.png"));
 		}catch(Exception exception){
@@ -76,6 +80,7 @@ public class ImageComponent implements MenuComponent{
 						image = null;
 					}
 				}
+				anchor.load(bin);
 				break;
 			}
 			default:
@@ -87,6 +92,7 @@ public class ImageComponent implements MenuComponent{
 		bin.addStringAllocated(name);
 		bin.allocateBytes(1);
 		bin.addBoolean(image!=null);
+		anchor.save(bin);
 		if(saveImage){
 			saveImage = false;
 			try{
@@ -212,16 +218,11 @@ public class ImageComponent implements MenuComponent{
 		return uuid;
 	}
 	@Override
-	public float getX(){
-		return x;
+	public Anchor getAnchor(){
+		return anchor;
 	}
 	@Override
-	public float getY(){
-		return y;
-	}
-	@Override
-	public void setPosition(float x, float y){
-		this.x = x;
-		this.y = y;
+	public void draw(Graphics2D g, float x, float y, float w, float h){
+		g.drawImage(image, Math.round(x), Math.round(y), Math.round(w), Math.round(h), null);
 	}
 }

@@ -23,10 +23,13 @@ import javax.swing.JPanel;
  */
 public class MenuEditor extends JPanel{
 	private static final int BORDER_SPACING = 50;
+	private static final int END_BSPACING = 50;
+	private static final int WINDOW_DRAG_ICON_R = 4;
 	private final Object[] selectedImageRegion = new Object[5];
 	private Menu menu;
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
+	private WindowDrag windowDrag;
 	public MenuEditor(){
 		InputAdapter ia = new InputAdapter(){
 			@Override
@@ -39,6 +42,10 @@ public class MenuEditor extends JPanel{
 					componentDrag = null;
 					repaint();
 				}
+				if(windowDrag!=null){
+					windowDrag = null;
+					repaint();
+				}
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
@@ -47,6 +54,12 @@ public class MenuEditor extends JPanel{
 				}
 				int x = event.getX();
 				int y = event.getY();
+				int width = getWidth();
+				int height = getHeight();
+				if(Math.pow(x-(width-END_BSPACING), 2)+Math.pow(y-(height-END_BSPACING), 2)<WINDOW_DRAG_ICON_R*WINDOW_DRAG_ICON_R){
+					windowDrag = new WindowDrag(x, y, END_BSPACING);
+					return;
+				}
 				if(event.isShiftDown()){
 					// Update selected.
 					componentList.setSelectedComponent(null);
@@ -66,6 +79,10 @@ public class MenuEditor extends JPanel{
 				}
 				if(componentDrag!=null){
 					componentDrag.updatePosition(event.getX(), event.getY(), getWidth(), getHeight());
+					repaint();
+				}
+				if(windowDrag!=null){
+					windowDrag.update(event.getX(), event.getY());
 					repaint();
 				}
 			}
@@ -99,6 +116,7 @@ public class MenuEditor extends JPanel{
 		this.menu = menu;
 		// And also remove references to temp variables.
 		componentDrag = null;
+		windowDrag = null;
 		repaint();
 	}
 	@Override
@@ -114,8 +132,12 @@ public class MenuEditor extends JPanel{
 			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.setColor(Color.white);
-			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING*2, height-BORDER_SPACING*2);
-			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING*2, height-BORDER_SPACING*2);
+			int bSpaceEndX = windowDrag==null?END_BSPACING:windowDrag.getSpacingX();
+			int bSpaceEndY = windowDrag==null?END_BSPACING:windowDrag.getSpacingY();
+			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
+			g.setColor(new Color(230, 230, 230));
+			g.fillOval(width-bSpaceEndX-WINDOW_DRAG_ICON_R, height-bSpaceEndY-WINDOW_DRAG_ICON_R, WINDOW_DRAG_ICON_R*2, WINDOW_DRAG_ICON_R*2);
+			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
 			if(selectedImageRegion[0]!=null){
 				// If we have a selected component.
 				g.setColor(Color.black);

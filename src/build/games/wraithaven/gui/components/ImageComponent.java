@@ -42,6 +42,8 @@ public class ImageComponent implements MenuComponent{
 	private String name = "Image Component";
 	private BufferedImage image;
 	boolean saveImage;
+	private float x;
+	private float y;
 	public ImageComponent(String uuid){
 		this.uuid = uuid;
 		try{
@@ -208,5 +210,18 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public String getUUID(){
 		return uuid;
+	}
+	@Override
+	public float getX(){
+		return x;
+	}
+	@Override
+	public float getY(){
+		return y;
+	}
+	@Override
+	public void setPosition(float x, float y){
+		this.x = x;
+		this.y = y;
 	}
 }

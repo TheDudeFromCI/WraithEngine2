@@ -19,4 +19,7 @@ public interface MenuComponent extends MenuComponentHeirarchy{
 	public MenuComponentDialog getCreationDialog();
 	public String getName();
 	public String getUUID();
+	public float getX();
+	public float getY();
+	public void setPosition(float x, float y);
 }

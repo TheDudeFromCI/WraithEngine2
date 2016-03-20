@@ -34,8 +34,10 @@ public class MenuList extends JPanel{
 	private final ArrayList<Menu> menus = new ArrayList(16);
 	private final JList list;
 	private final MenuComponentList componentList;
-	public MenuList(MenuComponentList componentList){
+	private final MenuEditor menuEditor;
+	public MenuList(MenuComponentList componentList, MenuEditor menuEditor){
 		this.componentList = componentList;
+		this.menuEditor = menuEditor;
 		load();
 		setMinimumSize(new Dimension(100, 200));
 		list = new JList();
@@ -133,6 +135,7 @@ public class MenuList extends JPanel{
 	}
 	private void selectMenu(Menu menu){
 		componentList.setMenu(menu);
+		menuEditor.loadMenu(menu);
 	}
 	private void load(){
 		File file = Algorithms.getFile("Menus.dat");

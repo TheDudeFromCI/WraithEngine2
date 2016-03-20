@@ -175,6 +175,9 @@ public class ImageComponent implements MenuComponent{
 						@Override
 						public void actionPerformed(ActionEvent e){
 							File file = Algorithms.userChooseImage("Select Image", "Select");
+							if(file==null){
+								return;
+							}
 							try{
 								image = ImageIO.read(file);
 								imagePanel.setImage(image);

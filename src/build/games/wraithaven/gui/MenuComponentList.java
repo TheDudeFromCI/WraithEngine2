@@ -56,11 +56,13 @@ public class MenuComponentList extends JPanel{
 	private final BufferedImage arrow4;
 	private final BufferedImage arrow5;
 	private final BufferedImage arrow6;
+	private final MenuEditor menuEditor;
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
 	private TreeDrag treeDrag;
 	private MenuComponentHeirarchy mousedOver;
-	public MenuComponentList(){
+	public MenuComponentList(MenuEditor menuEditor){
+		this.menuEditor = menuEditor;
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
 		arrow3 = attemptLoadImage("Arrow3.png");
@@ -328,6 +330,8 @@ public class MenuComponentList extends JPanel{
 			drawComponentHeirarchy(g, menu, 0, 0, fm);
 		}
 		g.dispose();
+		// Just to make sure everything matches up over there.
+		menuEditor.repaint();
 	}
 	private int drawComponentHeirarchy(Graphics2D g, MenuComponentHeirarchy com, int x, int y, FontMetrics fm){
 		// Draw

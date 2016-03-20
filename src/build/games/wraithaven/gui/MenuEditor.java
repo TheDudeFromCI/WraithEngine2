@@ -8,10 +8,12 @@
 package build.games.wraithaven.gui;
 
 import build.games.wraithaven.util.InputAdapter;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
@@ -27,6 +29,9 @@ public class MenuEditor extends JPanel{
 		InputAdapter ia = new InputAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent event){
+				if(menu==null){
+					return;
+				}
 				if(componentDrag!=null){
 					menu.save();
 					componentDrag = null;
@@ -35,9 +40,16 @@ public class MenuEditor extends JPanel{
 			}
 			@Override
 			public void mousePressed(MouseEvent event){
+				if(menu==null){
+					return;
+				}
 				int x = event.getX();
 				int y = event.getY();
-				updateSelectedComponent(x, y);
+				if(event.isShiftDown()){
+					// Update selected.
+					componentList.setSelectedComponent(null);
+					updateSelectedComponent(menu, x, y, 0, 0, getWidth(), getHeight());
+				}
 				MenuComponentHeirarchy h = componentList.getSelectedComponent();
 				if(h!=null&&h.getParent()!=null){
 					// Make sure a have a component selected, other than root.
@@ -47,13 +59,28 @@ public class MenuEditor extends JPanel{
 			}
 			@Override
 			public void mouseDragged(MouseEvent event){
+				if(menu==null){
+					return;
+				}
 				if(componentDrag!=null){
 					componentDrag.updatePosition(event.getX(), event.getY(), getWidth(), getHeight());
 					repaint();
 				}
 			}
-			private void updateSelectedComponent(int x, int y){
-				// TODO
+			private void updateSelectedComponent(MenuComponentHeirarchy root, int mouseX, int mouseY, float x, float y, float width, float height){
+				if(root instanceof MenuComponent){
+					Anchor a = ((MenuComponent)root).getAnchor();
+					x = x+width*a.getParentX()-a.getWidth()*a.getChildX();
+					y = y+height*a.getParentY()-a.getHeight()*a.getChildY();
+					width = a.getWidth();
+					height = a.getHeight();
+					if(mouseX>=x&&mouseX<x+width&&mouseY>=y&&mouseY<y+height){
+						componentList.setSelectedComponent(root);
+					}
+				}
+				for(MenuComponentHeirarchy c : root.getChildren()){
+					updateSelectedComponent(c, mouseX, mouseY, x, y, width, height);
+				}
 			}
 		};
 		addMouseListener(ia);
@@ -66,8 +93,10 @@ public class MenuEditor extends JPanel{
 		return menu;
 	}
 	public void loadMenu(Menu menu){
-		this.menu = menu;
 		// No need to load the menu here, as it would always be loaded first by the menu component list.
+		this.menu = menu;
+		// And also remove references to temp variables.
+		componentDrag = null;
 		repaint();
 	}
 	@Override
@@ -96,6 +125,13 @@ public class MenuEditor extends JPanel{
 			width = a.getWidth();
 			height = a.getHeight();
 			((MenuComponent)h).draw(g, x, y, width, height);
+			if(componentList.getSelectedComponent()==h){
+				g.setColor(Color.black);
+				Stroke pre = g.getStroke();
+				g.setStroke(new BasicStroke(1));
+				g.drawRect(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
+				g.setStroke(pre);
+			}
 		}
 		for(MenuComponentHeirarchy com : h.getChildren()){
 			drawHeirachry(g, com, x, y, width, height);

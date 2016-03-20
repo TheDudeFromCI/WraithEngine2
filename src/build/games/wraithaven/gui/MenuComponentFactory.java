@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
 
 /**
@@ -17,6 +18,8 @@ public class MenuComponentFactory{
 		switch(id){
 			case 0:
 				return new ImageComponent(uuid);
+			case 1:
+				return new EmptyComponent(uuid);
 			default:
 				throw new RuntimeException();
 		}

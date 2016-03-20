@@ -469,4 +469,8 @@ public class MenuComponentList extends JPanel{
 		});
 		return item;
 	}
+	public void setSelectedComponent(MenuComponentHeirarchy selectedComponent){
+		this.selectedComponent = selectedComponent;
+		repaint();
+	}
 }

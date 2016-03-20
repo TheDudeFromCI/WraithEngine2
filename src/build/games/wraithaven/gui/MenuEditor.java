@@ -13,7 +13,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
@@ -22,6 +21,7 @@ import javax.swing.JPanel;
  */
 public class MenuEditor extends JPanel{
 	private static final int BORDER_SPACING = 20;
+	private final int[] selectedImageRegion = new int[5];
 	private Menu menu;
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
@@ -106,6 +106,7 @@ public class MenuEditor extends JPanel{
 		int height = getHeight();
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, width, height);
+		selectedImageRegion[0] = 0; // Turn off selection region.
 		if(menu!=null){
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -114,6 +115,12 @@ public class MenuEditor extends JPanel{
 			g.setColor(Color.white);
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING*2, height-BORDER_SPACING*2);
 			drawHeirachry(g, menu, 0, 0, width, height);
+			if(selectedImageRegion[0]==1){
+				// If we have a selected component.
+				g.setColor(Color.black);
+				g.setStroke(new BasicStroke(1));
+				g.drawRect(selectedImageRegion[1], selectedImageRegion[2], selectedImageRegion[3], selectedImageRegion[4]);
+			}
 		}
 		g.dispose();
 	}
@@ -126,11 +133,12 @@ public class MenuEditor extends JPanel{
 			height = a.getHeight();
 			((MenuComponent)h).draw(g, x, y, width, height);
 			if(componentList.getSelectedComponent()==h){
-				g.setColor(Color.black);
-				Stroke pre = g.getStroke();
-				g.setStroke(new BasicStroke(1));
-				g.drawRect(Math.round(x), Math.round(y), Math.round(width), Math.round(height));
-				g.setStroke(pre);
+				// Turn on selection region.
+				selectedImageRegion[0] = 1;
+				selectedImageRegion[1] = Math.round(x);
+				selectedImageRegion[2] = Math.round(y);
+				selectedImageRegion[3] = Math.round(width);
+				selectedImageRegion[4] = Math.round(height);
 			}
 		}
 		for(MenuComponentHeirarchy com : h.getChildren()){

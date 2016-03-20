@@ -8,6 +8,7 @@
 package build.games.wraithaven.gui;
 
 import build.games.wraithaven.util.InputAdapter;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -19,9 +20,13 @@ import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
@@ -31,12 +36,26 @@ public class MenuEditor extends JPanel{
 	private static final int END_BSPACING = 50;
 	private static final int WINDOW_DRAG_ICON_R = 6;
 	private static final int COMP_DRAG_ICON_R = 5;
+	private static final int RESIZE_ICON_SIZE = 16;
+	private static final int RESIZE_ICON_DISTANCE = 25;
 	private final Object[] selectedImageRegion = new Object[5];
+	private final BufferedImage autoResizeIcon;
+	private final Area resizeIconClip;
 	private Menu menu;
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
 	private WindowDrag windowDrag;
+	private boolean overResizeIcon;
 	public MenuEditor(){
+		BufferedImage autoResizeIconTemp;
+		try{
+			autoResizeIconTemp = ImageIO.read(Algorithms.getAsset("Auto Resize.png"));
+		}catch(Exception exception){
+			exception.printStackTrace();
+			autoResizeIconTemp = null;
+		}
+		autoResizeIcon = autoResizeIconTemp;
+		resizeIconClip = Algorithms.createClip(autoResizeIcon, RESIZE_ICON_SIZE, RESIZE_ICON_SIZE);
 		InputAdapter ia = new InputAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent event){
@@ -92,6 +111,31 @@ public class MenuEditor extends JPanel{
 					repaint();
 				}
 			}
+			@Override
+			public void mouseMoved(MouseEvent event){
+				if(menu==null){
+					overResizeIcon = false;
+					return;
+				}
+				if(selectedImageRegion[0]==null||!(selectedImageRegion[0] instanceof AutoResizableComponent)){
+					overResizeIcon = false;
+					return;
+				}
+				int x = event.getX();
+				int y = event.getY();
+				float a = (float)selectedImageRegion[1]+(float)selectedImageRegion[3]+RESIZE_ICON_DISTANCE;
+				float b = (float)selectedImageRegion[2]+(float)selectedImageRegion[4]+RESIZE_ICON_DISTANCE;
+				boolean isOver = x>=a&&x<a+RESIZE_ICON_SIZE&&y>=b&&y<b+RESIZE_ICON_SIZE;
+				if(isOver!=overResizeIcon){
+					overResizeIcon = isOver;
+					repaint();
+				}
+			}
+			@Override
+			public void mouseExited(MouseEvent event){
+				overResizeIcon = false;
+				repaint();
+			}
 			private void updateSelectedComponent(MenuComponentHeirarchy root, int mouseX, int mouseY, float x, float y, float width, float height){
 				if(root instanceof MenuComponent){
 					Anchor a = ((MenuComponent)root).getAnchor();
@@ -134,6 +178,7 @@ public class MenuEditor extends JPanel{
 		g.fillRect(0, 0, width, height);
 		if(menu!=null){
 			// Rendering hints are set after filling the background color to optimize rendering time.
+			// Also, no need to set rendering hints if there's nothing to render.
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -142,15 +187,12 @@ public class MenuEditor extends JPanel{
 			int bSpaceEndX = windowDrag==null?END_BSPACING:windowDrag.getSpacingX();
 			int bSpaceEndY = windowDrag==null?END_BSPACING:windowDrag.getSpacingY();
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
-			g.setColor(new Color(230, 230, 230));
 			drawPrettySphere(g, width-bSpaceEndX, height-bSpaceEndY, WINDOW_DRAG_ICON_R, Color.gray);
+			selectedImageRegion[0] = null;
 			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
 			if(selectedImageRegion[0]!=null){
 				// If we have a selected component.
 				drawSelectionRegion(g);
-				// And disable.
-				// This also disposes an unnessicary use of memory, and possible leaks.
-				selectedImageRegion[0] = null;
 			}
 		}
 		g.dispose();
@@ -183,6 +225,20 @@ public class MenuEditor extends JPanel{
 		Rectangle2D recY = fm.getStringBounds(percentY, g);
 		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent());
 		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
+		if(selectedImageRegion[0] instanceof AutoResizableComponent){
+			Graphics2D g2 =
+				(Graphics2D)g.create(Math.round(x+w+RESIZE_ICON_DISTANCE), Math.round(y+h+RESIZE_ICON_DISTANCE), RESIZE_ICON_SIZE, RESIZE_ICON_SIZE);
+			g2.setColor(Color.white);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g2.fillRect(0, 0, RESIZE_ICON_SIZE, RESIZE_ICON_SIZE);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+			g2.drawImage(autoResizeIcon, 0, 0, RESIZE_ICON_SIZE, RESIZE_ICON_SIZE, this);
+			if(overResizeIcon){
+				g2.setClip(resizeIconClip);
+				g2.fillRect(0, 0, RESIZE_ICON_SIZE, RESIZE_ICON_SIZE);
+			}
+			g2.dispose();
+		}
 		g.dispose();
 	}
 	private void drawPrettySphere(Graphics2D g1, float x, float y, float r, Color color){

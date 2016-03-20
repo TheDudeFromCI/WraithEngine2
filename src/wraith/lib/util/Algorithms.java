@@ -8,7 +8,9 @@
 package wraith.lib.util;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -202,5 +204,21 @@ public class Algorithms{
 			s = s.substring(0, s.length()-1);
 		}
 		return s;
+	}
+	public static Area createClip(BufferedImage image, float w, float h){
+		Area area = new Area();
+		int a, b;
+		int u = image.getWidth();
+		int v = image.getHeight();
+		int[] rgb = new int[u*v];
+		image.getRGB(0, 0, u, v, rgb, 0, u);
+		for(a = 0; a<u; a++){
+			for(b = 0; b<v; b++){
+				if(((rgb[b*u+a]>>24)&0xFF)>0){
+					area.add(new Area(new Rectangle((int)Math.floor((float)a/u*w), (int)Math.floor((float)b/v*h), 1, 1)));
+				}
+			}
+		}
+		return area;
 	}
 }

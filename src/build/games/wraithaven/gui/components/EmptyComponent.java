@@ -8,6 +8,7 @@
 package build.games.wraithaven.gui.components;
 
 import build.games.wraithaven.gui.Anchor;
+import build.games.wraithaven.gui.AutoResizableComponent;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
@@ -23,7 +24,7 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public class EmptyComponent implements MenuComponent{
+public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	private static final int ID = 1;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
 	private final String uuid;
@@ -148,4 +149,6 @@ public class EmptyComponent implements MenuComponent{
 		g.setColor(Color.red);
 		g.drawLine(Math.round(x+w/2), Math.round(y), Math.round(x+w/2), Math.round(y+h));
 	}
+	@Override
+	public void resize(){}
 }

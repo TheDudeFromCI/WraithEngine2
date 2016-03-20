@@ -35,7 +35,7 @@ public class EmptyComponent implements MenuComponent{
 	public EmptyComponent(String uuid){
 		this.uuid = uuid;
 		anchor = new Anchor();
-		anchor.setSize(100, 100);
+		anchor.setSize(20, 20);
 	}
 	@Override
 	public void load(Menu menu, BinaryFile bin, short version){

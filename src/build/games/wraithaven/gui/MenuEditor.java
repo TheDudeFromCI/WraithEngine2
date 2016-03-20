@@ -27,8 +27,11 @@ public class MenuEditor extends JPanel{
 		InputAdapter ia = new InputAdapter(){
 			@Override
 			public void mouseReleased(MouseEvent event){
-				componentDrag = null;
-				repaint();
+				if(componentDrag!=null){
+					menu.save();
+					componentDrag = null;
+					repaint();
+				}
 			}
 			@Override
 			public void mousePressed(MouseEvent event){

@@ -17,8 +17,8 @@ public class Anchor{
 	private float parentY = 0.5f;
 	private float childX = 0.5f;
 	private float childY = 0.5f;
-	private float width = 180;
-	private float height = 135;
+	private float width;
+	private float height;
 	public float getParentX(){
 		return parentX;
 	}

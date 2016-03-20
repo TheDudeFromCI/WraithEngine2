@@ -196,8 +196,12 @@ public class ImageComponent implements MenuComponent{
 			public void build(MenuComponent component){
 				ImageComponent c = (ImageComponent)component;
 				c.name = nameInput.getText();
-				c.image = image;
-				c.saveImage = true;
+				if(c.image!=image){
+					// Don't reload the image, if it hasn't changed.
+					c.image = image;
+					c.anchor.setSize(image.getWidth(), image.getHeight());
+					c.saveImage = true;
+				}
 			}
 		};
 	}

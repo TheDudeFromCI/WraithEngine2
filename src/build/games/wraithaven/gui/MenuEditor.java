@@ -10,18 +10,20 @@ package build.games.wraithaven.gui;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 
 /**
  * @author thedudefromci
  */
 public class MenuEditor extends JPanel{
-	private static final int BORDER_SPACING = 20;
-	private final int[] selectedImageRegion = new int[5];
+	private static final int BORDER_SPACING = 50;
+	private final Object[] selectedImageRegion = new Object[5];
 	private Menu menu;
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
@@ -106,7 +108,6 @@ public class MenuEditor extends JPanel{
 		int height = getHeight();
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, width, height);
-		selectedImageRegion[0] = 0; // Turn off selection region.
 		if(menu!=null){
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -114,12 +115,30 @@ public class MenuEditor extends JPanel{
 			g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 			g.setColor(Color.white);
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING*2, height-BORDER_SPACING*2);
-			drawHeirachry(g, menu, 0, 0, width, height);
-			if(selectedImageRegion[0]==1){
+			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING*2, height-BORDER_SPACING*2);
+			if(selectedImageRegion[0]!=null){
 				// If we have a selected component.
 				g.setColor(Color.black);
-				g.setStroke(new BasicStroke(1));
-				g.drawRect(selectedImageRegion[1], selectedImageRegion[2], selectedImageRegion[3], selectedImageRegion[4]);
+				g.setStroke(new BasicStroke(2));
+				g.drawRect(Math.round((float)selectedImageRegion[1]), Math.round((float)selectedImageRegion[2]),
+					Math.round((float)selectedImageRegion[3]), Math.round((float)selectedImageRegion[4]));
+				g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
+					9
+				}, 0));
+				Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
+				int anchorX = Math.round((float)selectedImageRegion[1]+(float)selectedImageRegion[3]*an.getChildX());
+				int anchorY = Math.round((float)selectedImageRegion[2]+(float)selectedImageRegion[4]*an.getChildY());
+				g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
+				g.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
+				String percentX = String.format("%.1f", an.getParentX()*100)+"%";
+				String percentY = String.format("%.1f", an.getParentY()*100)+"%";
+				FontMetrics fm = g.getFontMetrics();
+				Rectangle2D recX = fm.getStringBounds(percentX, g);
+				Rectangle2D recY = fm.getStringBounds(percentY, g);
+				g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent());
+				g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
+				// This also disposes an unnessicary use of memory, and possible leak.
+				selectedImageRegion[0] = null; // Turn off selection region.
 			}
 		}
 		g.dispose();
@@ -134,11 +153,11 @@ public class MenuEditor extends JPanel{
 			((MenuComponent)h).draw(g, x, y, width, height);
 			if(componentList.getSelectedComponent()==h){
 				// Turn on selection region.
-				selectedImageRegion[0] = 1;
-				selectedImageRegion[1] = Math.round(x);
-				selectedImageRegion[2] = Math.round(y);
-				selectedImageRegion[3] = Math.round(width);
-				selectedImageRegion[4] = Math.round(height);
+				selectedImageRegion[0] = h;
+				selectedImageRegion[1] = x;
+				selectedImageRegion[2] = y;
+				selectedImageRegion[3] = width;
+				selectedImageRegion[4] = height;
 			}
 		}
 		for(MenuComponentHeirarchy com : h.getChildren()){

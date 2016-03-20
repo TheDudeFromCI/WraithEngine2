@@ -16,6 +16,7 @@ public class ComponentDrag{
 	private final float startY;
 	private final int mouseXStart;
 	private final int mouseYStart;
+	private boolean active;
 	public ComponentDrag(MenuComponent component, int mouseX, int mouseY){
 		this.component = component;
 		Anchor a = component.getAnchor();
@@ -42,6 +43,13 @@ public class ComponentDrag{
 		a.setParentPosition(startX, startY);
 	}
 	public void updatePosition(int mouseX, int mouseY, int screenWidth, int screenHeight){
+		if(!active){
+			if(Math.abs(mouseX-mouseXStart)>=3||Math.abs(mouseY-mouseYStart)>=3){
+				active = true;
+			}else{
+				return;
+			}
+		}
 		float parentWidth, parentHeight;
 		{
 			// If parent is screen, use screen size. Otherwise use component size.

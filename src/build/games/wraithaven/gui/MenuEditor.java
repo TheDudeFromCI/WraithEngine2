@@ -11,10 +11,15 @@ import build.games.wraithaven.util.InputAdapter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
 
@@ -24,7 +29,8 @@ import javax.swing.JPanel;
 public class MenuEditor extends JPanel{
 	private static final int BORDER_SPACING = 50;
 	private static final int END_BSPACING = 50;
-	private static final int WINDOW_DRAG_ICON_R = 4;
+	private static final int WINDOW_DRAG_ICON_R = 6;
+	private static final int COMP_DRAG_ICON_R = 5;
 	private final Object[] selectedImageRegion = new Object[5];
 	private Menu menu;
 	private ComponentDrag componentDrag;
@@ -127,6 +133,7 @@ public class MenuEditor extends JPanel{
 		g.setColor(Color.lightGray);
 		g.fillRect(0, 0, width, height);
 		if(menu!=null){
+			// Rendering hints are set after filling the background color to optimize rendering time.
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -136,33 +143,86 @@ public class MenuEditor extends JPanel{
 			int bSpaceEndY = windowDrag==null?END_BSPACING:windowDrag.getSpacingY();
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
 			g.setColor(new Color(230, 230, 230));
-			g.fillOval(width-bSpaceEndX-WINDOW_DRAG_ICON_R, height-bSpaceEndY-WINDOW_DRAG_ICON_R, WINDOW_DRAG_ICON_R*2, WINDOW_DRAG_ICON_R*2);
+			drawPrettySphere(g, width-bSpaceEndX, height-bSpaceEndY, WINDOW_DRAG_ICON_R, Color.gray);
 			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
 			if(selectedImageRegion[0]!=null){
 				// If we have a selected component.
-				g.setColor(Color.black);
-				g.setStroke(new BasicStroke(2));
-				g.drawRect(Math.round((float)selectedImageRegion[1]), Math.round((float)selectedImageRegion[2]),
-					Math.round((float)selectedImageRegion[3]), Math.round((float)selectedImageRegion[4]));
-				g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
-					9
-				}, 0));
-				Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
-				int anchorX = Math.round((float)selectedImageRegion[1]+(float)selectedImageRegion[3]*an.getChildX());
-				int anchorY = Math.round((float)selectedImageRegion[2]+(float)selectedImageRegion[4]*an.getChildY());
-				g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
-				g.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
-				String percentX = String.format("%.1f", an.getParentX()*100)+"%";
-				String percentY = String.format("%.1f", an.getParentY()*100)+"%";
-				FontMetrics fm = g.getFontMetrics();
-				Rectangle2D recX = fm.getStringBounds(percentX, g);
-				Rectangle2D recY = fm.getStringBounds(percentY, g);
-				g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent());
-				g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
-				// This also disposes an unnessicary use of memory, and possible leak.
-				selectedImageRegion[0] = null; // Turn off selection region.
+				drawSelectionRegion(g);
+				// And disable.
+				// This also disposes an unnessicary use of memory, and possible leaks.
+				selectedImageRegion[0] = null;
 			}
 		}
+		g.dispose();
+	}
+	private void drawSelectionRegion(Graphics2D g1){
+		Graphics2D g = (Graphics2D)g1.create();
+		g.setColor(Color.black);
+		g.setStroke(new BasicStroke(2));
+		float x = (float)selectedImageRegion[1];
+		float y = (float)selectedImageRegion[2];
+		float w = (float)selectedImageRegion[3];
+		float h = (float)selectedImageRegion[4];
+		g.drawRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+		drawPrettySphere(g1, x, y, COMP_DRAG_ICON_R, Color.blue);
+		drawPrettySphere(g1, x, y+h, COMP_DRAG_ICON_R, Color.blue);
+		drawPrettySphere(g1, x+w, y+h, COMP_DRAG_ICON_R, Color.blue);
+		drawPrettySphere(g1, x+w, y, COMP_DRAG_ICON_R, Color.blue);
+		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
+			9
+		}, 0));
+		Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
+		int anchorX = Math.round(x+w*an.getChildX());
+		int anchorY = Math.round(y+h*an.getChildY());
+		g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
+		g.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
+		String percentX = String.format("%.1f", an.getParentX()*100)+"%";
+		String percentY = String.format("%.1f", an.getParentY()*100)+"%";
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D recX = fm.getStringBounds(percentX, g);
+		Rectangle2D recY = fm.getStringBounds(percentY, g);
+		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent());
+		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
+		g.dispose();
+	}
+	private void drawPrettySphere(Graphics2D g1, float x, float y, float r, Color color){
+		int size = Math.round(r*2);
+		Graphics2D g = (Graphics2D)g1.create(Math.round(x-r), Math.round(y-r), size, size);
+		g.setColor(color);
+		g.fillOval(0, 0, size-1, size-1);
+		// Adds shadows at the top
+		Paint p;
+		p = new GradientPaint(0, 0, new Color(0.0f, 0.0f, 0.0f, 0.4f), 0, size, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		g.setPaint(p);
+		g.fillOval(0, 0, size-1, size-1);
+		// Adds highlights at the bottom
+		p = new GradientPaint(0, 0, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0, size, new Color(1.0f, 1.0f, 1.0f, 0.4f));
+		g.setPaint(p);
+		g.fillOval(0, 0, size-1, size-1);
+		// Creates dark edges for 3D effect
+		p = new RadialGradientPaint(new Point2D.Double(r, r), r, new float[]{
+			0.0f, 1.0f
+		}, new Color[]{
+			new Color(6, 76, 160, 127), new Color(0.0f, 0.0f, 0.0f, 0.8f)
+		});
+		g.setPaint(p);
+		g.fillOval(0, 0, getWidth()-1, getHeight()-1);
+		// Adds oval inner highlight at the bottom
+		p = new RadialGradientPaint(new Point2D.Double(r, size*1.5), size/2.3f, new Point2D.Double(r, size*1.75+6), new float[]{
+			0.0f, 0.8f
+		}, new Color[]{
+			new Color(64, 142, 203, 255), new Color(64, 142, 203, 0)
+		}, RadialGradientPaint.CycleMethod.NO_CYCLE, RadialGradientPaint.ColorSpaceType.SRGB, AffineTransform.getScaleInstance(1.0, 0.5));
+		g.setPaint(p);
+		g.fillOval(0, 0, size-1, size-1);
+		// Adds oval specular highlight at the top left
+		p = new RadialGradientPaint(new Point2D.Double(r, r), size/1.4f, new Point2D.Double(45.0, 25.0), new float[]{
+			0.0f, 0.5f
+		}, new Color[]{
+			new Color(1.0f, 1.0f, 1.0f, 0.4f), new Color(1.0f, 1.0f, 1.0f, 0.0f)
+		}, RadialGradientPaint.CycleMethod.NO_CYCLE);
+		g.setPaint(p);
+		g.fillOval(0, 0, size-1, size-1);
 		g.dispose();
 	}
 	private void drawHeirachry(Graphics2D g, MenuComponentHeirarchy h, float x, float y, float width, float height){

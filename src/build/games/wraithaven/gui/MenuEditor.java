@@ -7,10 +7,12 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.util.InputAdapter;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
 /**
@@ -19,6 +21,44 @@ import javax.swing.JPanel;
 public class MenuEditor extends JPanel{
 	private static final int BORDER_SPACING = 20;
 	private Menu menu;
+	private ComponentDrag componentDrag;
+	private MenuComponentList componentList;
+	public MenuEditor(){
+		InputAdapter ia = new InputAdapter(){
+			@Override
+			public void mouseReleased(MouseEvent event){
+				componentDrag = null;
+				repaint();
+			}
+			@Override
+			public void mousePressed(MouseEvent event){
+				int x = event.getX();
+				int y = event.getY();
+				updateSelectedComponent(x, y);
+				MenuComponentHeirarchy h = componentList.getSelectedComponent();
+				if(h!=null&&h.getParent()!=null){
+					// Make sure a have a component selected, other than root.
+					componentDrag = new ComponentDrag((MenuComponent)h, x, y);
+				}
+				repaint();
+			}
+			@Override
+			public void mouseDragged(MouseEvent event){
+				if(componentDrag!=null){
+					componentDrag.updatePosition(event.getX(), event.getY(), getWidth(), getHeight());
+					repaint();
+				}
+			}
+			private void updateSelectedComponent(int x, int y){
+				// TODO
+			}
+		};
+		addMouseListener(ia);
+		addMouseMotionListener(ia);
+	}
+	public void setMenuComponentList(MenuComponentList componentList){
+		this.componentList = componentList;
+	}
 	public Menu getMenu(){
 		return menu;
 	}

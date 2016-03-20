@@ -453,4 +453,7 @@ public class MenuComponentList extends JPanel{
 		}
 		return false;
 	}
+	public MenuComponentHeirarchy getSelectedComponent(){
+		return selectedComponent;
+	}
 }

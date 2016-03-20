@@ -44,6 +44,7 @@ public class GuiEditor{
 		frame.setLayout(new BorderLayout());
 		MenuEditor editor = new MenuEditor();
 		MenuComponentList menuComponentList = new MenuComponentList(editor);
+		editor.setMenuComponentList(menuComponentList);
 		JScrollPane scrollPane = new JScrollPane(menuComponentList);
 		MenuList menuList = new MenuList(menuComponentList, editor);
 		JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, menuList);

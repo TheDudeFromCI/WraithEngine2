@@ -342,7 +342,7 @@ public class MenuComponentList extends JPanel{
 		}
 		int textPosition = (TEXT_HEIGHT-fm.getHeight())/2+fm.getAscent()+y;
 		g.drawString(com.toString(), ARROW_SIZE+x, textPosition);
-		if(treeDrag!=null&&y/TEXT_HEIGHT==treeDrag.getCurrentLocation()){
+		if(treeDrag!=null&&treeDrag.isActive()&&y/TEXT_HEIGHT==treeDrag.getCurrentLocation()){
 			g.setColor(Color.gray);
 			Stroke s = g.getStroke();
 			g.setStroke(new BasicStroke(2));

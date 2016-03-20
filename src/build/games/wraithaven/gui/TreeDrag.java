@@ -15,6 +15,7 @@ public class TreeDrag{
 	private final int originalLocation;
 	private int currentLocation;
 	private boolean sibiling;
+	private boolean active;
 	public TreeDrag(MenuComponentHeirarchy object, int originalLocation){
 		this.object = object;
 		this.originalLocation = originalLocation;
@@ -23,6 +24,9 @@ public class TreeDrag{
 	public void setCurrentLocation(int location, boolean sibiling){
 		currentLocation = location;
 		this.sibiling = sibiling;
+		if(!isOriginalLocation()){
+			active = true;
+		}
 	}
 	public MenuComponentHeirarchy getObject(){
 		return object;
@@ -35,5 +39,8 @@ public class TreeDrag{
 	}
 	public boolean isOriginalLocation(){
 		return currentLocation==originalLocation;
+	}
+	public boolean isActive(){
+		return active;
 	}
 }

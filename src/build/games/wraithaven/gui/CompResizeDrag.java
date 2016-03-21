@@ -57,7 +57,8 @@ public class CompResizeDrag{
 				break;
 		}
 	}
-	private int sign(int x){
-		return x==0?0:x>0?1:-1;
+	public String getSize(){
+		Anchor a = object.getAnchor();
+		return Math.round(a.getWidth())+"x"+Math.round(a.getHeight());
 	}
 }

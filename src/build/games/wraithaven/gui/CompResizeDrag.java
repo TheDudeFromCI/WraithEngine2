@@ -34,10 +34,16 @@ public class CompResizeDrag{
 		Anchor a = object.getAnchor();
 		switch(corner){
 			case 0:
+				a.setSize(startWidth-(x-mouseXStart), startHeight-(y-mouseYStart));
+				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
 			case 1:
+				a.setSize(startWidth+(x-mouseXStart), startHeight-(y-mouseYStart));
+				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
 			case 2:
+				a.setSize(startWidth-(x-mouseXStart), startHeight+(y-mouseYStart));
+				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;
 			case 3:
 				a.setSize(startWidth+(x-mouseXStart), startHeight+(y-mouseYStart));

@@ -153,6 +153,7 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	public void resize(float parentWidth, float parentHeight){
 		if(children.isEmpty()){
 			anchor.setSize(20, 20);
+			anchor.setChildPosition(0.5f, 0.5f);
 			return;
 		}
 		float[] bounds = new float[]{

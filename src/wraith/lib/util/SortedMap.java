@@ -31,7 +31,7 @@ public class SortedMap<K,V> implements Iterable<K>{
 			return null;
 		}
 		for(int i = 0; i<size; i++){
-			if(k[i]==key){
+			if(k[i].equals(key)){
 				return (V)v[i];
 			}
 		}
@@ -131,6 +131,46 @@ public class SortedMap<K,V> implements Iterable<K>{
 			}
 		}
 	}
+	public K getLargestK(Comparator<K> sorter){
+		Object swapK, swapV;
+		int c;
+		for(int m = 0; m<(size-1); m++){
+			if(sorter==null){
+				c = ((Comparable)k[m]).compareTo(k[m+1]);
+			}else{
+				c = sorter.compare((K)k[m], (K)k[m+1]);
+			}
+			if(c>0){
+				swapK = k[m];
+				k[m] = k[m+1];
+				k[m+1] = swapK;
+				swapV = v[m];
+				v[m] = v[m+1];
+				v[m+1] = swapV;
+			}
+		}
+		return (K)k[size-1];
+	}
+	public K getSmallestK(Comparator<K> sorter){
+		Object swapK, swapV;
+		int c;
+		for(int m = size-1; m>0; m--){
+			if(sorter==null){
+				c = ((Comparable)k[m-1]).compareTo(k[m]);
+			}else{
+				c = sorter.compare((K)k[m-1], (K)k[m]);
+			}
+			if(c>0){
+				swapK = k[m];
+				k[m] = k[m-1];
+				k[m-1] = swapK;
+				swapV = v[m];
+				v[m] = v[m-1];
+				v[m-1] = swapV;
+			}
+		}
+		return (K)k[0];
+	}
 	public void quickClear(){
 		size = 0;
 	}
@@ -156,5 +196,11 @@ public class SortedMap<K,V> implements Iterable<K>{
 	}
 	public int getSize(){
 		return size;
+	}
+	public K getKeyByIndex(int index){
+		return (K)k[index];
+	}
+	public V getValueByIndex(int index){
+		return (V)v[index];
 	}
 }

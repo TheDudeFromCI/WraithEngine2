@@ -255,6 +255,14 @@ public class MenuEditor extends JPanel{
 				// If we have a selected component.
 				drawSelectionRegion(g);
 			}
+			if(windowDrag!=null){
+				String ratio = (width-BORDER_SPACING-bSpaceEndX)+"x"+(height-BORDER_SPACING-bSpaceEndY);
+				float x = width-bSpaceEndX;
+				float y = height-bSpaceEndY;
+				FontMetrics fm = g.getFontMetrics();
+				g.setColor(Color.black);
+				g.drawString(ratio, x+fm.getHeight()/2f, y-fm.getHeight()/2f);
+			}
 		}
 		g.dispose();
 	}

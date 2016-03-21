@@ -73,6 +73,7 @@ public class MenuEditor extends JPanel{
 					repaint();
 				}
 				if(compResizeDrag!=null){
+					menu.save();
 					compResizeDrag = null;
 					repaint();
 				}

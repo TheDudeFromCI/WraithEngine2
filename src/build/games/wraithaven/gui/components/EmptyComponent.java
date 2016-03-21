@@ -26,6 +26,7 @@ import wraith.lib.util.BinaryFile;
  */
 public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	private static final int ID = 1;
+	private static final int CROSSHAIR_SIZE = 7;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
 	private final String uuid;
 	private final Anchor anchor;
@@ -144,10 +145,12 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	}
 	@Override
 	public void draw(Graphics2D g, float x, float y, float w, float h){
+		x += w/2;
+		y += h/2;
 		g.setColor(Color.blue);
-		g.drawLine(Math.round(x), Math.round(y+h/2), Math.round(x+w), Math.round(y+h/2));
+		g.drawLine(Math.round(x-CROSSHAIR_SIZE), Math.round(y), Math.round(x+CROSSHAIR_SIZE), Math.round(y));
 		g.setColor(Color.red);
-		g.drawLine(Math.round(x+w/2), Math.round(y), Math.round(x+w/2), Math.round(y+h));
+		g.drawLine(Math.round(x), Math.round(y-CROSSHAIR_SIZE), Math.round(x), Math.round(y+CROSSHAIR_SIZE));
 	}
 	@Override
 	public void resize(float parentWidth, float parentHeight){

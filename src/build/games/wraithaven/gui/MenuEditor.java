@@ -280,10 +280,12 @@ public class MenuEditor extends JPanel{
 		Rectangle2D recY = fm.getStringBounds(percentY, g);
 		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent());
 		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
-		if(compResizeDrag!=null){
-			String size = compResizeDrag.getSize();
+		if(compResizeDrag!=null||componentDrag!=null){
+			String size = Math.round((float)selectedImageRegion[3])+"x"+Math.round((float)selectedImageRegion[4]);
+			String pos = "("+Math.round((float)selectedImageRegion[1])+", "+Math.round((float)selectedImageRegion[2])+")";
 			g.drawString(size, (float)selectedImageRegion[1]+(float)selectedImageRegion[3]+fm.getHeight()/2f,
 				(float)selectedImageRegion[2]+(float)selectedImageRegion[4]-fm.getHeight()/2f);
+			g.drawString(pos, (float)selectedImageRegion[1]-fm.getHeight()/2f, (float)selectedImageRegion[2]-fm.getHeight()/2f);
 		}
 		if(selectedImageRegion[0] instanceof AutoResizableComponent){
 			Graphics2D g2 =

@@ -109,7 +109,8 @@ public class MenuEditor extends JPanel{
 				if(event.isShiftDown()){
 					// Update selected.
 					componentList.setSelectedComponent(null);
-					updateSelectedComponent(menu, x, y, 0, 0, getWidth(), getHeight());
+					updateSelectedComponent(menu, x, y, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-END_BSPACING,
+						height-BORDER_SPACING-END_BSPACING);
 				}
 				MenuComponentHeirarchy h = componentList.getSelectedComponent();
 				if(h!=null&&h.getParent()!=null){
@@ -160,7 +161,7 @@ public class MenuEditor extends JPanel{
 					repaint();
 				}
 				if(compResizeDrag!=null){
-					compResizeDrag.update(event.getX(), event.getY());
+					compResizeDrag.update(event.getX(), event.getY(), event.isControlDown());
 					repaint();
 				}
 			}

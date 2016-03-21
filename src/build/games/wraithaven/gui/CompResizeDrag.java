@@ -30,25 +30,33 @@ public class CompResizeDrag{
 		anchorStartX = a.getChildX();
 		anchorStartY = a.getChildY();
 	}
-	public void update(int x, int y){
+	public void update(int x, int y, boolean maintainRatio){
 		Anchor a = object.getAnchor();
+		x = (x-mouseXStart);
+		y = (y-mouseYStart);
+		if(maintainRatio){
+			y = x;
+		}
 		switch(corner){
 			case 0:
-				a.setSize(startWidth-(x-mouseXStart), startHeight-(y-mouseYStart));
+				a.setSize(startWidth-x, startHeight-y);
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
 			case 1:
-				a.setSize(startWidth+(x-mouseXStart), startHeight-(y-mouseYStart));
+				a.setSize(startWidth+x, startHeight-y);
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
 			case 2:
-				a.setSize(startWidth-(x-mouseXStart), startHeight+(y-mouseYStart));
+				a.setSize(startWidth-x, startHeight+y);
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;
 			case 3:
-				a.setSize(startWidth+(x-mouseXStart), startHeight+(y-mouseYStart));
+				a.setSize(startWidth+x, startHeight+y);
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;
 		}
+	}
+	private int sign(int x){
+		return x==0?0:x>0?1:-1;
 	}
 }

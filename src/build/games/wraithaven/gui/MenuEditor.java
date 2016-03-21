@@ -77,6 +77,22 @@ public class MenuEditor extends JPanel{
 				if(menu==null){
 					return;
 				}
+				if(overResizeIcon){
+					MenuComponentHeirarchy h = ((MenuComponent)selectedImageRegion[0]).getParent();
+					float height, width;
+					if(h instanceof MenuComponent){
+						width = ((MenuComponent)h).getAnchor().getWidth();
+						height = ((MenuComponent)h).getAnchor().getHeight();
+					}else{
+						width = getWidth()-BORDER_SPACING-END_BSPACING;
+						height = getHeight()-BORDER_SPACING-END_BSPACING;
+					}
+					((AutoResizableComponent)selectedImageRegion[0]).resize(width, height);
+					menu.save();
+					overResizeIcon = false; // The icon has likely moved, so unselect it.
+					repaint();
+					return;
+				}
 				int x = event.getX();
 				int y = event.getY();
 				int width = getWidth();

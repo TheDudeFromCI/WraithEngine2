@@ -150,5 +150,53 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 		g.drawLine(Math.round(x+w/2), Math.round(y), Math.round(x+w/2), Math.round(y+h));
 	}
 	@Override
-	public void resize(){}
+	public void resize(float parentWidth, float parentHeight){
+		if(children.isEmpty()){
+			anchor.setSize(20, 20);
+			return;
+		}
+		float[] bounds = new float[]{
+			Float.MAX_VALUE, Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE
+		};
+		findBounds(this, bounds, 0, 0, anchor.getWidth(), anchor.getHeight());
+		MenuComponent c;
+		Anchor a;
+		float x, y;
+		float w2 = bounds[2]-bounds[0];
+		float h2 = bounds[3]-bounds[1];
+		for(MenuComponentHeirarchy com : children){
+			if(com instanceof MenuComponent){
+				c = (MenuComponent)com;
+				a = c.getAnchor();
+				// X2 = (W1*X1-O)/W2
+				x = (anchor.getWidth()*a.getParentX()-bounds[0])/w2;
+				y = (anchor.getHeight()*a.getParentY()-bounds[1])/h2;
+				a.setParentPosition(x, y);
+			}
+		}
+		x = (parentWidth*anchor.getParentX()-anchor.getWidth()*anchor.getChildX())/parentWidth;
+		y = (parentHeight*anchor.getParentY()-anchor.getHeight()*anchor.getChildY())/parentHeight;
+		float x2 = x+bounds[0]/parentWidth;
+		float y2 = y+bounds[1]/parentHeight;
+		x = x2+w2*anchor.getChildX()/parentWidth;
+		y = y2+h2*anchor.getChildY()/parentHeight;
+		anchor.setParentPosition(x, y);
+		anchor.setSize(w2, h2);
+	}
+	private void findBounds(MenuComponentHeirarchy c, float[] bounds, float x, float y, float w, float h){
+		if(c!=this&&c instanceof MenuComponent){
+			Anchor a = ((MenuComponent)c).getAnchor();
+			x = x+w*a.getParentX()-a.getWidth()*a.getChildX();
+			y = y+h*a.getParentY()-a.getHeight()*a.getChildY();
+			w = a.getWidth();
+			h = a.getHeight();
+			bounds[0] = Math.min(bounds[0], x);
+			bounds[1] = Math.min(bounds[1], y);
+			bounds[2] = Math.max(bounds[2], x+w);
+			bounds[3] = Math.max(bounds[3], y+h);
+		}
+		for(MenuComponentHeirarchy c2 : c.getChildren()){
+			findBounds(c2, bounds, x, y, w, h);
+		}
+	}
 }

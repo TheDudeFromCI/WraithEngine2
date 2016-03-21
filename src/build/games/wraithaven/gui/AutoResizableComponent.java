@@ -11,5 +11,5 @@ package build.games.wraithaven.gui;
  * @author thedudefromci
  */
 public interface AutoResizableComponent{
-	public void resize();
+	public void resize(float width, float height);
 }

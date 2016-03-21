@@ -127,7 +127,9 @@ public class MenuEditor extends JPanel{
 							float d = (float)selectedImageRegion[4];
 							Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
 							int corner;
-							if(Math.pow(x-a, 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Left
+							if(Math.pow(x-(a+c*an.getChildX()), 2)+Math.pow(y-(b+d*an.getChildY()), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Center
+								corner = -1;
+							}else if(Math.pow(x-a, 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Left
 								corner = 0;
 							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Right
 								corner = 1;
@@ -135,8 +137,6 @@ public class MenuEditor extends JPanel{
 								corner = 2;
 							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Bottom Right
 								corner = 3;
-							}else if(Math.pow(x-(a+c*an.getChildX()), 2)+Math.pow(y-(b+d*an.getChildY()), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Center
-								corner = -1;
 							}else{
 								corner = -2;
 							}

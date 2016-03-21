@@ -53,8 +53,8 @@ public class CompResizeDrag{
 				float px, py;
 				px = anchorStartX+x/startWidth;
 				py = anchorStartY+y/startHeight;
-				px = Math.round(px*100)/100f;
-				py = Math.round(py*100)/100f;
+				px = Math.round(px*20)/20f;
+				py = Math.round(py*20)/20f;
 				a.setChildPosition(px, py);
 				px = (parentWidth*parentStartX-startWidth*anchorStartX+a.getChildX()*startWidth)/parentWidth;
 				py = (parentHeight*parentStartY-startHeight*anchorStartY+a.getChildY()*startHeight)/parentHeight;

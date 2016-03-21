@@ -32,7 +32,7 @@ import wraith.lib.util.Algorithms;
  * @author thedudefromci
  */
 public class MenuEditor extends JPanel{
-	private static final int BORDER_SPACING = 30;
+	private static final int BORDER_SPACING = 35;
 	private static final int END_BSPACING = BORDER_SPACING;
 	private static final int WINDOW_DRAG_ICON_R = 6;
 	private static final int COMP_DRAG_ICON_R = 5;
@@ -308,6 +308,8 @@ public class MenuEditor extends JPanel{
 		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()-fm.getHeight()/2);
 		percentX = Math.round(an.getChildX()*100)+"%";
 		percentY = Math.round(an.getChildY()*100)+"%";
+		recX = fm.getStringBounds(percentX, g);
+		recY = fm.getStringBounds(percentY, g);
 		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent()+fm.getHeight()/2);
 		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()+fm.getHeight()/2);
 		if(compResizeDrag!=null||componentDrag!=null){

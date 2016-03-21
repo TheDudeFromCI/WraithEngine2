@@ -8,12 +8,22 @@
 package build.games.wraithaven.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
@@ -55,5 +65,52 @@ public class GuiEditor{
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftPanel, centerPanel);
 		splitPane.setResizeWeight(0.2);
 		frame.add(splitPane, BorderLayout.CENTER);
+		{
+			JMenuBar menuBar = new JMenuBar();
+			{
+				// Edit
+				JMenu menu = new JMenu("Edit");
+				{
+					// Background
+					JMenu menu2 = new JMenu("Temp Background");
+					{
+						// Set Background
+						JMenuItem item = new JMenuItem("Set Background");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								File file = Algorithms.userChooseImage("Import Image", "Import");
+								if(file==null){
+									return;
+								}
+								try{
+									BufferedImage image = ImageIO.read(file);
+									editor.setTempBackground(image);
+								}catch(Exception exception){
+									exception.printStackTrace();
+									JOptionPane.showMessageDialog(null, "There has been an error trying to load this image.", "Error",
+										JOptionPane.ERROR_MESSAGE);
+								}
+							}
+						});
+						menu2.add(item);
+					}
+					{
+						// Clear Background
+						JMenuItem item = new JMenuItem("Clear Background");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								editor.setTempBackground(null);
+							}
+						});
+						menu2.add(item);
+					}
+					menu.add(menu2);
+				}
+				menuBar.add(menu);
+			}
+			frame.add(menuBar, BorderLayout.NORTH);
+		}
 	}
 }

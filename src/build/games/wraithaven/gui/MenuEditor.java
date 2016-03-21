@@ -47,6 +47,7 @@ public class MenuEditor extends JPanel{
 	private WindowDrag windowDrag;
 	private CompResizeDrag compResizeDrag;
 	private boolean overResizeIcon;
+	private BufferedImage tempImage;
 	public MenuEditor(){
 		BufferedImage autoResizeIconTemp;
 		try{
@@ -230,8 +231,12 @@ public class MenuEditor extends JPanel{
 		Graphics2D g = (Graphics2D)g1;
 		int width = getWidth();
 		int height = getHeight();
-		g.setColor(Color.lightGray);
-		g.fillRect(0, 0, width, height);
+		if(tempImage==null){
+			g.setColor(Color.lightGray);
+			g.fillRect(0, 0, width, height);
+		}else{
+			g.drawImage(tempImage, 0, 0, width, height, null);
+		}
 		if(menu!=null){
 			// Rendering hints are set after filling the background color to optimize rendering time.
 			// Also, no need to set rendering hints if there's nothing to render.
@@ -364,5 +369,9 @@ public class MenuEditor extends JPanel{
 		for(MenuComponentHeirarchy com : h.getChildren()){
 			drawHeirachry(g, com, x, y, width, height);
 		}
+	}
+	public void setTempBackground(BufferedImage tempImage){
+		this.tempImage = tempImage;
+		repaint();
 	}
 }

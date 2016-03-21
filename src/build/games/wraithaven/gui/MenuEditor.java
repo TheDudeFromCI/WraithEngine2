@@ -288,8 +288,8 @@ public class MenuEditor extends JPanel{
 		int anchorY = Math.round(y+h*an.getChildY());
 		g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
 		g.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
-		String percentX = String.format("%.1f", an.getParentX()*100)+"%";
-		String percentY = String.format("%.1f", an.getParentY()*100)+"%";
+		String percentX = String.format("%.0f", an.getParentX()*100)+"%";
+		String percentY = String.format("%.0f", an.getParentY()*100)+"%";
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D recX = fm.getStringBounds(percentX, g);
 		Rectangle2D recY = fm.getStringBounds(percentY, g);

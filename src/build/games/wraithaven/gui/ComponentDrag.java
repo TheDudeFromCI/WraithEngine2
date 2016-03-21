@@ -11,38 +11,6 @@ package build.games.wraithaven.gui;
  * @author thedudefromci
  */
 public class ComponentDrag{
-	private static float snap(float x){
-		switch(Math.round(x*100)){
-			case 0:
-				return 0f;
-			case 10:
-				return 0.1f;
-			case 20:
-				return 0.2f;
-			case 25:
-				return 0.25f;
-			case 30:
-				return 0.3f;
-			case 40:
-				return 0.4f;
-			case 50:
-				return 0.5f;
-			case 60:
-				return 0.6f;
-			case 70:
-				return 0.7f;
-			case 75:
-				return 0.75f;
-			case 80:
-				return 0.8f;
-			case 90:
-				return 0.9f;
-			case 100:
-				return 1f;
-			default:
-				return x;
-		}
-	}
 	private final MenuComponent component;
 	private final float startX;
 	private final float startY;
@@ -96,8 +64,9 @@ public class ComponentDrag{
 		}
 		float x = (mouseX-mouseXStart)/parentWidth+startX;
 		float y = (mouseY-mouseYStart)/parentHeight+startY;
-		x = snap(x);
-		y = snap(y);
+		// Round all percents to nearest whole.
+		x = Math.round(x*100)/100f;
+		y = Math.round(y*100)/100f;
 		setPosition(x, y);
 	}
 }

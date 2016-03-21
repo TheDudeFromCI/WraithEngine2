@@ -45,6 +45,7 @@ public class MenuEditor extends JPanel{
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
 	private WindowDrag windowDrag;
+	private CompResizeDrag compResizeDrag;
 	private boolean overResizeIcon;
 	public MenuEditor(){
 		BufferedImage autoResizeIconTemp;
@@ -69,6 +70,10 @@ public class MenuEditor extends JPanel{
 				}
 				if(windowDrag!=null){
 					windowDrag = null;
+					repaint();
+				}
+				if(compResizeDrag!=null){
+					compResizeDrag = null;
 					repaint();
 				}
 			}
@@ -109,6 +114,34 @@ public class MenuEditor extends JPanel{
 				MenuComponentHeirarchy h = componentList.getSelectedComponent();
 				if(h!=null&&h.getParent()!=null){
 					// Make sure a have a component selected, other than root.
+					// First check for resize-drag.
+					{
+						if(selectedImageRegion[0]!=null){
+							// Yep, we are building off of this, again.
+							float a = (float)selectedImageRegion[1];
+							float b = (float)selectedImageRegion[2];
+							float c = (float)selectedImageRegion[3];
+							float d = (float)selectedImageRegion[4];
+							int corner;
+							if(Math.pow(x-a, 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+								corner = 0;
+							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+								corner = 1;
+							}else if(Math.pow(x-a, 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+								corner = 2;
+							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+								corner = 3;
+							}else{
+								corner = -1;
+							}
+							if(corner>-1){
+								compResizeDrag = new CompResizeDrag((MenuComponent)h, x, y, corner);
+								repaint();
+								return;
+							}
+						}
+					}
+					// Default to move-drag.
 					componentDrag = new ComponentDrag((MenuComponent)h, x, y);
 				}
 				repaint();
@@ -124,6 +157,10 @@ public class MenuEditor extends JPanel{
 				}
 				if(windowDrag!=null){
 					windowDrag.update(event.getX(), event.getY());
+					repaint();
+				}
+				if(compResizeDrag!=null){
+					compResizeDrag.update(event.getX(), event.getY());
 					repaint();
 				}
 			}
@@ -183,6 +220,7 @@ public class MenuEditor extends JPanel{
 		// And also remove references to temp variables.
 		componentDrag = null;
 		windowDrag = null;
+		compResizeDrag = null;
 		repaint();
 	}
 	@Override

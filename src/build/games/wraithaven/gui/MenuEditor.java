@@ -32,8 +32,8 @@ import wraith.lib.util.Algorithms;
  * @author thedudefromci
  */
 public class MenuEditor extends JPanel{
-	private static final int BORDER_SPACING = 50;
-	private static final int END_BSPACING = 50;
+	private static final int BORDER_SPACING = 30;
+	private static final int END_BSPACING = BORDER_SPACING;
 	private static final int WINDOW_DRAG_ICON_R = 6;
 	private static final int COMP_DRAG_ICON_R = 5;
 	private static final int RESIZE_ICON_SIZE = 16;
@@ -299,13 +299,17 @@ public class MenuEditor extends JPanel{
 		int anchorY = Math.round(y+h*an.getChildY());
 		g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
 		g.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
-		String percentX = String.format("%.0f", an.getParentX()*100)+"%";
-		String percentY = String.format("%.0f", an.getParentY()*100)+"%";
+		String percentX = Math.round(an.getParentX()*100)+"%";
+		String percentY = Math.round(an.getParentY()*100)+"%";
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D recX = fm.getStringBounds(percentX, g);
 		Rectangle2D recY = fm.getStringBounds(percentY, g);
-		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent());
-		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
+		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent()-fm.getHeight()/2);
+		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()-fm.getHeight()/2);
+		percentX = Math.round(an.getChildX()*100)+"%";
+		percentY = Math.round(an.getChildY()*100)+"%";
+		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent()+fm.getHeight()/2);
+		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()+fm.getHeight()/2);
 		if(compResizeDrag!=null||componentDrag!=null){
 			String size = Math.round((float)selectedImageRegion[3])+"x"+Math.round((float)selectedImageRegion[4]);
 			String pos = "("+Math.round((float)selectedImageRegion[1]-BORDER_SPACING)+", "+Math.round((float)selectedImageRegion[2]-BORDER_SPACING)+")";

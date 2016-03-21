@@ -11,6 +11,7 @@ package build.games.wraithaven.gui;
  * @author thedudefromci
  */
 public class CompResizeDrag{
+	private static final int SMALLEST_SIZE = 10;
 	private final MenuComponent object;
 	private final int mouseXStart;
 	private final int mouseYStart;
@@ -39,19 +40,19 @@ public class CompResizeDrag{
 		}
 		switch(corner){
 			case 0:
-				a.setSize(startWidth-x, startHeight-y);
+				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
 			case 1:
-				a.setSize(startWidth+x, startHeight-y);
+				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
 			case 2:
-				a.setSize(startWidth-x, startHeight+y);
+				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;
 			case 3:
-				a.setSize(startWidth+x, startHeight+y);
+				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;
 		}

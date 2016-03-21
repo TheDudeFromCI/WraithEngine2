@@ -274,15 +274,16 @@ public class MenuEditor extends JPanel{
 		float y = (float)selectedImageRegion[2];
 		float w = (float)selectedImageRegion[3];
 		float h = (float)selectedImageRegion[4];
+		Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
 		g.drawRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
 		drawPrettySphere(g1, x, y, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y, COMP_DRAG_ICON_R, Color.blue);
+		drawPrettySphere(g1, x+w*an.getChildX(), y+h*an.getChildY(), COMP_DRAG_ICON_R, Color.blue);
 		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
 			9
 		}, 0));
-		Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
 		int anchorX = Math.round(x+w*an.getChildX());
 		int anchorY = Math.round(y+h*an.getChildY());
 		g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);

@@ -115,7 +115,7 @@ public class MenuEditor extends JPanel{
 						height-BORDER_SPACING-END_BSPACING);
 				}
 				MenuComponentHeirarchy h = componentList.getSelectedComponent();
-				if(h!=null&&h.getParent()!=null){
+				if(h!=null&&h instanceof MenuComponent){
 					// Make sure a have a component selected, other than root.
 					// First check for resize-drag.
 					{
@@ -125,20 +125,31 @@ public class MenuEditor extends JPanel{
 							float b = (float)selectedImageRegion[2];
 							float c = (float)selectedImageRegion[3];
 							float d = (float)selectedImageRegion[4];
+							Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
 							int corner;
-							if(Math.pow(x-a, 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+							if(Math.pow(x-a, 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Left
 								corner = 0;
-							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Right
 								corner = 1;
-							}else if(Math.pow(x-a, 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+							}else if(Math.pow(x-a, 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Bottom Left
 								corner = 2;
-							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){
+							}else if(Math.pow(x-(a+c), 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Bottom Right
 								corner = 3;
-							}else{
+							}else if(Math.pow(x-(a+c*an.getChildX()), 2)+Math.pow(y-(b+d*an.getChildY()), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Center
 								corner = -1;
+							}else{
+								corner = -2;
 							}
-							if(corner>-1){
-								compResizeDrag = new CompResizeDrag((MenuComponent)h, x, y, corner);
+							if(corner>-2){
+								MenuComponentHeirarchy par = h.getParent();
+								if(par!=null&&par instanceof MenuComponent){
+									a = ((MenuComponent)par).getAnchor().getWidth();
+									b = ((MenuComponent)par).getAnchor().getHeight();
+								}else{
+									a = getWidth()-BORDER_SPACING-END_BSPACING;
+									b = getHeight()-BORDER_SPACING-END_BSPACING;
+								}
+								compResizeDrag = new CompResizeDrag((MenuComponent)h, x, y, corner, a, b);
 								repaint();
 								return;
 							}
@@ -297,7 +308,7 @@ public class MenuEditor extends JPanel{
 		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent());
 		if(compResizeDrag!=null||componentDrag!=null){
 			String size = Math.round((float)selectedImageRegion[3])+"x"+Math.round((float)selectedImageRegion[4]);
-			String pos = "("+Math.round((float)selectedImageRegion[1])+", "+Math.round((float)selectedImageRegion[2])+")";
+			String pos = "("+Math.round((float)selectedImageRegion[1]-BORDER_SPACING)+", "+Math.round((float)selectedImageRegion[2]-BORDER_SPACING)+")";
 			g.drawString(size, (float)selectedImageRegion[1]+(float)selectedImageRegion[3]+fm.getHeight()/2f,
 				(float)selectedImageRegion[2]+(float)selectedImageRegion[4]-fm.getHeight()/2f);
 			g.drawString(pos, (float)selectedImageRegion[1]-fm.getHeight()/2f, (float)selectedImageRegion[2]-fm.getHeight()/2f);

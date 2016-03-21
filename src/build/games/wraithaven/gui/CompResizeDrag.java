@@ -16,42 +16,63 @@ public class CompResizeDrag{
 	private final int mouseXStart;
 	private final int mouseYStart;
 	private final int corner;
+	private final float parentWidth;
+	private final float parentHeight;
 	private final float startWidth;
 	private final float startHeight;
 	private final float anchorStartX;
 	private final float anchorStartY;
-	public CompResizeDrag(MenuComponent object, int mouseXStart, int mouseYStart, int corner){
+	private final float parentStartX;
+	private final float parentStartY;
+	public CompResizeDrag(MenuComponent object, int mouseXStart, int mouseYStart, int corner, float parentWidth, float parentHeight){
 		this.object = object;
 		this.mouseXStart = mouseXStart;
 		this.mouseYStart = mouseYStart;
 		this.corner = corner;
+		this.parentWidth = parentWidth;
+		this.parentHeight = parentHeight;
 		Anchor a = object.getAnchor();
 		startWidth = a.getWidth();
 		startHeight = a.getHeight();
 		anchorStartX = a.getChildX();
 		anchorStartY = a.getChildY();
+		parentStartX = a.getParentX();
+		parentStartY = a.getParentY();
 	}
 	public void update(int x, int y, boolean maintainRatio){
 		Anchor a = object.getAnchor();
 		x = (x-mouseXStart);
 		y = (y-mouseYStart);
-		if(maintainRatio){
+		if(maintainRatio&&corner!=-1){
+			// Make sure we scale evenly.
+			// Ignore this if we are moving the center.
 			y = x;
 		}
 		switch(corner){
-			case 0:
+			case -1: // Center
+				float px, py;
+				px = anchorStartX+x/startWidth;
+				py = anchorStartY+y/startHeight;
+				px = Math.round(px*100)/100f;
+				py = Math.round(py*100)/100f;
+				a.setChildPosition(px, py);
+				px = (parentWidth*parentStartX-startWidth*anchorStartX+a.getChildX()*startWidth)/parentWidth;
+				py = (parentHeight*parentStartY-startHeight*anchorStartY+a.getChildY()*startHeight)/parentHeight;
+				a.setParentPosition(px, py);
+				break;
+			case 0: // Top Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
-			case 1:
+			case 1:// Top Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
 				break;
-			case 2:
+			case 2:// Bottom Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;
-			case 3:
+			case 3: // Bottom Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
 				break;

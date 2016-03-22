@@ -400,4 +400,19 @@ public class MenuEditor extends JPanel{
 		this.tempImage = tempImage;
 		repaint();
 	}
+	public void updateAllLayouts(){
+		if(menu==null){
+			return;
+		}
+		// It's best to update layouts with parent node first, incase the size needs to be changed.
+		updateAllLayouts(menu);
+	}
+	private void updateAllLayouts(MenuComponentHeirarchy h){
+		if(h instanceof ComponentLayout){
+			((ComponentLayout)h).updateLayout();
+		}
+		for(MenuComponentHeirarchy com : h.getChildren()){
+			updateAllLayouts(com);
+		}
+	}
 }

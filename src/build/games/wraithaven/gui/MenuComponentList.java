@@ -9,6 +9,7 @@ package build.games.wraithaven.gui;
 
 import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
+import build.games.wraithaven.gui.components.MigLayout;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
 import java.awt.BasicStroke;
@@ -109,8 +110,14 @@ public class MenuComponentList extends JPanel{
 							JMenu menu2 = new JMenu("New");
 							{
 								// Components
-								menu2.add(addComponentToList("Empty", EmptyComponent.class));
-								menu2.add(addComponentToList("Image", ImageComponent.class));
+								addComponentToList(menu2, "Empty", EmptyComponent.class);
+								addComponentToList(menu2, "Image", ImageComponent.class);
+								{
+									// Layouts
+									JMenu menu3 = new JMenu("Layout");
+									addComponentToList(menu3, "Mig", MigLayout.class);
+									menu2.add(menu3);
+								}
 							}
 							menu.add(menu2);
 						}
@@ -452,7 +459,7 @@ public class MenuComponentList extends JPanel{
 	public MenuComponentHeirarchy getSelectedComponent(){
 		return selectedComponent;
 	}
-	public JMenuItem addComponentToList(String simpleName, Class<? extends MenuComponent> component){
+	public void addComponentToList(JMenu menu, String simpleName, Class<? extends MenuComponent> component){
 		JMenuItem item = new JMenuItem(simpleName);
 		item.addActionListener(new ActionListener(){
 			@Override
@@ -467,7 +474,7 @@ public class MenuComponentList extends JPanel{
 				}
 			}
 		});
-		return item;
+		menu.add(item);
 	}
 	public void setSelectedComponent(MenuComponentHeirarchy selectedComponent){
 		this.selectedComponent = selectedComponent;

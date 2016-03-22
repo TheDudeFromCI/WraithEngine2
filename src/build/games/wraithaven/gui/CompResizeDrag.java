@@ -63,10 +63,16 @@ public class CompResizeDrag{
 			case 0: // Top Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
+				if(object instanceof ComponentLayout){
+					((ComponentLayout)object).updateLayout();
+				}
 				break;
 			case 1:// Top Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
+				if(object instanceof ComponentLayout){
+					((ComponentLayout)object).updateLayout();
+				}
 				break;
 			case 2:// Bottom Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
@@ -75,11 +81,10 @@ public class CompResizeDrag{
 			case 3: // Bottom Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
+				if(object instanceof ComponentLayout){
+					((ComponentLayout)object).updateLayout();
+				}
 				break;
 		}
-	}
-	public String getSize(){
-		Anchor a = object.getAnchor();
-		return Math.round(a.getWidth())+"x"+Math.round(a.getHeight());
 	}
 }

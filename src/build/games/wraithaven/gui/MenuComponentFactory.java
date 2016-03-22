@@ -9,6 +9,7 @@ package build.games.wraithaven.gui;
 
 import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
+import build.games.wraithaven.gui.components.MigLayout;
 
 /**
  * @author thedudefromci
@@ -20,6 +21,8 @@ public class MenuComponentFactory{
 				return new ImageComponent(uuid);
 			case 1:
 				return new EmptyComponent(uuid);
+			case 2:
+				return new MigLayout(uuid);
 			default:
 				throw new RuntimeException();
 		}

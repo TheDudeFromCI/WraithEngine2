@@ -15,6 +15,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +40,7 @@ public class MigLayout extends DefaultLayout{
 	private static final int ID = 2;
 	private int[] cols = new int[1];
 	private int[] rows = new int[1];
+	private MigObjectLocation[] locs = new MigObjectLocation[0];
 	public MigLayout(String uuid){
 		super(uuid);
 	}
@@ -50,9 +52,10 @@ public class MigLayout extends DefaultLayout{
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final JTextField nameInput;
+			private final MigBuilder migBuilder;
 			private int[] cols;
 			private int[] rows;
-			private MigBuilder migBuilder;
+			private MigObjectLocation[] locs;
 			{
 				// Builder
 				setLayout(new VerticalFlowLayout(0, 5));
@@ -69,26 +72,105 @@ public class MigLayout extends DefaultLayout{
 					panel.setLayout(new BorderLayout());
 					cols = MigLayout.this.cols;
 					rows = MigLayout.this.rows;
-					migBuilder = new MigBuilder(rows, cols);
+					locs = MigLayout.this.locs;
+					migBuilder = new MigBuilder(rows, cols, locs);
 					panel.add(migBuilder, BorderLayout.CENTER);
 					// Column and Row sizes.
 					JPanel panel2 = new JPanel();
 					panel2.setLayout(new GridLayout(0, 1, 0, 5));
-					buildColEditor(panel2, "Cols", true);
-					buildColEditor(panel2, "Rows", false);
+					buildColEditor(panel2, "Cols", 0);
+					buildColEditor(panel2, "Rows", 1);
 					panel.add(panel2, BorderLayout.EAST);
 					add(panel);
 				}
+				{
+					// Child Locations
+					JPanel panel = new JPanel();
+					panel.setLayout(new BorderLayout());
+					JTable table = new JTable();
+					String[] tableColNames = new String[]{
+						"#", "Col", "Row", "Width", "Height"
+					};
+					{
+						// Table
+						Object[][] data = buildLocTableData();
+						updateTableModel(table, data, tableColNames, 2);
+						JScrollPane scroll = new JScrollPane(table);
+						scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+						scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+						scroll.setPreferredSize(new Dimension(400, 120));
+						panel.add(scroll, BorderLayout.CENTER);
+					}
+					{
+						// Buttons
+						JPanel panel2 = new JPanel();
+						panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+						JButton newCol = new JButton("Add");
+						newCol.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								locs = Arrays.copyOf(locs, locs.length+1);
+								locs[locs.length-1] = new MigObjectLocation(0, 0, 1, 1);
+								migBuilder.setLocs(locs);
+								Object[][] data = buildLocTableData();
+								updateTableModel(table, data, tableColNames, 2);
+							}
+						});
+						panel2.add(newCol);
+						JButton delCol = new JButton("Del");
+						delCol.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								int selectedIndex = table.getSelectedRow();
+								if(selectedIndex==-1){
+									return;
+								}
+								MigObjectLocation[] x = new MigObjectLocation[locs.length-1];
+								{
+									// Delete row
+									int j = 0;
+									for(int i = 0; i<locs.length; i++){
+										if(i==selectedIndex){
+											continue;
+										}
+										x[j++] = locs[i];
+									}
+								}
+								locs = x;
+								migBuilder.setLocs(locs);
+								Object[][] data = buildLocTableData();
+								updateTableModel(table, data, tableColNames, 2);
+							}
+						});
+						panel2.add(delCol);
+						panel.add(panel2, BorderLayout.SOUTH);
+					}
+					add(panel);
+				}
 			}
-			private void buildColEditor(JPanel panel2, String name, boolean col){
-				int[] x = col?cols:rows;
+			private Object[][] buildLocTableData(){
+				Object[][] data = new Object[locs.length][5];
+				for(int i = 0; i<locs.length; i++){
+					data[i][0] = i+1;
+					data[i][1] = locs[i].x+1;
+					data[i][2] = locs[i].y+1;
+					data[i][3] = locs[i].w;
+					data[i][4] = locs[i].h;
+				}
+				return data;
+			}
+			private void buildColEditor(JPanel panel2, String name, int colType){
+				int[] x = colType==0?cols:rows;
 				JPanel panel3 = new JPanel();
 				panel3.setLayout(new BorderLayout());
 				JLabel label = new JLabel(name);
 				panel3.add(label, BorderLayout.NORTH);
 				JTable table = new JTable();
-				Object[][] tableData = buildTableData(x);
-				updateTableModel(table, tableData, col);
+				Object[][] tableData = buildTableData(x, colType);
+				String[] tableColNames = new String[]{
+					"#", "Size"
+				};
+				updateTableModel(table, tableData, tableColNames, colType);
 				JScrollPane scroll = new JScrollPane(table);
 				scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 				scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -100,17 +182,20 @@ public class MigLayout extends DefaultLayout{
 				newCol.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
-						int[] x = col?cols:rows;
+						int[] x = colType==0?cols:rows;
 						int[] x2 = Arrays.copyOf(x, x.length+1);
 						x2[x.length] = 0;
-						if(col){
+						if(colType==0){
 							cols = x2;
 						}else{
 							rows = x2;
 						}
 						migBuilder.setSizes(cols, rows);
-						Object[][] tableData = buildTableData(x2);
-						updateTableModel(table, tableData, col);
+						Object[][] tableData = buildTableData(x2, colType);
+						String[] tableColNames = new String[]{
+							"#", "Size"
+						};
+						updateTableModel(table, tableData, tableColNames, colType);
 					}
 				});
 				panel4.add(newCol);
@@ -122,7 +207,7 @@ public class MigLayout extends DefaultLayout{
 						if(selectedIndex==-1){
 							return;
 						}
-						int[] x = col?cols:rows;
+						int[] x = colType==0?cols:rows;
 						int[] x2 = new int[x.length-1];
 						{
 							// Delete row
@@ -134,33 +219,35 @@ public class MigLayout extends DefaultLayout{
 								x2[j++] = x[i];
 							}
 						}
-						if(col){
+						if(colType==0){
 							cols = x2;
 						}else{
 							rows = x2;
 						}
 						migBuilder.setSizes(cols, rows);
-						Object[][] tableData = buildTableData(x2);
-						updateTableModel(table, tableData, col);
+						Object[][] tableData = buildTableData(x2, colType);
+						String[] tableColNames = new String[]{
+							"#", "Size"
+						};
+						updateTableModel(table, tableData, tableColNames, colType);
 					}
 				});
 				panel4.add(delCol);
 				panel3.add(panel4, BorderLayout.SOUTH);
 				panel2.add(panel3);
 			}
-			private void updateTableModel(JTable table, Object[][] data, boolean col){
-				String[] tableColNames = new String[]{
-					"#", "Size"
-				};
-				table.setModel(new DefaultTableModel(data, tableColNames){
+			private void updateTableModel(JTable table, Object[][] data, String[] names, int colType){
+				table.setModel(new DefaultTableModel(data, names){
 					@Override
 					public boolean isCellEditable(int row, int column){
-						return column==1;
+						return column>0;
 					}
 				});
 				table.getTableHeader().setReorderingAllowed(false);
-				table.getColumnModel().getColumn(0).setResizable(false);
-				table.getColumnModel().getColumn(0).setPreferredWidth(20);
+				if(colType==0||colType==1){
+					table.getColumnModel().getColumn(0).setResizable(false);
+					table.getColumnModel().getColumn(0).setPreferredWidth(20);
+				}
 				table.setColumnSelectionAllowed(false);
 				table.setRowSelectionAllowed(false);
 				table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -184,41 +271,87 @@ public class MigLayout extends DefaultLayout{
 					@Override
 					public void tableChanged(TableModelEvent e){
 						int row = e.getFirstRow();
-						if(col){
-							String s = (String)table.getModel().getValueAt(row, 1);
-							try{
-								cols[row] = Integer.valueOf(s);
-								if(row<0){
-									throw new NumberFormatException();
+						switch(colType){
+							case 0:{
+								String s = (String)table.getModel().getValueAt(row, 1);
+								try{
+									cols[row] = Integer.valueOf(s);
+									if(row<0){
+										throw new NumberFormatException();
+									}
+								}catch(NumberFormatException exception){
+									cols[row] = 0;
+									table.getModel().setValueAt(0, row, 1);
 								}
-							}catch(NumberFormatException exception){
-								cols[row] = 0;
-								table.getModel().setValueAt(0, row, 1);
+								migBuilder.repaint();
+								break;
 							}
-							migBuilder.repaint();
-						}else{
-							String s = (String)table.getModel().getValueAt(row, 1);
-							try{
-								rows[row] = Integer.valueOf(s);
-								if(row<0){
-									throw new NumberFormatException();
+							case 1:{
+								String s = (String)table.getModel().getValueAt(row, 1);
+								try{
+									rows[row] = Integer.valueOf(s);
+									if(row<0){
+										throw new NumberFormatException();
+									}
+								}catch(NumberFormatException exception){
+									rows[row] = 0;
+									table.getModel().setValueAt(0, row, 1);
 								}
-							}catch(NumberFormatException exception){
-								rows[row] = 0;
-								table.getModel().setValueAt(0, row, 1);
+								migBuilder.repaint();
+								break;
 							}
-							migBuilder.repaint();
+							case 2:{
+								int col = e.getColumn();
+								String s = (String)table.getModel().getValueAt(row, col);
+								int v;
+								try{
+									v = Integer.valueOf(s);
+									if(v<1){
+										throw new NumberFormatException();
+									}
+								}catch(NumberFormatException exception){
+									v = 1;
+									table.getModel().setValueAt(v, row, col);
+								}
+								switch(col){
+									case 1:
+										locs[row].x = v-1;
+										break;
+									case 2:
+										locs[row].y = v-1;
+										break;
+									case 3:
+										locs[row].w = v;
+										break;
+									case 4:
+										locs[row].h = v;
+										break;
+									default:
+										break;
+								}
+								migBuilder.repaint();
+								break;
+							}
+							default:
+								break;
 						}
 					}
 				});
 			}
-			private Object[][] buildTableData(int[] col){
-				Object[][] data = new Object[col.length][2];
-				for(int i = 0; i<col.length; i++){
-					data[i][0] = i+1;
-					data[i][1] = col[i];
+			private Object[][] buildTableData(int[] col, int colType){
+				switch(colType){
+					case 0:
+					case 1:{
+						Object[][] data = new Object[col.length][2];
+						for(int i = 0; i<col.length; i++){
+							data[i][0] = i+1;
+							data[i][1] = col[i];
+						}
+						return data;
+					}
+					default:
+						return null;
 				}
-				return data;
 			}
 			@Override
 			public JComponent getDefaultFocus(){
@@ -230,6 +363,7 @@ public class MigLayout extends DefaultLayout{
 				c.name = nameInput.getText();
 				c.cols = cols;
 				c.rows = rows;
+				c.locs = locs;
 			}
 		};
 	}

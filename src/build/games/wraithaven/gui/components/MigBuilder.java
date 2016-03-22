@@ -20,11 +20,14 @@ import javax.swing.JPanel;
 public class MigBuilder extends JPanel{
 	private static final int BORDER_SPACE = 10;
 	private static final float COLUMN_DARKNESS = 0.2f;
+	private static final float COMPONENT_THICKNESS = 0.8f;
 	private int[] rows;
 	private int[] cols;
-	public MigBuilder(int[] rows, int[] cols){
+	private MigObjectLocation[] locs;
+	public MigBuilder(int[] rows, int[] cols, MigObjectLocation[] locs){
 		this.rows = rows;
 		this.cols = cols;
+		this.locs = locs;
 		setPreferredSize(new Dimension(320, 240));
 	}
 	@Override
@@ -46,7 +49,38 @@ public class MigBuilder extends JPanel{
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
 			drawRowsAndCols(g, false, sizeWidth, sizeHeight);
 		}
+		{
+			// Draw Components
+			g.setColor(new Color(1f, 0f, 0f, COMPONENT_THICKNESS));
+			int[] x = new int[2];
+			int[] y = new int[2];
+			for(MigObjectLocation loc : locs){
+				getPos(cols, loc.x, loc.w, sizeWidth, x);
+				getPos(rows, loc.y, loc.h, sizeHeight, y);
+				x[0] += BORDER_SPACE;
+				y[0] += BORDER_SPACE;
+				g.fillRect(x[0]+2, y[0]+2, x[1]-4, y[1]-4);
+			}
+		}
 		g.dispose();
+	}
+	private void getPos(int[] x, int col, int s, int size, int[] out){
+		int extraSpaceCols = countExtraSpace(x, size);
+		int w;
+		out[0] = 0;
+		out[1] = 0;
+		for(int i = 0; i<x.length; i++){
+			w = x[i]==0?extraSpaceCols:x[i];
+			if(i<col){
+				out[0] += w;
+			}else{
+				s--;
+				out[1] += w;
+				if(s==0){
+					break;
+				}
+			}
+		}
 	}
 	private void drawRowsAndCols(Graphics2D g, boolean fill, int sizeWidth, int sizeHeight){
 		int extraSpaceCols = countExtraSpace(cols, sizeWidth);
@@ -91,6 +125,10 @@ public class MigBuilder extends JPanel{
 	public void setSizes(int[] cols, int[] rows){
 		this.cols = cols;
 		this.rows = rows;
+		repaint();
+	}
+	public void setLocs(MigObjectLocation[] locs){
+		this.locs = locs;
 		repaint();
 	}
 }

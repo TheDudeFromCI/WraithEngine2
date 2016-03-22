@@ -77,6 +77,9 @@ public class CompResizeDrag{
 			case 2:// Bottom Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
+				if(object instanceof ComponentLayout){
+					((ComponentLayout)object).updateLayout();
+				}
 				break;
 			case 3: // Bottom Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));

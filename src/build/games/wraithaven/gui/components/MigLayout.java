@@ -7,10 +7,12 @@
  */
 package build.games.wraithaven.gui.components;
 
+import build.games.wraithaven.gui.Anchor;
 import build.games.wraithaven.gui.DefaultLayout;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
+import build.games.wraithaven.gui.MenuComponentHeirarchy;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -419,5 +421,54 @@ public class MigLayout extends DefaultLayout{
 		};
 	}
 	@Override
-	public void updateLayout(){}
+	public void updateLayout(){
+		int i = -1;
+		for(MenuComponentHeirarchy h : children){
+			i++;
+			if(!(h instanceof MenuComponent)){
+				continue;
+			}
+			Anchor a = ((MenuComponent)h).getAnchor();
+			if(i>locs.length){
+				setChildPos(a, 0, 0, 0, 0);
+				continue;
+			}
+			int[] x = new int[2];
+			int[] y = new int[2];
+			MigObjectLocation l = locs[i];
+			getPos(cols, l.x, l.w, Math.round(anchor.getWidth()), x);
+			getPos(rows, l.y, l.h, Math.round(anchor.getHeight()), y);
+			setChildPos(a, x[0], y[0], x[1], y[1]);
+		}
+	}
+	private void getPos(int[] x, int col, int s, int size, int[] out){
+		int extraSpaceCols = countExtraSpace(x, size);
+		int w;
+		out[0] = 0;
+		out[1] = 0;
+		for(int i = 0; i<x.length; i++){
+			w = x[i]==0?extraSpaceCols:x[i];
+			if(i<col){
+				out[0] += w;
+			}else{
+				s--;
+				out[1] += w;
+				if(s==0){
+					break;
+				}
+			}
+		}
+	}
+	private int countExtraSpace(int[] x, int total){
+		int y = 0;
+		int a = 0;
+		for(int z : x){
+			if(z==0){
+				a++;
+				continue;
+			}
+			y += z;
+		}
+		return (total-y)/a;
+	}
 }

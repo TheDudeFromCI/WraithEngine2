@@ -41,6 +41,7 @@ public class ImageComponent implements MenuComponent{
 	private final Anchor anchor;
 	private boolean collapsed;
 	private boolean mousedOver;
+	private boolean defaultImage;
 	private MenuComponentHeirarchy parent;
 	private String name = "Image Component";
 	private BufferedImage image;
@@ -50,6 +51,8 @@ public class ImageComponent implements MenuComponent{
 		anchor = new Anchor();
 		try{
 			image = ImageIO.read(Algorithms.getAsset("No Image.png"));
+			defaultImage = true;
+			anchor.setSize(image.getWidth(), image.getHeight());
 		}catch(Exception exception){
 			exception.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -62,19 +65,12 @@ public class ImageComponent implements MenuComponent{
 			case 0:{
 				name = bin.getString();
 				if(bin.getBoolean()){
+					defaultImage = false;
 					try{
 						image = ImageIO.read(Algorithms.getFile("Menus", menu.getUUID(), uuid+".png"));
 					}catch(Exception exception){
 						exception.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Image component image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
-						image = null;
-					}
-				}else{
-					try{
-						image = ImageIO.read(Algorithms.getAsset("No Image.png"));
-					}catch(Exception exception){
-						exception.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Default image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
 						image = null;
 					}
 				}
@@ -89,7 +85,7 @@ public class ImageComponent implements MenuComponent{
 	public void save(Menu menu, BinaryFile bin){
 		bin.addStringAllocated(name);
 		bin.allocateBytes(1);
-		bin.addBoolean(image!=null);
+		bin.addBoolean(!defaultImage);
 		anchor.save(bin);
 		if(saveImage){
 			saveImage = false;
@@ -201,6 +197,7 @@ public class ImageComponent implements MenuComponent{
 					c.image = image;
 					c.anchor.setSize(image.getWidth(), image.getHeight());
 					c.saveImage = true;
+					c.defaultImage = false;
 				}
 			}
 		};

@@ -429,7 +429,7 @@ public class MigLayout extends DefaultLayout{
 				continue;
 			}
 			Anchor a = ((MenuComponent)h).getAnchor();
-			if(i>locs.length){
+			if(i>=locs.length){
 				setChildPos(a, 0, 0, 0, 0);
 				continue;
 			}

@@ -401,6 +401,7 @@ public class MenuComponentList extends JPanel{
 		builder.build(child);
 		parent.addChild(child);
 		child.setParent(parent);
+		menuEditor.updateAllLayouts();
 		menu.save();
 		repaint();
 	}
@@ -417,6 +418,7 @@ public class MenuComponentList extends JPanel{
 			return;
 		}
 		builder.build(com);
+		menuEditor.updateAllLayouts();
 		menu.save();
 		repaint();
 	}

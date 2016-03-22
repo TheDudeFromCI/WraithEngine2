@@ -8,6 +8,7 @@
 package build.games.wraithaven.gui.components;
 
 import build.games.wraithaven.gui.DefaultLayout;
+import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
@@ -32,6 +33,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
@@ -43,6 +45,55 @@ public class MigLayout extends DefaultLayout{
 	private MigObjectLocation[] locs = new MigObjectLocation[0];
 	public MigLayout(String uuid){
 		super(uuid);
+	}
+	@Override
+	public void load(Menu menu, BinaryFile bin, short version){
+		switch(version){
+			case 0:{
+				name = bin.getString();
+				anchor.load(bin);
+				cols = new int[bin.getInt()];
+				for(int i = 0; i<cols.length; i++){
+					cols[i] = bin.getInt();
+				}
+				rows = new int[bin.getInt()];
+				for(int i = 0; i<rows.length; i++){
+					rows[i] = bin.getInt();
+				}
+				locs = new MigObjectLocation[bin.getInt()];
+				for(int i = 0; i<locs.length; i++){
+					locs[i] = new MigObjectLocation(0, 0, 0, 0);
+					locs[i].x = bin.getInt();
+					locs[i].y = bin.getInt();
+					locs[i].w = bin.getInt();
+					locs[i].h = bin.getInt();
+				}
+				break;
+			}
+			default:
+				throw new RuntimeException();
+		}
+	}
+	@Override
+	public void save(Menu menu, BinaryFile bin){
+		bin.addStringAllocated(name);
+		anchor.save(bin);
+		bin.allocateBytes(3*4+cols.length*4+rows.length*4+locs.length*4*4);
+		bin.addInt(cols.length);
+		for(int x : cols){
+			bin.addInt(x);
+		}
+		bin.addInt(rows.length);
+		for(int x : rows){
+			bin.addInt(x);
+		}
+		bin.addInt(locs.length);
+		for(MigObjectLocation l : locs){
+			bin.addInt(l.x);
+			bin.addInt(l.y);
+			bin.addInt(l.w);
+			bin.addInt(l.h);
+		}
 	}
 	@Override
 	public int getId(){

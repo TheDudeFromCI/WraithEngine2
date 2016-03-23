@@ -10,6 +10,8 @@ package build.games.wraithaven.util;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
@@ -17,7 +19,10 @@ import javax.swing.JPanel;
  * @author thedudefromci
  */
 public class ImagePanel extends JPanel{
+	private final Dimension lastSize = new Dimension();
+	private final Rectangle rec = new Rectangle();
 	private BufferedImage image;
+	private boolean fill;
 	public ImagePanel(BufferedImage image){
 		this.image = image;
 		setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
@@ -28,6 +33,7 @@ public class ImagePanel extends JPanel{
 	}
 	public void setImage(BufferedImage image){
 		this.image = image;
+		updateRectangle(true);
 		repaint();
 	}
 	public void setImageSize(int width, int height){
@@ -35,14 +41,55 @@ public class ImagePanel extends JPanel{
 		getParent().revalidate();
 		repaint();
 	}
-	@Override
-	public void paintComponent(Graphics g1){
-		Graphics2D g = (Graphics2D)g1;
-		g.setColor(getBackground());
+	public void setFill(boolean fill){
+		this.fill = fill;
+		updateRectangle(true);
+		repaint();
+	}
+	public boolean isFill(){
+		return fill;
+	}
+	private void updateRectangle(boolean force){
+		if(image==null){
+			return;
+		}
 		int width = getWidth();
 		int height = getHeight();
+		if(!force){
+			if(width==lastSize.width&&height==lastSize.height){
+				return;
+			}
+		}
+		rec.width = image.getWidth();
+		rec.height = image.getHeight();
+		lastSize.width = width;
+		lastSize.height = height;
+		if(image.getWidth()>width){
+			rec.width = width;
+			rec.height = (rec.width*image.getHeight())/image.getWidth();
+		}
+		if(rec.height>height){
+			rec.height = height;
+			rec.width = (rec.height*image.getWidth())/image.getHeight();
+		}
+		rec.x = (width-rec.width)/2;
+		rec.y = (height-rec.height)/2;
+	}
+	@Override
+	public void paintComponent(Graphics g1){
+		updateRectangle(false);
+		Graphics2D g = (Graphics2D)g1;
+		int width = getWidth();
+		int height = getHeight();
+		g.setColor(getBackground());
 		g.fillRect(0, 0, width, height);
-		g.drawImage(image, 0, 0, width, height, null);
+		if(image!=null){
+			// Turn on some quality, to account for loss with image scaling.
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+			g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			g.drawImage(image, rec.x, rec.y, rec.width, rec.height, null);
+		}
 		g.dispose();
 	}
 }

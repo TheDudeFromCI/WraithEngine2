@@ -200,6 +200,7 @@ public class ProjectList extends JFrame{
 		WraithEngine.updateFolders(WraithEngine.getWorkspace()+File.separatorChar+pc.getUUID(), WraithEngine.getAssetFolder());
 		WraithEngine.projectName = pc.getName();
 		WraithEngine.projectBitSize = pc.getBitSize();
+		WraithEngine.projectUUID = pc.getUUID();
 		MapStyleFactory.loadMapStyle(pc.getType()).buildWindow();
 	}
 	private ProjectConstraints[] loadProjects(){

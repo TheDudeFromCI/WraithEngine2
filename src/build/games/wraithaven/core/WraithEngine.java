@@ -19,6 +19,7 @@ public class WraithEngine{
 	private static String assetFolder;
 	public static String projectName;
 	public static int projectBitSize;
+	public static String projectUUID;
 	public static void main(String[] args){
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

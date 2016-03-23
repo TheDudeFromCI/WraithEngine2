@@ -108,7 +108,7 @@ public class TopDownMapStyle implements MapStyle{
 		mntmImportNewChipset.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent event){
-				File file = Algorithms.userChooseImage("Import New Chipset", "Import");
+				File file = Algorithms.userChooseFile("Import New Chipset", "Import", "png");
 				if(file==null){
 					return;
 				}

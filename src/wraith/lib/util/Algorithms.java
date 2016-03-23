@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Calendar;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -52,12 +53,9 @@ public class Algorithms{
 		}
 		return file;
 	}
-	public static File getFile(String... path){
-		if(outputFolder==null){
-			throw new RuntimeException();
-		}
+	public static File getRawFile(String dir, String... path){
 		StringBuilder sb = new StringBuilder(0);
-		sb.append(outputFolder);
+		sb.append(dir);
 		for(String s : path){
 			sb.append(File.separatorChar);
 			sb.append(s);
@@ -71,6 +69,12 @@ public class Algorithms{
 			}
 		}
 		return file;
+	}
+	public static File getFile(String... path){
+		if(outputFolder==null){
+			throw new RuntimeException();
+		}
+		return getRawFile(outputFolder, path);
 	}
 	public static String randomUUID(){
 		final int uuidSize = 24;
@@ -87,18 +91,20 @@ public class Algorithms{
 	 *            - The title of the window.
 	 * @param button
 	 *            - The name on the button.
+	 * @param fileType
+	 *            - The type of file to choose.
 	 * @return The image file the user has chosen, or null if no image was chosen.
 	 */
-	public static File userChooseImage(String title, String button){
+	public static File userChooseFile(String title, String button, String fileType){
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setFileFilter(new FileFilter(){
 			@Override
 			public boolean accept(File file){
-				return file.isDirectory()||file.getName().endsWith(".png");
+				return file.isDirectory()||file.getName().endsWith("."+fileType.toLowerCase());
 			}
 			@Override
 			public String getDescription(){
-				return "*.PNG Files";
+				return "*."+fileType.toUpperCase()+" Files";
 			}
 		});
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -220,5 +226,18 @@ public class Algorithms{
 			}
 		}
 		return area;
+	}
+	public static String getFormattedData(){
+		Calendar cal = Calendar.getInstance();
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH);
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		int minute = cal.get(Calendar.MINUTE);
+		StringBuilder sb = new StringBuilder(16);
+		sb.append(year).append('-').append(month).append('-').append(day);
+		sb.append('_');
+		sb.append(hour).append('-').append(minute);
+		return sb.toString();
 	}
 }

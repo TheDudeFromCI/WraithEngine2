@@ -168,7 +168,7 @@ public class ImageComponent implements MenuComponent{
 					button.addActionListener(new ActionListener(){
 						@Override
 						public void actionPerformed(ActionEvent e){
-							File file = Algorithms.userChooseImage("Select Image", "Select");
+							File file = Algorithms.userChooseFile("Select Image", "Select", "png");
 							if(file==null){
 								return;
 							}

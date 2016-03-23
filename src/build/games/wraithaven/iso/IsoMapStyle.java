@@ -31,6 +31,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
 import wraith.lib.util.Algorithms;
+import wraith.lib.util.BackupUtils;
 
 /**
  * @author TheDudeFromCI
@@ -105,13 +106,14 @@ public class IsoMapStyle implements MapStyle{
 						});
 						mnFile.add(switchProject);
 					}
+					mnFile.addSeparator();
 					{
 						// Import New Tile
 						JMenuItem mntmImportNewChipset = new JMenuItem("Import New Tile");
 						mntmImportNewChipset.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent event){
-								File file = Algorithms.userChooseImage("Import New Tile", "Import");
+								File file = Algorithms.userChooseFile("Import New Tile", "Import", "png");
 								if(file==null){
 									return;
 								}
@@ -126,7 +128,7 @@ public class IsoMapStyle implements MapStyle{
 						mntmImportNewChipset.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent event){
-								File file = Algorithms.userChooseImage("Import New Raw Tile", "Import");
+								File file = Algorithms.userChooseFile("Import New Raw Tile", "Import", "png");
 								if(file==null){
 									return;
 								}
@@ -160,7 +162,7 @@ public class IsoMapStyle implements MapStyle{
 						item.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent e){
-								File file = Algorithms.userChooseImage("Import New Entity", "Import");
+								File file = Algorithms.userChooseFile("Import New Entity", "Import", "png");
 								if(file==null){
 									return;
 								}
@@ -176,8 +178,69 @@ public class IsoMapStyle implements MapStyle{
 						mnFile.add(item);
 					}
 					{
+						// Backups
+						JMenu menu2 = new JMenu("Backups");
+						{
+							// Save
+							JMenuItem item = new JMenuItem("Create");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									File folder = Algorithms.getFile();
+									String date = Algorithms.getFormattedData();
+									File zip = Algorithms.getRawFile(WraithEngine.getWorkspace(), "Backups", WraithEngine.projectUUID, date+".zip");
+									try{
+										BackupUtils.createBackup(folder, zip);
+									}catch(IOException ex){
+										ex.printStackTrace();
+										JOptionPane.showMessageDialog(null, "There has been an error attempting to create this backup.", "Error",
+											JOptionPane.ERROR_MESSAGE);
+										// Just to clean up any mess.
+										if(zip.exists()){
+											zip.delete();
+										}
+									}
+								}
+							});
+							menu2.add(item);
+						}
+						{
+							// Load
+							JMenuItem item = new JMenuItem("Load");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									File file = Algorithms.userChooseFile("Load Backup", "Load", "zip");
+									if(file==null){
+										return;
+									}
+									int response =
+										JOptionPane.showConfirmDialog(null, "Are you sure you want to load this backup? All current data WILL BE LOST!",
+											"Confirm Load", JOptionPane.YES_NO_OPTION);
+									if(response!=JOptionPane.YES_OPTION){
+										return;
+									}
+									File folder = Algorithms.getFile();
+									// Edit all files.
+									try{
+										BackupUtils.loadBackup(folder, file);
+									}catch(IOException ex){
+										ex.printStackTrace();
+										JOptionPane.showMessageDialog(null, "There has been an error attempting to load this backup.", "Error",
+											JOptionPane.ERROR_MESSAGE);
+									}
+									// Close current window, and reload.
+									frame.dispose();
+									new IsoMapStyle().buildWindow();
+								}
+							});
+							menu2.add(item);
+						}
+						mnFile.add(menu2);
+					}
+					mnFile.addSeparator();
+					{
 						// Exit
-						mnFile.addSeparator();
 						JMenuItem mntmExit = new JMenuItem("Exit");
 						mntmExit.addActionListener(new ActionListener(){
 							@Override
@@ -209,7 +272,7 @@ public class IsoMapStyle implements MapStyle{
 										JOptionPane.showMessageDialog(null, "You do not have a map selected!", "Warning", JOptionPane.WARNING_MESSAGE);
 										return;
 									}
-									File image = Algorithms.userChooseImage("Import Background", "Import");
+									File image = Algorithms.userChooseFile("Import Background", "Import", "png");
 									if(image==null){
 										return;
 									}

@@ -79,7 +79,7 @@ public class GuiEditor{
 						item.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent e){
-								File file = Algorithms.userChooseImage("Import Image", "Import");
+								File file = Algorithms.userChooseFile("Import Image", "Import", "png");
 								if(file==null){
 									return;
 								}

@@ -138,7 +138,7 @@ public class ChipsetImporter{
 				chooseNewTopButton.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
-						File file = Algorithms.userChooseImage("Upload Texture", "Open");
+						File file = Algorithms.userChooseFile("Upload Texture", "Open", "png");
 						if(file==null){
 							return;
 						}
@@ -153,7 +153,7 @@ public class ChipsetImporter{
 				chooseNewLeftButton.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
-						File file = Algorithms.userChooseImage("Upload Texture", "Open");
+						File file = Algorithms.userChooseFile("Upload Texture", "Open", "png");
 						if(file==null){
 							return;
 						}
@@ -168,7 +168,7 @@ public class ChipsetImporter{
 				chooseNewRightButton.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
-						File file = Algorithms.userChooseImage("Upload Texture", "Open");
+						File file = Algorithms.userChooseFile("Upload Texture", "Open", "png");
 						if(file==null){
 							return;
 						}

@@ -210,7 +210,8 @@ public class IsoMapStyle implements MapStyle{
 							item.addActionListener(new ActionListener(){
 								@Override
 								public void actionPerformed(ActionEvent e){
-									File file = Algorithms.userChooseFile("Load Backup", "Load", "zip");
+									File backupDir = Algorithms.getRawFile(WraithEngine.getWorkspace(), "Backups", WraithEngine.projectUUID);
+									File file = Algorithms.userChooseFile("Load Backup", "Load", "zip", backupDir);
 									if(file==null){
 										return;
 									}

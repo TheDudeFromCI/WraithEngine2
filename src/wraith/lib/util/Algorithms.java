@@ -110,7 +110,27 @@ public class Algorithms{
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setDialogTitle(title);
-		fileChooser.setAcceptAllFileFilterUsed(true);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.showDialog(null, button);
+		return fileChooser.getSelectedFile();
+	}
+	public static File userChooseFile(String title, String button, String fileType, File dir){
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setFileFilter(new FileFilter(){
+			@Override
+			public boolean accept(File file){
+				return file.isDirectory()||file.getName().endsWith("."+fileType.toLowerCase());
+			}
+			@Override
+			public String getDescription(){
+				return "*."+fileType.toUpperCase()+" Files";
+			}
+		});
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setMultiSelectionEnabled(false);
+		fileChooser.setDialogTitle(title);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.setCurrentDirectory(dir);
 		fileChooser.showDialog(null, button);
 		return fileChooser.getSelectedFile();
 	}

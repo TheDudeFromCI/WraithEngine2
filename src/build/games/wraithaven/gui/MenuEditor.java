@@ -291,7 +291,7 @@ public class MenuEditor extends JPanel{
 		drawPrettySphere(g1, x, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y, COMP_DRAG_ICON_R, Color.blue);
-		drawPrettySphere(g1, x+w*an.getChildX(), y+h*an.getChildY(), COMP_DRAG_ICON_R, Color.blue);
+		drawPrettySphere(g1, x+w*an.getChildX(), y+h*an.getChildY(), COMP_DRAG_ICON_R, Color.red);
 		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
 			9
 		}, 0));

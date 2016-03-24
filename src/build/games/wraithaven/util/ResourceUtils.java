@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.jar.JarEntry;
@@ -33,9 +34,9 @@ public class ResourceUtils{
 			out.flush();
 		}
 	}
-	public static void exportFolder(String path, File file) throws IOException{
+	public static void exportFolder(String path, File file) throws IOException, URISyntaxException{
 		file.mkdirs();
-		File jarFile = new File(ResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+		File jarFile = new File(ResourceUtils.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 		System.out.println("Unpacking Jar.");
 		try(JarFile jar = new JarFile(jarFile)){
 			Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar

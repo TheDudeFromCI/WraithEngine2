@@ -37,6 +37,10 @@ public class MapRenderer implements RenderLoop{
 	}
 	@Override
 	public void windowResized(int width, int height){
+		if(map==null){
+			// Some operating systems call a window resize before the preloop is called.
+			return;
+		}
 		map.getCamera().setOrthographic(0, width, height, 0, -1, 1);
 		GL11.glViewport(0, 0, width, height);
 		if(map.hasBackground()){

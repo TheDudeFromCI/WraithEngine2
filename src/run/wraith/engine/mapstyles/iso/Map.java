@@ -30,9 +30,11 @@ public class Map{
 	private final Universe universe;
 	private final Camera camera;
 	private final ShaderProgram shader;
+	private final boolean hasBackground;
 	public Map(String uuid){
 		this.uuid = uuid;
 		try{
+			// For static map objects, like tiles, combine them all into one giant vao to save space (and lower render calls, if possible).
 			{
 				// Initalize scene.
 				universe = new Universe();
@@ -80,14 +82,18 @@ public class Map{
 			{
 				// Load background, if we have one.
 				BackgroundImage image;
+				boolean hasBackground;
 				try{
 					image = new BackgroundImage(uuid);
 					BackgroundImageModelInstance mod = new BackgroundImageModelInstance(image.getModel(), camera);
 					mod.setRenderIndex(-1);
 					universe.addModel(mod);
+					hasBackground = true;
 				}catch(Exception exception){
 					// We don't. Continue.
+					hasBackground = false;
 				}
+				this.hasBackground = hasBackground;
 			}
 			{
 				// Load Tiles
@@ -182,5 +188,14 @@ public class Map{
 	}
 	public Camera getCamera(){
 		return camera;
+	}
+	public boolean hasBackground(){
+		return hasBackground;
+	}
+	public BackgroundImageModelInstance getBackground(){
+		if(hasBackground){
+			return (BackgroundImageModelInstance)universe.getModels().get(0);
+		}
+		return null;
 	}
 }

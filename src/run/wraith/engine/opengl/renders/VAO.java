@@ -30,8 +30,8 @@ public class VAO{
 	private final int vaoId;
 	private final int vboId;
 	private final int vboiId;
-	private final int indexCount;
-	private final int arrayCount;
+	private int indexCount;
+	private int arrayCount;
 	public VAO(float[] vertices, short[] indices, VaoArray[] arrays){
 		indexCount = indices.length;
 		arrayCount = arrays.length;
@@ -58,6 +58,37 @@ public class VAO{
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		GL30.glBindVertexArray(0);
 		vboiId = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboiId);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+	public void rebuild(float[] vertices, short[] indices, VaoArray[] arrays){
+		// Very similar to generation, except we reuse the references, instead of generating new ones.
+		indexCount = indices.length;
+		arrayCount = arrays.length;
+		FloatBuffer vertexData = BufferUtils.createFloatBuffer(vertices.length);
+		vertexData.put(vertices);
+		vertexData.flip();
+		ShortBuffer indexData = BufferUtils.createShortBuffer(indices.length);
+		indexData.put(indices);
+		indexData.flip();
+		// vaoId = GL30.glGenVertexArrays();
+		GL30.glBindVertexArray(vaoId);
+		// vboId = GL15.glGenBuffers();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboId);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertexData, GL15.GL_STATIC_DRAW);
+		int stride = 0;
+		for(VaoArray a : arrays){
+			stride += a.size*4;
+		}
+		int offset = 0;
+		for(int i = 0; i<arrays.length; i++){
+			GL20.glVertexAttribPointer(i, arrays[i].size, GL11.GL_FLOAT, arrays[i].normalized, stride, offset);
+			offset += arrays[i].size*4;
+		}
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		GL30.glBindVertexArray(0);
+		// vboiId = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboiId);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexData, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);

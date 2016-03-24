@@ -13,6 +13,7 @@ import org.lwjgl.opengl.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 import run.wraith.engine.core.RunProtocol;
+import run.wraith.engine.opengl.renders.UniverseFlags;
 
 /**
  * @author thedudefromci
@@ -92,6 +93,7 @@ public class MainLoop{
 		glfwTerminate();
 	}
 	private void loop(){
+		UniverseFlags.initalize(); // Just take care of this here.
 		runProtocol.preLoop();
 		double lastFrameTime = 0;
 		double currentFrameTime;

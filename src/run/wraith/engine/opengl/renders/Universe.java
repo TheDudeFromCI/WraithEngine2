@@ -92,4 +92,7 @@ public class Universe{
 	public ShaderProgram getShader(){
 		return shader;
 	}
+	public ArrayList<ModelInstance> getModels(){
+		return models;
+	}
 }

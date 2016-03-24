@@ -9,7 +9,6 @@ package run.wraith.engine.mapstyles.iso;
 
 import org.lwjgl.opengl.GL11;
 import run.wraith.engine.opengl.loop.RenderLoop;
-import run.wraith.engine.opengl.renders.UniverseFlags;
 
 /**
  * @author thedudefromci
@@ -21,11 +20,12 @@ public class MapRenderer implements RenderLoop{
 	}
 	public void initalize(){
 		GL11.glClearColor(0, 0, 0, 1);
-		UniverseFlags.initalize();
 	}
 	@Override
 	public void render(){
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		if(!map.hasBackground()){
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		}
 		map.render();
 	}
 	public void dispose(){
@@ -39,5 +39,8 @@ public class MapRenderer implements RenderLoop{
 	public void windowResized(int width, int height){
 		map.getCamera().setOrthographic(0, width, height, 0, -1, 1);
 		GL11.glViewport(0, 0, width, height);
+		if(map.hasBackground()){
+			((BackgroundImageModel)map.getBackground().getModel()).resize(width, height);
+		}
 	}
 }

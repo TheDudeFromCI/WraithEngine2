@@ -31,6 +31,9 @@ public class PrimitiveGenerator{
 			}
 			size = s;
 		}
+		public int getSize(){
+			return size;
+		}
 	}
 	private static class Builder{
 		private final PrimitiveFlags flags;

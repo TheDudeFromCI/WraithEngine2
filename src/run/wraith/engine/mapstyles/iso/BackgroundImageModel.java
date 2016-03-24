@@ -17,7 +17,7 @@ import run.wraith.engine.opengl.utils.VertexBuildData;
  * @author thedudefromci
  */
 public class BackgroundImageModel extends Model{
-	private static VAO generateVAO(BackgroundImage image){
+	private static VAO generateVAO(){
 		PrimitiveGenerator.PrimitiveFlags flags = new PrimitiveGenerator.PrimitiveFlags(true, true);
 		VertexBuildData data = PrimitiveGenerator.generateSquare(800, 600, flags);
 		VAO vao = PrimitiveGenerator.convertToVAO(data, flags);
@@ -25,8 +25,25 @@ public class BackgroundImageModel extends Model{
 	}
 	private final Texture texture;
 	public BackgroundImageModel(BackgroundImage image){
-		super(generateVAO(image));
+		super(generateVAO());
 		texture = new Texture(image.getImage(), true);
+	}
+	public void resize(int width, int height){
+		PrimitiveGenerator.PrimitiveFlags flags = new PrimitiveGenerator.PrimitiveFlags(true, true);
+		VertexBuildData data = PrimitiveGenerator.generateSquare(width, height, flags);
+		float[] vertLocations = data.getVertexLocations();
+		float[] vertices = new float[vertLocations.length/flags.getSize()*5];
+		for(int i = 0; i<vertices.length; i += 5){
+			vertices[i+0] = vertLocations[i/5*flags.getSize()+0];
+			vertices[i+1] = vertLocations[i/5*flags.getSize()+1];
+			vertices[i+2] = vertLocations[i/5*flags.getSize()+2];
+			vertices[i+3] = vertLocations[i/5*flags.getSize()+3];
+			vertices[i+4] = vertLocations[i/5*flags.getSize()+4];
+		}
+		VAO.VaoArray[] parts = new VAO.VaoArray[]{
+			new VAO.VaoArray(3, false), new VAO.VaoArray(2, false)
+		};
+		vao.rebuild(vertices, data.getIndexLocations(), parts);
 	}
 	@Override
 	public void render(){

@@ -11,8 +11,8 @@ package run.wraith.engine.opengl.renders;
  * @author thedudefromci
  */
 public class Model{
-	private final VAO vao;
-	private boolean disposed;
+	protected final VAO vao;
+	protected boolean disposed;
 	public Model(VAO vao){
 		this.vao = vao;
 	}

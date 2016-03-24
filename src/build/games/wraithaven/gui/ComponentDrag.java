@@ -66,9 +66,6 @@ public class ComponentDrag{
 		}
 		float x = (mouseX-mouseXStart)/parentWidth+startX;
 		float y = (mouseY-mouseYStart)/parentHeight+startY;
-		// Round all percents to nearest whole.
-		x = Math.round(x*20)/20f;
-		y = Math.round(y*20)/20f;
 		setPosition(x, y);
 		menuEditor.updateAllLayouts();
 	}

@@ -12,6 +12,7 @@ package build.games.wraithaven.gui;
  */
 public class CompResizeDrag{
 	private static final int SMALLEST_SIZE = 10;
+	private final MenuEditor menuEditor;
 	private final MenuComponent object;
 	private final int mouseXStart;
 	private final int mouseYStart;
@@ -24,7 +25,9 @@ public class CompResizeDrag{
 	private final float anchorStartY;
 	private final float parentStartX;
 	private final float parentStartY;
-	public CompResizeDrag(MenuComponent object, int mouseXStart, int mouseYStart, int corner, float parentWidth, float parentHeight){
+	public CompResizeDrag(
+		MenuEditor menuEditor, MenuComponent object, int mouseXStart, int mouseYStart, int corner, float parentWidth, float parentHeight){
+		this.menuEditor = menuEditor;
 		this.object = object;
 		this.mouseXStart = mouseXStart;
 		this.mouseYStart = mouseYStart;
@@ -63,31 +66,20 @@ public class CompResizeDrag{
 			case 0: // Top Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
-				if(object instanceof ComponentLayout){
-					((ComponentLayout)object).updateLayout();
-				}
 				break;
 			case 1:// Top Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight-y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), 1-(1-anchorStartY)*startHeight/a.getHeight());
-				if(object instanceof ComponentLayout){
-					((ComponentLayout)object).updateLayout();
-				}
 				break;
 			case 2:// Bottom Left
 				a.setSize(Math.max(startWidth-x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(1-(1-anchorStartX)*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
-				if(object instanceof ComponentLayout){
-					((ComponentLayout)object).updateLayout();
-				}
 				break;
 			case 3: // Bottom Right
 				a.setSize(Math.max(startWidth+x, SMALLEST_SIZE), Math.max(startHeight+y, SMALLEST_SIZE));
 				a.setChildPosition(anchorStartX*startWidth/a.getWidth(), anchorStartY*startHeight/a.getHeight());
-				if(object instanceof ComponentLayout){
-					((ComponentLayout)object).updateLayout();
-				}
 				break;
 		}
+		menuEditor.updateAllLayouts();
 	}
 }

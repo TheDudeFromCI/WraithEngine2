@@ -149,14 +149,14 @@ public class MenuEditor extends JPanel{
 									a = getWidth()-BORDER_SPACING-END_BSPACING;
 									b = getHeight()-BORDER_SPACING-END_BSPACING;
 								}
-								compResizeDrag = new CompResizeDrag((MenuComponent)h, x, y, corner, a, b);
+								compResizeDrag = new CompResizeDrag(MenuEditor.this, (MenuComponent)h, x, y, corner, a, b);
 								repaint();
 								return;
 							}
 						}
 					}
 					// Default to move-drag.
-					componentDrag = new ComponentDrag((MenuComponent)h, x, y);
+					componentDrag = new ComponentDrag(MenuEditor.this, (MenuComponent)h, x, y);
 				}
 				repaint();
 			}

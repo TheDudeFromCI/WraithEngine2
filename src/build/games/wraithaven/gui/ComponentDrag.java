@@ -11,13 +11,15 @@ package build.games.wraithaven.gui;
  * @author thedudefromci
  */
 public class ComponentDrag{
+	private final MenuEditor menuEditor;
 	private final MenuComponent component;
 	private final float startX;
 	private final float startY;
 	private final int mouseXStart;
 	private final int mouseYStart;
 	private boolean active;
-	public ComponentDrag(MenuComponent component, int mouseX, int mouseY){
+	public ComponentDrag(MenuEditor menuEditor, MenuComponent component, int mouseX, int mouseY){
+		this.menuEditor = menuEditor;
 		this.component = component;
 		Anchor a = component.getAnchor();
 		startX = a.getParentX();
@@ -68,5 +70,6 @@ public class ComponentDrag{
 		x = Math.round(x*20)/20f;
 		y = Math.round(y*20)/20f;
 		setPosition(x, y);
+		menuEditor.updateAllLayouts();
 	}
 }

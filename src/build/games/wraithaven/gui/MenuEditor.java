@@ -33,7 +33,7 @@ import wraith.lib.util.Algorithms;
  */
 public class MenuEditor extends JPanel{
 	private static final int BORDER_SPACING = 35;
-	private static final int END_BSPACING = BORDER_SPACING;
+	private static final int END_BSPACING = 20;
 	private static final int WINDOW_DRAG_ICON_R = 6;
 	private static final int COMP_DRAG_ICON_R = 5;
 	private static final int RESIZE_ICON_SIZE = 16;

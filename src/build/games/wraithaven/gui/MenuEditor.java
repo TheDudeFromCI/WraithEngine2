@@ -266,13 +266,14 @@ public class MenuEditor extends JPanel{
 				// If we have a selected component.
 				drawSelectionRegion(g);
 			}
-			if(windowDrag!=null){
+			{
+				// Drag window size.
 				String ratio = (width-BORDER_SPACING-bSpaceEndX)+"x"+(height-BORDER_SPACING-bSpaceEndY);
 				float x = width-bSpaceEndX;
 				float y = height-bSpaceEndY;
 				FontMetrics fm = g.getFontMetrics();
 				g.setColor(Color.black);
-				g.drawString(ratio, x+fm.getHeight()/2f, y-fm.getHeight()/2f);
+				g.drawString(ratio, x-fm.getHeight()/2f-fm.stringWidth(ratio), y-fm.getHeight()/2f);
 			}
 		}
 		g.dispose();
@@ -291,7 +292,6 @@ public class MenuEditor extends JPanel{
 		drawPrettySphere(g1, x, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y, COMP_DRAG_ICON_R, Color.blue);
-		drawPrettySphere(g1, x+w*an.getChildX(), y+h*an.getChildY(), COMP_DRAG_ICON_R, Color.red);
 		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
 			9
 		}, 0));
@@ -312,7 +312,8 @@ public class MenuEditor extends JPanel{
 		recY = fm.getStringBounds(percentY, g);
 		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent()+fm.getHeight()/2);
 		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()+fm.getHeight()/2);
-		if(compResizeDrag!=null||componentDrag!=null){
+		{
+			// Draw component position and scale.
 			String size = Math.round((float)selectedImageRegion[3])+"x"+Math.round((float)selectedImageRegion[4]);
 			String pos = "("+Math.round((float)selectedImageRegion[1]-BORDER_SPACING)+", "+Math.round((float)selectedImageRegion[2]-BORDER_SPACING)+")";
 			g.drawString(size, (float)selectedImageRegion[1]+(float)selectedImageRegion[3]+fm.getHeight()/2f,

@@ -197,5 +197,8 @@ public class MenuList extends JPanel{
 			componentList.setMenu(null);
 		}
 		list.setModel(new DefaultComboBoxModel(menus.toArray()));
+		// Delete files.
+		Algorithms.deleteFile(Algorithms.getFile("Menus", menu.getUUID()));
+		Algorithms.deleteFile(Algorithms.getFile("Menus", menu.getUUID()+".dat"));
 	}
 }

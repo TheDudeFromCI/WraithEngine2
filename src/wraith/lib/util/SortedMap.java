@@ -203,4 +203,19 @@ public class SortedMap<K,V> implements Iterable<K>{
 	public V getValueByIndex(int index){
 		return (V)v[index];
 	}
+	public boolean contains(K key){
+		for(int i = 0; i<size; i++){
+			if(k[i].equals(key)){
+				return true;
+			}
+		}
+		return false;
+	}
+	public void ensureSize(int s){
+		if(size>=s){
+			return;
+		}
+		k = Arrays.copyOf(k, s);
+		v = Arrays.copyOf(v, s);
+	}
 }

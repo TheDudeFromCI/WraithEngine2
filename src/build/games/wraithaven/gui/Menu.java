@@ -37,7 +37,40 @@ public class Menu implements MenuComponentHeirarchy{
 	public String toString(){
 		return name;
 	}
+	private void deleteUnusedFiles(){
+		System.out.printf("Cleaning unused menu files for menu '%s'.\n", uuid);
+		File file = Algorithms.getFile("Menus", uuid);
+		if(!file.exists()){
+			System.out.println("Complete.");
+			return;
+		}
+		for(File f : file.listFiles()){
+			String id = f.getName();
+			id = id.substring(0, id.length()-4); // Clip off resource type.
+			if(isFileUsed(this, id)){
+				continue;
+			}
+			// We are not using this resource.
+			System.out.printf("  Deleting unused resource '%s'.\n", f.getName());
+			f.delete();
+		}
+		System.out.println("Complete.");
+	}
+	private boolean isFileUsed(MenuComponentHeirarchy root, String file){
+		if(root instanceof MenuComponent){
+			if(((MenuComponent)root).getUUID().equals(file)){
+				return true;
+			}
+		}
+		for(MenuComponentHeirarchy h : root.getChildren()){
+			if(isFileUsed(h, file)){
+				return true;
+			}
+		}
+		return false;
+	}
 	public void load(){
+		System.out.printf("Loading menu '%s'.\n", uuid);
 		String previousName = name;
 		File file = Algorithms.getFile("Menus", uuid+".dat");
 		if(!file.exists()){
@@ -78,6 +111,7 @@ public class Menu implements MenuComponentHeirarchy{
 			name = previousName;
 			components.clear();
 		}
+		deleteUnusedFiles();
 	}
 	private void loadChildren(BinaryFile bin, MenuComponent parent, short version){
 		int childCount = bin.getInt();

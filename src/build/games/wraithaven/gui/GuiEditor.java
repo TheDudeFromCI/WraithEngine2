@@ -29,13 +29,12 @@ import wraith.lib.util.Algorithms;
  * @author thedudefromci
  */
 public class GuiEditor{
-	private static boolean ALIVE;
+	private static JFrame frame;
 	public static void launch(){
-		if(ALIVE){
+		if(frame!=null){
 			return;
 		}
-		ALIVE = true;
-		JFrame frame = new JFrame();
+		frame = new JFrame();
 		frame.setTitle("GUI Editor");
 		frame.setSize(700, 525);
 		frame.setLocationRelativeTo(null);
@@ -43,12 +42,18 @@ public class GuiEditor{
 		frame.addWindowListener(new WindowAdapter(){
 			@Override
 			public void windowClosing(WindowEvent e){
-				ALIVE = false;
+				frame = null;
 			}
 		});
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		addComponents(frame);
 		frame.setVisible(true);
+	}
+	public static void closeFrame(){
+		if(frame!=null){
+			frame.dispose();
+			frame = null;
+		}
 	}
 	private static void addComponents(JFrame frame){
 		frame.setLayout(new BorderLayout());

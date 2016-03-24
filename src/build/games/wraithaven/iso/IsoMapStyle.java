@@ -99,6 +99,7 @@ public class IsoMapStyle implements MapStyle{
 						switchProject.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent e){
+								GuiEditor.closeFrame();
 								frame.dispose();
 								WraithEngine.updateFolders(WraithEngine.getWorkspace(), WraithEngine.getAssetFolder());
 								new ProjectList();
@@ -191,6 +192,7 @@ public class IsoMapStyle implements MapStyle{
 									File zip = Algorithms.getRawFile(WraithEngine.getWorkspace(), "Backups", WraithEngine.projectUUID, date+".zip");
 									try{
 										BackupUtils.createBackup(folder, zip);
+										JOptionPane.showMessageDialog(null, "Backup '"+date+".zip' created.");
 									}catch(IOException ex){
 										ex.printStackTrace();
 										JOptionPane.showMessageDialog(null, "There has been an error attempting to create this backup.", "Error",
@@ -231,6 +233,7 @@ public class IsoMapStyle implements MapStyle{
 											JOptionPane.ERROR_MESSAGE);
 									}
 									// Close current window, and reload.
+									GuiEditor.closeFrame();
 									frame.dispose();
 									new IsoMapStyle().buildWindow();
 								}

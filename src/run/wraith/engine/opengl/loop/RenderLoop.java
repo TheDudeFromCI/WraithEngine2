@@ -13,4 +13,5 @@ package run.wraith.engine.opengl.loop;
 public interface RenderLoop{
 	public void render();
 	public void update(double delta, double time);
+	public void windowResized(int width, int height);
 }

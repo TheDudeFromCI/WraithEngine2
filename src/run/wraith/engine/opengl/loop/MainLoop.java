@@ -23,6 +23,7 @@ public class MainLoop{
 	private GLFWKeyCallback keyCallback;
 	private GLFWMouseButtonCallback mouseButtonCallback;
 	private GLFWScrollCallback scrollCallback;
+	private GLFWWindowSizeCallback windowSizeCallback;
 	private long window;
 	private boolean windowOpen = false;
 	private int fpsCap = 30;
@@ -82,6 +83,7 @@ public class MainLoop{
 		mouseButtonCallback.release();
 		cursorPosCallback.release();
 		scrollCallback.release();
+		windowSizeCallback.release();
 		errorCallback.release();
 		destoryWindow();
 	}
@@ -154,7 +156,7 @@ public class MainLoop{
 		}
 		glfwDefaultWindowHints();
 		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+		glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 		window = GLFW.glfwCreateWindow(windowInitalizer.getWindowWidth(), windowInitalizer.getWindowHeight(), windowInitalizer.getWindowTitle(),
 			windowInitalizer.isFullscreen()?glfwGetPrimaryMonitor():NULL, NULL);
 		if(window==NULL){
@@ -182,6 +184,12 @@ public class MainLoop{
 			@Override
 			public void invoke(long window, double xoffset, double yoffset){
 				windowInitalizer.getInputHandler().mouseWheel(window, xoffset, yoffset);
+			}
+		});
+		glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback(){
+			@Override
+			public void invoke(long window, int width, int height){
+				runProtocol.getRenderLoop().windowResized(width, height);
 			}
 		});
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());

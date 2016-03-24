@@ -22,8 +22,6 @@ import wraith.lib.util.BinaryFile;
  */
 public class Map{
 	public static final float PIXELS = 64;
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 600;
 	private final int width;
 	private final int height;
 	private final TileInstance[] tiles;
@@ -39,7 +37,7 @@ public class Map{
 				// Initalize scene.
 				universe = new Universe();
 				camera = new Camera();
-				camera.setOrthographic(0, WIDTH, HEIGHT, 0, -1, 1);
+				camera.setOrthographic(0, 800, 600, 0, -1, 1);
 				universe.setCamera(camera);
 				File vertexShader = Algorithms.getAsset("Vertex.txt");
 				File fragmentShader = Algorithms.getAsset("Fragment.txt");

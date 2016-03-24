@@ -19,7 +19,7 @@ import run.wraith.engine.opengl.utils.VertexBuildData;
 public class BackgroundImageModel extends Model{
 	private static VAO generateVAO(BackgroundImage image){
 		PrimitiveGenerator.PrimitiveFlags flags = new PrimitiveGenerator.PrimitiveFlags(true, true);
-		VertexBuildData data = PrimitiveGenerator.generateSquare(Map.WIDTH, Map.HEIGHT, flags);
+		VertexBuildData data = PrimitiveGenerator.generateSquare(800, 600, flags);
 		VAO vao = PrimitiveGenerator.convertToVAO(data, flags);
 		return vao;
 	}

@@ -35,4 +35,9 @@ public class MapRenderer implements RenderLoop{
 	public void update(double delta, double time){
 		map.update(delta, time);
 	}
+	@Override
+	public void windowResized(int width, int height){
+		map.getCamera().setOrthographic(0, width, height, 0, -1, 1);
+		GL11.glViewport(0, 0, width, height);
+	}
 }

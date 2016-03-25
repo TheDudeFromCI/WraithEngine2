@@ -9,6 +9,7 @@ package run.wraith.engine.gui;
 
 import java.util.ArrayList;
 import org.joml.Matrix4f;
+import run.wraith.engine.gui.components.EmptyComponent;
 import run.wraith.engine.gui.components.ImageComponent;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import run.wraith.engine.opengl.renders.Universe;
@@ -63,11 +64,19 @@ public class Menu{
 		switch(typeId){
 			case 0:
 				return new ImageComponent(gui, this, uuid);
+			case 1:
+				return new EmptyComponent();
 			default:
 				throw new RuntimeException("Unknown component type! '"+typeId+"'");
 		}
 	}
 	public void dispose(){
+		dispose(null, children);
+	}
+	private void dispose(MenuComponent comp, ArrayList<MenuComponent> children){
+		if(comp!=null){
+			comp.dispose();
+		}
 		for(MenuComponent m : children){
 			m.dispose();
 		}

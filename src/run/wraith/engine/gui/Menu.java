@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import org.joml.Matrix4f;
 import run.wraith.engine.gui.components.EmptyComponent;
 import run.wraith.engine.gui.components.ImageComponent;
+import run.wraith.engine.gui.components.MigLayout;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import run.wraith.engine.opengl.renders.Universe;
 import wraith.lib.gui.Anchor;
@@ -66,6 +67,8 @@ public class Menu{
 				return new ImageComponent(gui, this, uuid);
 			case 1:
 				return new EmptyComponent();
+			case 2:
+				return new MigLayout();
 			default:
 				throw new RuntimeException("Unknown component type! '"+typeId+"'");
 		}
@@ -118,10 +121,16 @@ public class Menu{
 			y = y+h*a.getParentY()-a.getHeight()*a.getChildY();
 			w = a.getWidth();
 			h = a.getHeight();
-			Matrix4f pos = current.getModel().getPosition();
-			pos.identity();
-			pos.translate(x, y, 0);
-			pos.scale(w, h, 0);
+			ModelInstance model = current.getModel();
+			if(model!=null){
+				Matrix4f pos = model.getPosition();
+				pos.identity();
+				pos.translate(x, y, 0);
+				pos.scale(w, h, 0);
+			}
+			if(current instanceof Layout){
+				((Layout)current).updateLayout();
+			}
 		}
 		for(MenuComponent child : children){
 			updateHeirarchy(child.getChildren(), child, x, y, w, h);

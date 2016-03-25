@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui.components;
 
+import wraith.lib.gui.MigObjectLocation;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;

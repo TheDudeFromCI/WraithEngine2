@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui.components;
 
+import wraith.lib.gui.MigObjectLocation;
 import wraith.lib.gui.Anchor;
 import build.games.wraithaven.gui.DefaultLayout;
 import build.games.wraithaven.gui.Menu;

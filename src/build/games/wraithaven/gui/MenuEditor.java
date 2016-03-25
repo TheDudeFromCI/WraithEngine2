@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import wraith.lib.gui.Anchor;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;

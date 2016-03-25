@@ -7,6 +7,8 @@
  */
 package run.wraith.engine.core;
 
+import wraith.lib.util.SortedMap;
+
 /**
  * @author thedudefromci
  */
@@ -14,4 +16,5 @@ public class GameProgramContraints{
 	public boolean mapPreviewMode;
 	public String mapId;
 	public MapStyle mapStyle;
+	public SortedMap<String,String> softwareArgs;
 }

@@ -5,18 +5,20 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.core;
+package run.wraith.engine.gui;
 
-import run.wraith.engine.opengl.loop.InputHandler;
-import run.wraith.engine.opengl.loop.RenderLoop;
+import java.util.ArrayList;
+import run.wraith.engine.opengl.renders.ModelInstance;
+import wraith.lib.gui.Anchor;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public interface RunProtocol{
-	public RenderLoop getRenderLoop();
-	public InputHandler getInputHandler();
-	public void preLoop();
+public interface MenuComponent{
 	public void dispose();
-	public void initalize();
+	public ArrayList<MenuComponent> getChildren();
+	public ModelInstance getModel();
+	public void load(BinaryFile bin, short version);
+	public Anchor getAnchor();
 }

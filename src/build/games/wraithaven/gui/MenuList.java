@@ -214,4 +214,7 @@ public class MenuList extends JPanel{
 		Algorithms.deleteFile(Algorithms.getFile("Menus", menu.getUUID()));
 		Algorithms.deleteFile(Algorithms.getFile("Menus", menu.getUUID()+".dat"));
 	}
+	public Menu getSelectedMenu(){
+		return componentList.getMenu();
+	}
 }

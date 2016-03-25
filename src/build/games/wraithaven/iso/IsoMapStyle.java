@@ -14,6 +14,7 @@ import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.core.gameprep.GameBuilder;
 import build.games.wraithaven.core.gameprep.SaveHandler;
 import build.games.wraithaven.gui.GuiEditor;
+import build.games.wraithaven.gui.Menu;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -23,6 +24,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -359,9 +361,18 @@ public class IsoMapStyle implements MapStyle{
 											JOptionPane.WARNING_MESSAGE);
 										return;
 									}
+									Menu menu = GuiEditor.getSelectedMenu();
 									GameBuilder builder = new GameBuilder(IsoMapStyle.this);
 									builder.compile();
-									builder.run("-mapStyle:iso", "-mapPreview:"+map.getUUID());
+									ArrayList<String> args = new ArrayList(4);
+									args.add("-mapStyle:iso"); // Runtime Arg
+									args.add("-mapPreview:"+map.getUUID()); // Runtime Arg
+									if(menu!=null){
+										args.add("menu:"+menu.getUUID()); // Run Specific Arg
+									}
+									String[] args2 = new String[args.size()];
+									args.toArray(args2);
+									builder.run(args2);
 								}catch(IOException ex){
 									ex.printStackTrace();
 									JOptionPane.showMessageDialog(null, "There has been an error trying to launch this game.", "Error",

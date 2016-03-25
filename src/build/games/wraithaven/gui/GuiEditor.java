@@ -30,6 +30,7 @@ import wraith.lib.util.Algorithms;
  */
 public class GuiEditor{
 	private static JFrame frame;
+	private static MenuList menuList;
 	public static void launch(){
 		if(frame!=null){
 			return;
@@ -43,6 +44,7 @@ public class GuiEditor{
 			@Override
 			public void windowClosing(WindowEvent e){
 				frame = null;
+				menuList = null;
 			}
 		});
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -53,7 +55,14 @@ public class GuiEditor{
 		if(frame!=null){
 			frame.dispose();
 			frame = null;
+			menuList = null;
 		}
+	}
+	public static Menu getSelectedMenu(){
+		if(frame==null){
+			return null;
+		}
+		return menuList.getSelectedMenu();
 	}
 	private static void addComponents(JFrame frame){
 		frame.setLayout(new BorderLayout());
@@ -61,7 +70,7 @@ public class GuiEditor{
 		MenuComponentList menuComponentList = new MenuComponentList(editor);
 		editor.setMenuComponentList(menuComponentList);
 		JScrollPane scrollPane = new JScrollPane(menuComponentList);
-		MenuList menuList = new MenuList(menuComponentList, editor);
+		menuList = new MenuList(menuComponentList, editor);
 		JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, menuList);
 		leftPanel.setResizeWeight(0.7);
 		JPanel centerPanel = new JPanel();

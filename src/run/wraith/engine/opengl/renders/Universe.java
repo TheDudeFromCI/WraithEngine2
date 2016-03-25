@@ -44,7 +44,7 @@ public class Universe{
 	public UniverseFlags getFlags(){
 		return flags;
 	}
-	public void removeModel(Model model){
+	public void removeModel(ModelInstance model){
 		models.remove(model);
 	}
 	public void render(){

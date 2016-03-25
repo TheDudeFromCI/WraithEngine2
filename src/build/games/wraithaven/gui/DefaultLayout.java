@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import wraith.lib.gui.Anchor;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.Graphics2D;
 import java.util.ArrayList;

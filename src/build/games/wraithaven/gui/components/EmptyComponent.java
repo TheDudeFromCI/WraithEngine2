@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.gui.components;
 
-import build.games.wraithaven.gui.Anchor;
+import wraith.lib.gui.Anchor;
 import build.games.wraithaven.gui.AutoResizableComponent;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;

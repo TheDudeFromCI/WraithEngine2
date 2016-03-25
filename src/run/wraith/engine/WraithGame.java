@@ -15,6 +15,7 @@ import run.wraith.engine.mapstyles.iso.preview.MapPreviewProtocol;
 import run.wraith.engine.opengl.loop.MainLoop;
 import run.wraith.engine.opengl.loop.WindowInitalizer;
 import wraith.lib.util.Algorithms;
+import wraith.lib.util.SortedMap;
 
 /**
  * @author thedudefromci
@@ -33,31 +34,37 @@ public class WraithGame{
 		// final String COMPRESSED = "-compressed";
 		boolean dataSet = false;
 		boolean mapStyle = false;
+		gpc.softwareArgs = new SortedMap(4);
 		for(String s : args){
-			if(s.startsWith(DATA)){
-				if(dataSet){
-					System.err.println("Data folder already set!");
-					continue;
-				}
-				dataSet = true;
-				String dataFolder = s.substring(DATA.length());
-				Algorithms.initalize(dataFolder, new File(".").getAbsolutePath());
-				System.out.println("Program data folder set.\n  '"+dataFolder+"'");
-			}else if(s.startsWith(MAP_PREVIEW)){
-				gpc.mapPreviewMode = true;
-				gpc.mapId = s.substring(MAP_PREVIEW.length());
-				System.out.println("Running as map preview protocol.\n  Map: '"+gpc.mapId+"'");
-			}else if(s.startsWith(MAP_STYLE)){
-				s = s.substring(MAP_STYLE.length());
-				if(s.equals("iso")){
-					gpc.mapStyle = MapStyle.ISOMETRIC;
+			if(s.startsWith("-")){
+				if(s.startsWith(DATA)){
+					if(dataSet){
+						System.err.println("Data folder already set!");
+						continue;
+					}
+					dataSet = true;
+					String dataFolder = s.substring(DATA.length());
+					Algorithms.initalize(dataFolder, new File(".").getAbsolutePath());
+					System.out.println("Program data folder set.\n  '"+dataFolder+"'");
+				}else if(s.startsWith(MAP_PREVIEW)){
+					gpc.mapPreviewMode = true;
+					gpc.mapId = s.substring(MAP_PREVIEW.length());
+					System.out.println("Running as map preview protocol.\n  Map: '"+gpc.mapId+"'");
+				}else if(s.startsWith(MAP_STYLE)){
+					s = s.substring(MAP_STYLE.length());
+					if(s.equals("iso")){
+						gpc.mapStyle = MapStyle.ISOMETRIC;
+					}else{
+						throw new RuntimeException("Unknown map style: '"+s+"'");
+					}
+					mapStyle = true;
+					System.out.println("Set game map style as "+s+".");
 				}else{
-					throw new RuntimeException("Unknown map style: '"+s+"'");
+					throw new RuntimeException("Unknown program argument: '"+s+"'");
 				}
-				mapStyle = true;
-				System.out.println("Set game map style as "+s+".");
 			}else{
-				throw new RuntimeException("Unknown program argument: '"+s+"'");
+				String[] a = s.split(":");
+				gpc.softwareArgs.put(a[0], a[1]);
 			}
 		}
 		if(dataSet&&mapStyle){
@@ -70,7 +77,7 @@ public class WraithGame{
 		if(gpc.mapPreviewMode){
 			switch(gpc.mapStyle){
 				case ISOMETRIC:
-					runGame(new MapPreviewProtocol(gpc.mapId));
+					runGame(new MapPreviewProtocol(gpc.mapId, gpc.softwareArgs));
 					return;
 				default:
 					// Should never be called.

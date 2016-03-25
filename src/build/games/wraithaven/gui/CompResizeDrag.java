@@ -7,6 +7,8 @@
  */
 package build.games.wraithaven.gui;
 
+import wraith.lib.gui.Anchor;
+
 /**
  * @author thedudefromci
  */

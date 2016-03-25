@@ -8,25 +8,24 @@
 package run.wraith.engine.mapstyles.iso.preview;
 
 import run.wraith.engine.core.RunProtocol;
+import run.wraith.engine.gui.Gui;
 import run.wraith.engine.mapstyles.iso.Map;
 import run.wraith.engine.mapstyles.iso.MapRenderer;
 import run.wraith.engine.opengl.loop.InputHandler;
 import run.wraith.engine.opengl.loop.RenderLoop;
+import wraith.lib.util.SortedMap;
 
 /**
  * @author thedudefromci
  */
 public class MapPreviewProtocol implements RunProtocol{
 	private final String mapId;
+	private final SortedMap<String,String> args;
 	private MapRenderer renderer;
 	private MapPreviewInputHandler inputHandler;
-	public MapPreviewProtocol(String mapId){
+	public MapPreviewProtocol(String mapId, SortedMap<String,String> args){
 		this.mapId = mapId;
-	}
-	@Override
-	public void initalize(){
-		renderer = new MapRenderer();
-		inputHandler = new MapPreviewInputHandler();
+		this.args = args;
 	}
 	@Override
 	public RenderLoop getRenderLoop(){
@@ -37,14 +36,35 @@ public class MapPreviewProtocol implements RunProtocol{
 		return inputHandler;
 	}
 	@Override
+	public void initalize(){
+		renderer = new MapRenderer();
+		inputHandler = new MapPreviewInputHandler();
+	}
+	@Override
 	public void preLoop(){
 		renderer.initalize();
 		Map map = new Map(mapId);
 		renderer.setMap(map);
 		inputHandler.loadMap(map);
+		{
+			// Load menu, if available.
+			String menu = getArg("menu", null);
+			if(menu!=null){
+				Gui gui = new Gui();
+				gui.loadMenu(menu);
+				renderer.setGui(gui);
+			}
+		}
 	}
 	@Override
 	public void dispose(){
 		renderer.dispose();
+	}
+	public String getArg(String key, String def){
+		String val = args.get(key);
+		if(val==null){
+			return def;
+		}
+		return val;
 	}
 }

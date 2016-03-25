@@ -8,6 +8,7 @@
 package run.wraith.engine.mapstyles.iso;
 
 import org.lwjgl.opengl.GL11;
+import run.wraith.engine.gui.Gui;
 import run.wraith.engine.opengl.loop.RenderLoop;
 
 /**
@@ -15,8 +16,12 @@ import run.wraith.engine.opengl.loop.RenderLoop;
  */
 public class MapRenderer implements RenderLoop{
 	private Map map;
+	private Gui gui;
 	public void setMap(Map map){
 		this.map = map;
+	}
+	public void setGui(Gui gui){
+		this.gui = gui;
 	}
 	public void initalize(){
 		GL11.glClearColor(0, 0, 0, 1);
@@ -27,9 +32,15 @@ public class MapRenderer implements RenderLoop{
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		}
 		map.render();
+		if(gui!=null){
+			gui.render();
+		}
 	}
 	public void dispose(){
 		map.dispose();
+		if(gui!=null){
+			gui.dispose();
+		}
 	}
 	@Override
 	public void update(double delta, double time){
@@ -45,6 +56,9 @@ public class MapRenderer implements RenderLoop{
 		GL11.glViewport(0, 0, width, height);
 		if(map.hasBackground()){
 			((BackgroundImageModel)map.getBackground().getModel()).resize(width, height);
+		}
+		if(gui!=null){
+			gui.updateWindowSize(width, height);
 		}
 	}
 }

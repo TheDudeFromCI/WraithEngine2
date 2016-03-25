@@ -5,18 +5,28 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.core;
+package run.wraith.engine.gui;
 
-import run.wraith.engine.opengl.loop.InputHandler;
-import run.wraith.engine.opengl.loop.RenderLoop;
+import run.wraith.engine.opengl.renders.Model;
+import run.wraith.engine.opengl.renders.ModelInstance;
+import run.wraith.engine.opengl.renders.Texture;
 
 /**
  * @author thedudefromci
  */
-public interface RunProtocol{
-	public RenderLoop getRenderLoop();
-	public InputHandler getInputHandler();
-	public void preLoop();
-	public void dispose();
-	public void initalize();
+public class ImageModelInstance extends ModelInstance{
+	private final Texture texture;
+	public ImageModelInstance(Model model, Texture texture){
+		super(model);
+		this.texture = texture;
+	}
+	@Override
+	public void render(){
+		texture.bind();
+		super.render();
+		Texture.unbind();
+	}
+	public void dispose(){
+		texture.dispose();
+	}
 }

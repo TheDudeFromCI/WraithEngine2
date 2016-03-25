@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import wraith.lib.gui.Anchor;
 import java.awt.Graphics2D;
 import wraith.lib.util.BinaryFile;
 

@@ -8,6 +8,7 @@
 package build.games.wraithaven.gui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import wraith.lib.util.Algorithms;
@@ -190,5 +191,48 @@ public class Menu implements MenuComponentHeirarchy{
 	public void move(MenuComponentHeirarchy com, int index){
 		components.remove(com);
 		components.add(index, com);
+	}
+	public Menu copy(){
+		// Create new menu.
+		Menu menu = new Menu(Algorithms.randomUUID(), name);
+		// Copy resource folder. (If we can.)
+		File file = Algorithms.getFile("Menus", uuid);
+		if(file.exists()){
+			try{
+				Algorithms.copyFile(file, Algorithms.getFile("Menus", menu.getUUID()), false);
+			}catch(IOException ex){
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(null, "There has been an error copying this menu.", "Error", JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
+		}
+		// And finally copy the data file.
+		file = Algorithms.getFile("Menus", uuid+".dat");
+		if(file.exists()){
+			try{
+				Algorithms.copyFileRename(file, Algorithms.getFile("Menus", menu.getUUID()+".dat"));
+			}catch(IOException ex){
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(null, "There has been an error copying this menu.", "Error", JOptionPane.ERROR_MESSAGE);
+				{
+					// Attempt to delete the resource folder we just copied.
+					file = Algorithms.getFile("Menus", menu.getUUID());
+					try{
+						Algorithms.deleteFile(file);
+					}catch(Exception exception){
+						exception.printStackTrace();
+						// Well, couldn't clean up...
+					}
+				}
+				return null;
+			}
+			// Good. Now that that's done, lets refreash the menu to rename it.
+			menu.load();
+			menu.setName(name+" copy");
+			menu.save();
+			menu.dispose();
+			// Awesome. We're done.
+		}
+		return menu;
 	}
 }

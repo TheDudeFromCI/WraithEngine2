@@ -199,9 +199,28 @@ public class Algorithms{
 		g.dispose();
 		return out;
 	}
-	public static void copyFile(File file, File outFile) throws IOException{
+	public static void copyFile(File file, File outFile, boolean copyRootFolder) throws IOException{
+		if(file.isDirectory()){
+			for(File f : file.listFiles()){
+				copyFile(f, copyRootFolder?new File(outFile, file.getName()):outFile, true);
+			}
+		}else{
+			outFile.mkdirs();
+			try(BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(new File(outFile, file.getName())))){
+				byte[] buffer = new byte[4096];
+				int nBytes;
+				while((nBytes = in.read(buffer))!=-1){
+					out.write(buffer, 0, nBytes);
+				}
+				out.flush();
+			}
+		}
+	}
+	public static void copyFileRename(File file, File newPath) throws IOException{
+		newPath.getParentFile().mkdirs();
 		try(BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(outFile))){
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(newPath))){
 			byte[] buffer = new byte[4096];
 			int nBytes;
 			while((nBytes = in.read(buffer))!=-1){

@@ -127,6 +127,19 @@ public class MenuList extends JPanel{
 							});
 							menu.add(item);
 						}
+						{
+							// Copy
+							JMenuItem item = new JMenuItem("Copy Menu");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									Menu m = ((Menu)list.getSelectedValue()).copy();
+									addMenu(m);
+									JOptionPane.showMessageDialog(null, "Menu copied.", "Complete.", JOptionPane.PLAIN_MESSAGE);
+								}
+							});
+							menu.add(item);
+						}
 					}
 					menu.show(list, e.getX(), e.getY());
 				}

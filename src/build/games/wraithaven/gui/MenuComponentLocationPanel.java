@@ -96,26 +96,26 @@ public class MenuComponentLocationPanel extends JPanel{
 			label.setHorizontalAlignment(JLabel.CENTER);
 			switch(typeId){
 				case 0:
-					label.setText("PX");
+					label.setText("x");
 					break;
 				case 1:
-					label.setText("PY");
+					label.setText("y");
 					break;
 				case 2:
-					label.setText("CX");
+					label.setText("x");
 					break;
 				case 3:
-					label.setText("CY");
+					label.setText("y");
 					break;
 				case 4:
-					label.setText("W");
+					label.setText("w");
 					break;
 				case 5:
-					label.setText("H");
+					label.setText("h");
 					break;
 			}
 			setLayout(new BorderLayout());
-			add(label, BorderLayout.NORTH);
+			add(label, BorderLayout.EAST);
 			add(spinner, BorderLayout.CENTER);
 		}
 		private void updateCompPos(Number value){
@@ -194,6 +194,15 @@ public class MenuComponentLocationPanel extends JPanel{
 		infoBits[i] = new ComponentInfo(i++);
 		infoBits[i] = new ComponentInfo(i++);
 		setLayout(new GridLayout(0, 3, 5, 5));
+		JLabel loc = new JLabel("Loc");
+		loc.setHorizontalAlignment(JLabel.CENTER);
+		add(loc);
+		JLabel anc = new JLabel("Anc");
+		anc.setHorizontalAlignment(JLabel.CENTER);
+		add(anc);
+		JLabel size = new JLabel("Size");
+		size.setHorizontalAlignment(JLabel.CENTER);
+		add(size);
 		add(infoBits[0]);
 		add(infoBits[2]);
 		add(infoBits[4]);

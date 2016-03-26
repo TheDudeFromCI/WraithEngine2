@@ -8,6 +8,7 @@
 package build.games.wraithaven.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import javax.swing.JLabel;
@@ -94,28 +95,29 @@ public class MenuComponentLocationPanel extends JPanel{
 			spinner.setModel(model);
 			JLabel label = new JLabel("");
 			label.setHorizontalAlignment(JLabel.CENTER);
+			label.setFont(new Font("Courier", Font.PLAIN, 10));
 			switch(typeId){
 				case 0:
-					label.setText("x");
+					label.setText("X");
 					break;
 				case 1:
-					label.setText("y");
+					label.setText("Y");
 					break;
 				case 2:
-					label.setText("x");
+					label.setText("X");
 					break;
 				case 3:
-					label.setText("y");
+					label.setText("Y");
 					break;
 				case 4:
-					label.setText("w");
+					label.setText("W");
 					break;
 				case 5:
-					label.setText("h");
+					label.setText("H");
 					break;
 			}
-			setLayout(new BorderLayout());
-			add(label, BorderLayout.EAST);
+			setLayout(new BorderLayout(5, 0));
+			add(label, BorderLayout.WEST);
 			add(spinner, BorderLayout.CENTER);
 		}
 		private void updateCompPos(Number value){
@@ -193,22 +195,22 @@ public class MenuComponentLocationPanel extends JPanel{
 		infoBits[i] = new ComponentInfo(i++);
 		infoBits[i] = new ComponentInfo(i++);
 		infoBits[i] = new ComponentInfo(i++);
-		setLayout(new GridLayout(0, 3, 5, 5));
-		JLabel loc = new JLabel("Loc");
-		loc.setHorizontalAlignment(JLabel.CENTER);
-		add(loc);
-		JLabel anc = new JLabel("Anc");
-		anc.setHorizontalAlignment(JLabel.CENTER);
-		add(anc);
-		JLabel size = new JLabel("Size");
-		size.setHorizontalAlignment(JLabel.CENTER);
-		add(size);
-		add(infoBits[0]);
-		add(infoBits[2]);
-		add(infoBits[4]);
-		add(infoBits[1]);
-		add(infoBits[3]);
-		add(infoBits[5]);
+		setLayout(new BorderLayout(10, 0));
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new GridLayout(0, 1, 5, 5));
+		panel1.add(new JLabel("Loc"));
+		panel1.add(new JLabel("Anc"));
+		panel1.add(new JLabel("Size"));
+		add(panel1, BorderLayout.WEST);
+		JPanel panel2 = new JPanel();
+		panel2.setLayout(new GridLayout(0, 2, 5, 5));
+		add(panel2, BorderLayout.CENTER);
+		panel2.add(infoBits[0]);
+		panel2.add(infoBits[1]);
+		panel2.add(infoBits[2]);
+		panel2.add(infoBits[3]);
+		panel2.add(infoBits[4]);
+		panel2.add(infoBits[5]);
 	}
 	public void updateComponent(){
 		for(ComponentInfo info : infoBits){

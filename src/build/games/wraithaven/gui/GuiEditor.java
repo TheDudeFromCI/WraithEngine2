@@ -72,8 +72,10 @@ public class GuiEditor{
 		editor.setMenuComponentList(menuComponentList);
 		JScrollPane scrollPane = new JScrollPane(menuComponentList);
 		menuList = new MenuList(menuComponentList, editor);
-		JSplitPane upperPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, componentInfo);
-		upperPanel.setResizeWeight(0.8);
+		JPanel upperPanel = new JPanel();
+		upperPanel.setLayout(new BorderLayout());
+		upperPanel.add(componentInfo, BorderLayout.SOUTH);
+		upperPanel.add(scrollPane, BorderLayout.CENTER);
 		JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, upperPanel, menuList);
 		leftPanel.setResizeWeight(0.8);
 		JPanel centerPanel = new JPanel();

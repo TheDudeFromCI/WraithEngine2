@@ -163,14 +163,13 @@ public class MenuComponentLocationPanel extends JPanel{
 		infoBits[i] = new ComponentInfo(i++);
 		infoBits[i] = new ComponentInfo(i++);
 		infoBits[i] = new ComponentInfo(i++);
-		setLayout(new GridLayout(0, 4, 5, 5));
-		i = 0;
-		add(infoBits[i++]);
-		add(infoBits[i++]);
-		add(infoBits[i++]);
-		add(infoBits[i++]);
-		add(infoBits[i++]);
-		add(infoBits[i++]);
+		setLayout(new GridLayout(0, 3, 5, 5));
+		add(infoBits[0]);
+		add(infoBits[2]);
+		add(infoBits[4]);
+		add(infoBits[1]);
+		add(infoBits[3]);
+		add(infoBits[5]);
 	}
 	public void updateComponent(){
 		for(ComponentInfo info : infoBits){

@@ -68,6 +68,7 @@ public class GuiEditor{
 		frame.setLayout(new BorderLayout());
 		MenuComponentLocationPanel componentInfo = new MenuComponentLocationPanel();
 		MenuEditor editor = new MenuEditor(componentInfo);
+		componentInfo.setMenuEditor(editor);
 		MenuComponentList menuComponentList = new MenuComponentList(editor, componentInfo);
 		editor.setMenuComponentList(menuComponentList);
 		JScrollPane scrollPane = new JScrollPane(menuComponentList);

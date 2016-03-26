@@ -16,6 +16,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import wraith.lib.gui.Anchor;
 
 /**
  * @author thedudefromci
@@ -59,6 +60,7 @@ public class MenuComponentLocationPanel extends JPanel{
 						}else{
 							value = Integer.valueOf(visual);
 						}
+						updateCompPos(value);
 					}
 					for(ChangeListener listener : listeners){
 						listener.stateChanged(new ChangeEvent(this));
@@ -67,7 +69,7 @@ public class MenuComponentLocationPanel extends JPanel{
 				@Override
 				public Object getNextValue(){
 					if(isPercent()){
-						return String.format("%.1f", value.floatValue()*100+1)+"%";
+						return String.format("%.0f", value.floatValue()*100+1)+"%";
 					}else{
 						return String.valueOf(value.intValue()+1)+"";
 					}
@@ -75,7 +77,7 @@ public class MenuComponentLocationPanel extends JPanel{
 				@Override
 				public Object getPreviousValue(){
 					if(isPercent()){
-						return String.format("%.1f", value.floatValue()*100-1)+"%";
+						return String.format("%.0f", value.floatValue()*100-1)+"%";
 					}else{
 						return String.valueOf(value.intValue()-1);
 					}
@@ -116,6 +118,33 @@ public class MenuComponentLocationPanel extends JPanel{
 			add(label, BorderLayout.NORTH);
 			add(spinner, BorderLayout.CENTER);
 		}
+		private void updateCompPos(Number value){
+			if(selectedComponent==null){
+				return;
+			}
+			Anchor a = selectedComponent.getAnchor();
+			switch(typeId){
+				case 0:
+					a.setParentPosition(value.floatValue(), a.getParentY());
+					break;
+				case 1:
+					a.setParentPosition(a.getParentX(), value.floatValue());
+					break;
+				case 2:
+					a.setChildPosition(value.floatValue(), a.getChildY());
+					break;
+				case 3:
+					a.setChildPosition(a.getChildX(), value.floatValue());
+					break;
+				case 4:
+					a.setSize(value.intValue(), a.getHeight());
+					break;
+				case 5:
+					a.setSize(a.getWidth(), value.intValue());
+					break;
+			}
+			menuEditor.updateAllLayouts();
+		}
 		private void updateValue(){
 			if(selectedComponent==null){
 				if(isPercent()){
@@ -127,10 +156,10 @@ public class MenuComponentLocationPanel extends JPanel{
 			}
 			switch(typeId){
 				case 0:
-					spinner.setValue(selectedComponent.getAnchor().getParentY());
+					spinner.setValue(selectedComponent.getAnchor().getParentX());
 					break;
 				case 1:
-					spinner.setValue(selectedComponent.getAnchor().getParentX());
+					spinner.setValue(selectedComponent.getAnchor().getParentY());
 					break;
 				case 2:
 					spinner.setValue(selectedComponent.getAnchor().getChildX());
@@ -155,6 +184,7 @@ public class MenuComponentLocationPanel extends JPanel{
 	}
 	private final ComponentInfo[] infoBits = new ComponentInfo[6];
 	private MenuComponent selectedComponent;
+	private MenuEditor menuEditor;
 	public MenuComponentLocationPanel(){
 		int i = 0;
 		infoBits[i] = new ComponentInfo(i++);
@@ -179,5 +209,8 @@ public class MenuComponentLocationPanel extends JPanel{
 	public void setComponent(MenuComponent component){
 		selectedComponent = component;
 		updateComponent();
+	}
+	public void setMenuEditor(MenuEditor menuEditor){
+		this.menuEditor = menuEditor;
 	}
 }

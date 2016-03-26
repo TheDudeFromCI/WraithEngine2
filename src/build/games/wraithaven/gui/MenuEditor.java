@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.gui;
 
-import wraith.lib.gui.Anchor;
 import build.games.wraithaven.util.InputAdapter;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -27,6 +26,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import wraith.lib.gui.Anchor;
 import wraith.lib.util.Algorithms;
 
 /**
@@ -42,6 +42,7 @@ public class MenuEditor extends JPanel{
 	private final Object[] selectedImageRegion = new Object[5];
 	private final BufferedImage autoResizeIcon;
 	private final Area resizeIconClip;
+	private final MenuComponentLocationPanel componentInfo;
 	private Menu menu;
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
@@ -49,7 +50,8 @@ public class MenuEditor extends JPanel{
 	private CompResizeDrag compResizeDrag;
 	private boolean overResizeIcon;
 	private BufferedImage tempImage;
-	public MenuEditor(){
+	public MenuEditor(MenuComponentLocationPanel componentInfo){
+		this.componentInfo = componentInfo;
 		BufferedImage autoResizeIconTemp;
 		try{
 			autoResizeIconTemp = ImageIO.read(Algorithms.getAsset("Auto Resize.png"));
@@ -408,6 +410,7 @@ public class MenuEditor extends JPanel{
 		}
 		// It's best to update layouts with parent node first, incase the size needs to be changed.
 		updateAllLayouts(menu);
+		componentInfo.updateComponent();
 	}
 	private void updateAllLayouts(MenuComponentHeirarchy h){
 		if(h instanceof ComponentLayout){

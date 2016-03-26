@@ -66,13 +66,16 @@ public class GuiEditor{
 	}
 	private static void addComponents(JFrame frame){
 		frame.setLayout(new BorderLayout());
-		MenuEditor editor = new MenuEditor();
-		MenuComponentList menuComponentList = new MenuComponentList(editor);
+		MenuComponentLocationPanel componentInfo = new MenuComponentLocationPanel();
+		MenuEditor editor = new MenuEditor(componentInfo);
+		MenuComponentList menuComponentList = new MenuComponentList(editor, componentInfo);
 		editor.setMenuComponentList(menuComponentList);
 		JScrollPane scrollPane = new JScrollPane(menuComponentList);
 		menuList = new MenuList(menuComponentList, editor);
-		JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, menuList);
-		leftPanel.setResizeWeight(0.7);
+		JSplitPane upperPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, scrollPane, componentInfo);
+		upperPanel.setResizeWeight(0.8);
+		JSplitPane leftPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, upperPanel, menuList);
+		leftPanel.setResizeWeight(0.8);
 		JPanel centerPanel = new JPanel();
 		centerPanel.setLayout(new BorderLayout());
 		centerPanel.add(editor, BorderLayout.CENTER);

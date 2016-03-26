@@ -60,12 +60,14 @@ public class MenuComponentList extends JPanel{
 	private final BufferedImage arrow5;
 	private final BufferedImage arrow6;
 	private final MenuEditor menuEditor;
+	private final MenuComponentLocationPanel componentInfo;
 	private Menu menu;
 	private MenuComponentHeirarchy selectedComponent;
 	private TreeDrag treeDrag;
 	private MenuComponentHeirarchy mousedOver;
-	public MenuComponentList(MenuEditor menuEditor){
+	public MenuComponentList(MenuEditor menuEditor, MenuComponentLocationPanel componentInfo){
 		this.menuEditor = menuEditor;
+		this.componentInfo = componentInfo;
 		arrow1 = attemptLoadImage("Arrow1.png");
 		arrow2 = attemptLoadImage("Arrow2.png");
 		arrow3 = attemptLoadImage("Arrow3.png");
@@ -85,7 +87,7 @@ public class MenuComponentList extends JPanel{
 					int y = event.getY();
 					int r = checkForToggleCollapse(x, y, 0, 0, menu, true);
 					if(r!=-1){
-						selectedComponent = null;
+						setSelectedComponent(null);
 					}
 					if(selectedComponent!=null&&selectedComponent.getParent()!=null){
 						// Make sure we have a parent, otherwise we couldn't exactly drag stuff.
@@ -99,7 +101,7 @@ public class MenuComponentList extends JPanel{
 					int r = checkForToggleCollapse(x, y, 0, 0, menu, false);
 					if(r!=-1){
 						// Nah, just clicking void. Go ahead and return.
-						selectedComponent = null;
+						setSelectedComponent(null);
 						return;
 					}
 					JPopupMenu menu = new JPopupMenu();
@@ -152,7 +154,7 @@ public class MenuComponentList extends JPanel{
 										// Just in case it is for some reason...
 										parent.setCollapsed(false);
 									}
-									selectedComponent = null;
+									setSelectedComponent(null);
 									MenuComponentList.this.menu.save();
 									repaint();
 								}
@@ -175,7 +177,7 @@ public class MenuComponentList extends JPanel{
 					return -1;
 				}
 				if(y>=h&&y<h+TEXT_HEIGHT){
-					selectedComponent = com;
+					setSelectedComponent(com);
 					repaint();
 					return -1;
 				}
@@ -301,7 +303,7 @@ public class MenuComponentList extends JPanel{
 		if(this.menu==menu){
 			return;
 		}
-		selectedComponent = null;
+		setSelectedComponent(null);
 		treeDrag = null;
 		mousedOver = null;
 		if(this.menu!=null){
@@ -312,7 +314,6 @@ public class MenuComponentList extends JPanel{
 		if(this.menu!=null){
 			menu.load();
 		}
-		selectedComponent = null;
 		repaint();
 	}
 	@Override
@@ -480,6 +481,9 @@ public class MenuComponentList extends JPanel{
 	}
 	public void setSelectedComponent(MenuComponentHeirarchy selectedComponent){
 		this.selectedComponent = selectedComponent;
+		if(selectedComponent instanceof MenuComponent){
+			componentInfo.setComponent((MenuComponent)selectedComponent);
+		}
 		repaint();
 	}
 }

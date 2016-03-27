@@ -26,7 +26,7 @@ public class ImageComponent implements MenuComponent{
 	private final ArrayList<MenuComponent> children = new ArrayList(4);
 	private final ImageModelInstance model;
 	private final Anchor anchor;
-	public ImageComponent(Gui gui, Menu menu, String uuid){
+	public ImageComponent(Gui gui, Menu menu, String uuid, int depth){
 		Texture texture;
 		{
 			// Load Texture
@@ -38,7 +38,7 @@ public class ImageComponent implements MenuComponent{
 				texture = new Texture(file, false);
 			}
 		}
-		model = new ImageModelInstance(gui.getModel(), texture);
+		model = new ImageModelInstance(gui.getModel(), texture, menu, depth);
 		anchor = new Anchor();
 	}
 	@Override

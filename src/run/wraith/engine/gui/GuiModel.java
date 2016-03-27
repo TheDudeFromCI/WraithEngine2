@@ -7,38 +7,10 @@
  */
 package run.wraith.engine.gui;
 
-import run.wraith.engine.opengl.renders.Model;
-import run.wraith.engine.opengl.renders.ModelInstance;
-import run.wraith.engine.opengl.renders.Texture;
-
 /**
  * @author thedudefromci
  */
-public class ImageModelInstance extends ModelInstance implements GuiModel{
-	private final Texture texture;
-	private final Menu menu;
-	private final int depth;
-	public ImageModelInstance(Model model, Texture texture, Menu menu, int depth){
-		super(model);
-		this.texture = texture;
-		this.menu = menu;
-		this.depth = depth;
-	}
-	@Override
-	public void render(){
-		texture.bind();
-		super.render();
-		Texture.unbind();
-	}
-	public void dispose(){
-		texture.dispose();
-	}
-	@Override
-	public int getDepth(){
-		return depth;
-	}
-	@Override
-	public Menu getMenu(){
-		return menu;
-	}
+public interface GuiModel{
+	public int getDepth();
+	public Menu getMenu();
 }

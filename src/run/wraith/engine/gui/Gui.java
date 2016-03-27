@@ -9,8 +9,10 @@ package run.wraith.engine.gui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import run.wraith.engine.opengl.renders.Camera;
 import run.wraith.engine.opengl.renders.Model;
+import run.wraith.engine.opengl.renders.ModelInstance;
 import run.wraith.engine.opengl.renders.ShaderProgram;
 import run.wraith.engine.opengl.renders.Universe;
 import run.wraith.engine.opengl.renders.VAO;
@@ -71,6 +73,17 @@ public class Gui{
 		Menu menu = new Menu(this, uuid);
 		activeMenus.add(menu);
 		menu.addAllComponents(universe);
+		universe.sortModels(new Comparator<ModelInstance>(){
+			@Override
+			public int compare(ModelInstance o1, ModelInstance o2){
+				GuiModel a = (GuiModel)o1;
+				GuiModel b = (GuiModel)o2;
+				if(a.getMenu()==b.getMenu()){
+					return Integer.compare(a.getDepth(), b.getDepth());
+				}
+				return Integer.compare(activeMenus.indexOf(a.getMenu()), activeMenus.indexOf(b.getMenu()));
+			}
+		});
 	}
 	public void unloadMenu(String uuid){
 		Menu menu = null;

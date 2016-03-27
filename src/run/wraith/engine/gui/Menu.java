@@ -38,7 +38,7 @@ public class Menu{
 			switch(version){
 				case 0:{
 					bin.getString(); // Menu Name (Not Important)
-					loadChildren(bin, children, version);
+					loadChildren(bin, children, version, 0);
 					break;
 				}
 				default:
@@ -50,21 +50,21 @@ public class Menu{
 			System.exit(1);
 		}
 	}
-	private void loadChildren(BinaryFile bin, ArrayList<MenuComponent> compList, short version){
+	private void loadChildren(BinaryFile bin, ArrayList<MenuComponent> compList, short version, int depth){
 		int childCount = bin.getInt();
 		for(int i = 0; i<childCount; i++){
 			int compId = bin.getInt();
 			String compUuid = bin.getString();
-			MenuComponent comp = newComponent(gui, compId, compUuid);
+			MenuComponent comp = newComponent(gui, compId, compUuid, depth);
 			comp.load(bin, version);
 			compList.add(comp);
-			loadChildren(bin, comp.getChildren(), version);
+			loadChildren(bin, comp.getChildren(), version, depth+1);
 		}
 	}
-	private MenuComponent newComponent(Gui gui, int typeId, String uuid){
+	private MenuComponent newComponent(Gui gui, int typeId, String uuid, int depth){
 		switch(typeId){
 			case 0:
-				return new ImageComponent(gui, this, uuid);
+				return new ImageComponent(gui, this, uuid, depth);
 			case 1:
 				return new EmptyComponent();
 			case 2:

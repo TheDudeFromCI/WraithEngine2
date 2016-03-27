@@ -24,6 +24,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import wraith.lib.gui.Anchor;
@@ -264,7 +265,12 @@ public class MenuEditor extends JPanel{
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
 			drawPrettySphere(g, width-bSpaceEndX, height-bSpaceEndY, WINDOW_DRAG_ICON_R, Color.gray);
 			selectedImageRegion[0] = null;
-			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
+			ArrayList<MenuComponentDrawPosition> drawOrder = new ArrayList(64);
+			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY, drawOrder, 0);
+			drawOrder.sort(null);
+			for(MenuComponentDrawPosition draw : drawOrder){
+				draw.draw(g);
+			}
 			if(selectedImageRegion[0]!=null){
 				// If we have a selected component.
 				drawSelectionRegion(g);
@@ -380,14 +386,15 @@ public class MenuEditor extends JPanel{
 		g.fillOval(0, 0, size-1, size-1);
 		g.dispose();
 	}
-	private void drawHeirachry(Graphics2D g, MenuComponentHeirarchy h, float x, float y, float width, float height){
+	private void drawHeirachry(Graphics2D g, MenuComponentHeirarchy h, float x, float y, float width, float height,
+		ArrayList<MenuComponentDrawPosition> drawOrder, int depth){
 		if(h instanceof MenuComponent){
 			Anchor a = ((MenuComponent)h).getAnchor();
 			x = x+width*a.getParentX()-a.getWidth()*a.getChildX();
 			y = y+height*a.getParentY()-a.getHeight()*a.getChildY();
 			width = a.getWidth();
 			height = a.getHeight();
-			((MenuComponent)h).draw(g, x, y, width, height);
+			drawOrder.add(new MenuComponentDrawPosition((MenuComponent)h, depth, x, y, width, height));
 			if(componentList.getSelectedComponent()==h){
 				// Turn on selection region.
 				selectedImageRegion[0] = h;
@@ -397,8 +404,9 @@ public class MenuEditor extends JPanel{
 				selectedImageRegion[4] = height;
 			}
 		}
+		depth++;
 		for(MenuComponentHeirarchy com : h.getChildren()){
-			drawHeirachry(g, com, x, y, width, height);
+			drawHeirachry(g, com, x, y, width, height, drawOrder, depth);
 		}
 	}
 	public void setTempBackground(BufferedImage tempImage){

@@ -188,19 +188,18 @@ public class MenuComponentLocationPanel extends JPanel{
 	private MenuComponent selectedComponent;
 	private MenuEditor menuEditor;
 	public MenuComponentLocationPanel(){
-		int i = 0;
-		infoBits[i] = new ComponentInfo(i++);
-		infoBits[i] = new ComponentInfo(i++);
-		infoBits[i] = new ComponentInfo(i++);
-		infoBits[i] = new ComponentInfo(i++);
-		infoBits[i] = new ComponentInfo(i++);
-		infoBits[i] = new ComponentInfo(i++);
+		infoBits[0] = new ComponentInfo(0);
+		infoBits[1] = new ComponentInfo(1);
+		infoBits[2] = new ComponentInfo(2);
+		infoBits[3] = new ComponentInfo(3);
+		infoBits[4] = new ComponentInfo(4);
+		infoBits[5] = new ComponentInfo(5);
 		setLayout(new BorderLayout(10, 0));
 		JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayout(0, 1, 5, 5));
-		panel1.add(new JLabel("Loc"));
-		panel1.add(new JLabel("Anc"));
-		panel1.add(new JLabel("Size"));
+		panel1.add(new JLabel("Location:"));
+		panel1.add(new JLabel("Anchor:"));
+		panel1.add(new JLabel("Size:"));
 		add(panel1, BorderLayout.WEST);
 		JPanel panel2 = new JPanel();
 		panel2.setLayout(new GridLayout(0, 2, 5, 5));

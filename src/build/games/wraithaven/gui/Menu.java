@@ -18,7 +18,7 @@ import wraith.lib.util.BinaryFile;
  * @author thedudefromci
  */
 public class Menu implements MenuComponentHeirarchy{
-	private static final short FILE_VERSION = 0;
+	private static final short FILE_VERSION = 1;
 	private final ArrayList<MenuComponentHeirarchy> components = new ArrayList(8);
 	private final String uuid;
 	private String name;
@@ -90,8 +90,7 @@ public class Menu implements MenuComponentHeirarchy{
 					for(int i = 0; i<componentCount; i++){
 						int componentId = bin.getInt();
 						String comUuid = bin.getString();
-						MenuComponent com = MenuComponentFactory.newInstance(componentId, comUuid);
-						com.load(this, bin, version);
+						MenuComponent com = MenuComponentFactory.newComponentInstance(componentId, comUuid, version, this, bin);
 						components.add(com);
 						com.setParent(this);
 						loadChildren(bin, com, version);
@@ -119,8 +118,7 @@ public class Menu implements MenuComponentHeirarchy{
 		for(int i = 0; i<childCount; i++){
 			int componentId = bin.getInt();
 			String comUuid = bin.getString();
-			MenuComponent com = MenuComponentFactory.newInstance(componentId, comUuid);
-			com.load(this, bin, version);
+			MenuComponent com = MenuComponentFactory.newComponentInstance(componentId, comUuid, version, this, bin);
 			parent.addChild(com);
 			com.setParent(parent);
 			loadChildren(bin, com, version);

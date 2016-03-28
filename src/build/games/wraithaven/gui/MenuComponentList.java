@@ -9,7 +9,6 @@ package build.games.wraithaven.gui;
 
 import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
-import build.games.wraithaven.gui.components.MigLayout;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
 import java.awt.BasicStroke;
@@ -114,12 +113,6 @@ public class MenuComponentList extends JPanel{
 								// Components
 								addComponentToList(menu2, "Empty", EmptyComponent.class);
 								addComponentToList(menu2, "Image", ImageComponent.class);
-								{
-									// Layouts
-									JMenu menu3 = new JMenu("Layout");
-									addComponentToList(menu3, "Mig", MigLayout.class);
-									menu2.add(menu3);
-								}
 							}
 							menu.add(menu2);
 						}

@@ -7,11 +7,12 @@
  */
 package build.games.wraithaven.gui.components;
 
-import wraith.lib.gui.Anchor;
 import build.games.wraithaven.gui.AutoResizableComponent;
+import build.games.wraithaven.gui.ComponentLayout;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
+import build.games.wraithaven.gui.MenuComponentFactory;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.Color;
@@ -19,6 +20,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import wraith.lib.gui.Anchor;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -34,6 +36,7 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	private boolean mousedOver;
 	private MenuComponentHeirarchy parent;
 	private String name = "Empty Component";
+	private ComponentLayout layout;
 	public EmptyComponent(String uuid){
 		this.uuid = uuid;
 		anchor = new Anchor();
@@ -47,6 +50,15 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 				anchor.load(bin);
 				break;
 			}
+			case 1:{
+				name = bin.getString();
+				anchor.load(bin);
+				if(bin.getBoolean()){
+					int layoutId = bin.getInt();
+					layout = MenuComponentFactory.newLayoutInstance(layoutId, version, menu, bin);
+				}
+				break;
+			}
 			default:
 				throw new RuntimeException();
 		}
@@ -55,6 +67,12 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	public void save(Menu menu, BinaryFile bin){
 		bin.addStringAllocated(name);
 		anchor.save(bin);
+		bin.allocateBytes(1+(layout==null?0:4));
+		bin.addBoolean(layout!=null);
+		if(layout!=null){
+			bin.addInt(layout.getId());
+			layout.saveLayout(menu, bin);
+		}
 	}
 	@Override
 	public int getId(){
@@ -202,5 +220,13 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 		for(MenuComponentHeirarchy c2 : c.getChildren()){
 			findBounds(c2, bounds, x, y, w, h);
 		}
+	}
+	@Override
+	public ComponentLayout getLayout(){
+		return layout;
+	}
+	@Override
+	public void setLayout(ComponentLayout layout){
+		this.layout = layout;
 	}
 }

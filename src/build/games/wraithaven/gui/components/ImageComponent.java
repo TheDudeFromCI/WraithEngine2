@@ -7,10 +7,11 @@
  */
 package build.games.wraithaven.gui.components;
 
-import wraith.lib.gui.Anchor;
+import build.games.wraithaven.gui.ComponentLayout;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
+import build.games.wraithaven.gui.MenuComponentFactory;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
 import build.games.wraithaven.util.ImagePanel;
 import build.games.wraithaven.util.VerticalFlowLayout;
@@ -28,6 +29,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import wraith.lib.gui.Anchor;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
@@ -46,6 +48,7 @@ public class ImageComponent implements MenuComponent{
 	private String name = "Image Component";
 	private BufferedImage image;
 	boolean saveImage;
+	private ComponentLayout layout;
 	public ImageComponent(String uuid){
 		this.uuid = uuid;
 		anchor = new Anchor();
@@ -77,6 +80,25 @@ public class ImageComponent implements MenuComponent{
 				anchor.load(bin);
 				break;
 			}
+			case 1:{
+				name = bin.getString();
+				if(bin.getBoolean()){
+					defaultImage = false;
+					try{
+						image = ImageIO.read(Algorithms.getFile("Menus", menu.getUUID(), uuid+".png"));
+					}catch(Exception exception){
+						exception.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Image component image failed to load!", "Error", JOptionPane.ERROR_MESSAGE);
+						image = null;
+					}
+				}
+				anchor.load(bin);
+				if(bin.getBoolean()){
+					int layoutId = bin.getInt();
+					layout = MenuComponentFactory.newLayoutInstance(layoutId, version, menu, bin);
+				}
+				break;
+			}
 			default:
 				throw new RuntimeException();
 		}
@@ -95,6 +117,12 @@ public class ImageComponent implements MenuComponent{
 				exception.printStackTrace();
 				JOptionPane.showMessageDialog(null, "Image component image failed to save!", "Error", JOptionPane.ERROR_MESSAGE);
 			}
+		}
+		bin.allocateBytes(1+(layout==null?0:4));
+		bin.addBoolean(layout!=null);
+		if(layout!=null){
+			bin.addInt(layout.getId());
+			layout.saveLayout(menu, bin);
 		}
 	}
 	@Override
@@ -226,5 +254,13 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public void draw(Graphics2D g, float x, float y, float w, float h){
 		g.drawImage(image, Math.round(x), Math.round(y), Math.round(w), Math.round(h), null);
+	}
+	@Override
+	public ComponentLayout getLayout(){
+		return layout;
+	}
+	@Override
+	public void setLayout(ComponentLayout layout){
+		this.layout = layout;
 	}
 }

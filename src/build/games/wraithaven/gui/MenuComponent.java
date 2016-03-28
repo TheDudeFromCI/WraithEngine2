@@ -7,8 +7,8 @@
  */
 package build.games.wraithaven.gui;
 
-import wraith.lib.gui.Anchor;
 import java.awt.Graphics2D;
+import wraith.lib.gui.Anchor;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -23,4 +23,6 @@ public interface MenuComponent extends MenuComponentHeirarchy{
 	public String getUUID();
 	public Anchor getAnchor();
 	public void draw(Graphics2D g, float x, float y, float w, float h);
+	public ComponentLayout getLayout();
+	public void setLayout(ComponentLayout layout);
 }

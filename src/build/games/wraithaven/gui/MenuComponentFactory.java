@@ -10,21 +10,74 @@ package build.games.wraithaven.gui;
 import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.gui.components.MigLayout;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public class MenuComponentFactory{
-	public static MenuComponent newInstance(int id, String uuid){
-		switch(id){
-			case 0:
-				return new ImageComponent(uuid);
-			case 1:
-				return new EmptyComponent(uuid);
-			case 2:
-				return new MigLayout(uuid);
+	public static MenuComponent newComponentInstance(int id, String uuid, short version, Menu menu, BinaryFile bin){
+		switch(version){
+			case 0:{
+				switch(id){
+					case 0:{
+						ImageComponent comp = new ImageComponent(uuid);
+						comp.load(menu, bin, version);
+						return comp;
+					}
+					case 1:{
+						EmptyComponent comp = new EmptyComponent(uuid);
+						comp.load(menu, bin, version);
+						return comp;
+					}
+					case 2:{
+						EmptyComponent comp = new EmptyComponent(Algorithms.randomUUID());
+						MigLayout layout = new MigLayout();
+						comp.setLayout(layout);
+						comp.load(menu, bin, version);
+						layout.loadLayout(menu, bin, version);
+						return comp;
+					}
+					default:
+						throw new RuntimeException("Id: "+id);
+				}
+			}
+			case 1:{
+				switch(id){
+					case 0:{
+						ImageComponent comp = new ImageComponent(uuid);
+						comp.load(menu, bin, version);
+						return comp;
+					}
+					case 1:{
+						EmptyComponent comp = new EmptyComponent(uuid);
+						comp.load(menu, bin, version);
+						return comp;
+					}
+					default:
+						throw new RuntimeException("Id: "+id);
+				}
+			}
 			default:
-				throw new RuntimeException();
+				throw new RuntimeException("Version: "+version);
+		}
+	}
+	public static ComponentLayout newLayoutInstance(int id, short version, Menu menu, BinaryFile bin){
+		switch(version){
+			case 0:
+			case 1:
+				switch(id){
+					case 0:{
+						MigLayout layout = new MigLayout();
+						layout.loadLayout(menu, bin, version);
+						return layout;
+					}
+					default:
+						throw new RuntimeException("Id: "+id);
+				}
+			default:
+				throw new RuntimeException("Version: "+version);
 		}
 	}
 }

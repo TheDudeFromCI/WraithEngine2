@@ -7,9 +7,17 @@
  */
 package build.games.wraithaven.gui;
 
+import java.util.ArrayList;
+import wraith.lib.gui.Anchor;
+import wraith.lib.util.BinaryFile;
+
 /**
  * @author thedudefromci
  */
 public interface ComponentLayout{
-	public void updateLayout();
+	public void updateLayout(Anchor anchor, ArrayList<MenuComponentHeirarchy> children);
+	public void saveLayout(Menu menu, BinaryFile bin);
+	public void loadLayout(Menu menu, BinaryFile bin, short version);
+	public MenuComponentDialog getCreationDialog();
+	public int getId();
 }

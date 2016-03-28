@@ -7,9 +7,7 @@
  */
 package build.games.wraithaven.gui.components;
 
-import wraith.lib.gui.MigObjectLocation;
-import wraith.lib.gui.Anchor;
-import build.games.wraithaven.gui.DefaultLayout;
+import build.games.wraithaven.gui.ComponentLayout;
 import build.games.wraithaven.gui.Menu;
 import build.games.wraithaven.gui.MenuComponent;
 import build.games.wraithaven.gui.MenuComponentDialog;
@@ -23,6 +21,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -30,31 +29,28 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import wraith.lib.gui.Anchor;
+import wraith.lib.gui.MigObjectLocation;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class MigLayout extends DefaultLayout{
-	private static final int ID = 2;
+public class MigLayout implements ComponentLayout{
+	private static final int ID = 0;
 	private int[] cols = new int[1];
 	private int[] rows = new int[1];
 	private MigObjectLocation[] locs = new MigObjectLocation[0];
-	public MigLayout(String uuid){
-		super(uuid);
-	}
 	@Override
-	public void load(Menu menu, BinaryFile bin, short version){
+	public void loadLayout(Menu menu, BinaryFile bin, short version){
 		switch(version){
-			case 0:{
-				name = bin.getString();
-				anchor.load(bin);
+			case 0:
+			case 1:{
 				cols = new int[bin.getInt()];
 				for(int i = 0; i<cols.length; i++){
 					cols[i] = bin.getInt();
@@ -78,9 +74,7 @@ public class MigLayout extends DefaultLayout{
 		}
 	}
 	@Override
-	public void save(Menu menu, BinaryFile bin){
-		bin.addStringAllocated(name);
-		anchor.save(bin);
+	public void saveLayout(Menu menu, BinaryFile bin){
 		bin.allocateBytes(3*4+cols.length*4+rows.length*4+locs.length*4*4);
 		bin.addInt(cols.length);
 		for(int x : cols){
@@ -99,13 +93,8 @@ public class MigLayout extends DefaultLayout{
 		}
 	}
 	@Override
-	public int getId(){
-		return ID;
-	}
-	@Override
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
-			private final JTextField nameInput;
 			private final MigBuilder migBuilder;
 			private int[] cols;
 			private int[] rows;
@@ -113,13 +102,6 @@ public class MigLayout extends DefaultLayout{
 			{
 				// Builder
 				setLayout(new VerticalFlowLayout(0, 5));
-				{
-					// Name
-					nameInput = new JTextField();
-					nameInput.setColumns(20);
-					nameInput.setText(name);
-					add(nameInput);
-				}
 				{
 					// Preview
 					JPanel panel = new JPanel();
@@ -409,12 +391,11 @@ public class MigLayout extends DefaultLayout{
 			}
 			@Override
 			public JComponent getDefaultFocus(){
-				return nameInput;
+				return null;
 			}
 			@Override
 			public void build(MenuComponent component){
 				MigLayout c = (MigLayout)component;
-				c.name = nameInput.getText();
 				c.cols = cols;
 				c.rows = rows;
 				c.locs = locs;
@@ -422,7 +403,7 @@ public class MigLayout extends DefaultLayout{
 		};
 	}
 	@Override
-	public void updateLayout(){
+	public void updateLayout(Anchor anchor, ArrayList<MenuComponentHeirarchy> children){
 		int i = -1;
 		for(MenuComponentHeirarchy h : children){
 			i++;
@@ -431,7 +412,7 @@ public class MigLayout extends DefaultLayout{
 			}
 			Anchor a = ((MenuComponent)h).getAnchor();
 			if(i>=locs.length){
-				setChildPos(a, 0, 0, 0, 0);
+				setChildPos(anchor, a, 0, 0, 0, 0);
 				continue;
 			}
 			int[] x = new int[2];
@@ -439,8 +420,13 @@ public class MigLayout extends DefaultLayout{
 			MigObjectLocation l = locs[i];
 			getPos(cols, l.x, l.w, Math.round(anchor.getWidth()), x);
 			getPos(rows, l.y, l.h, Math.round(anchor.getHeight()), y);
-			setChildPos(a, x[0], y[0], x[1], y[1]);
+			setChildPos(anchor, a, x[0], y[0], x[1], y[1]);
 		}
+	}
+	private void setChildPos(Anchor anchor, Anchor a, float x, float y, float w, float h){
+		a.setChildPosition(0, 0);
+		a.setParentPosition(x/anchor.getWidth(), y/anchor.getHeight());
+		a.setSize(w, h);
 	}
 	private void getPos(int[] x, int col, int s, int size, int[] out){
 		int extraSpaceCols = countExtraSpace(x, size);
@@ -471,5 +457,9 @@ public class MigLayout extends DefaultLayout{
 			y += z;
 		}
 		return (total-y)/a;
+	}
+	@Override
+	public int getId(){
+		return ID;
 	}
 }

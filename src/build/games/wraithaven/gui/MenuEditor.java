@@ -424,8 +424,12 @@ public class MenuEditor extends JPanel{
 		repaint();
 	}
 	private void updateAllLayouts(MenuComponentHeirarchy h){
-		if(h instanceof ComponentLayout){
-			((ComponentLayout)h).updateLayout();
+		if(h instanceof MenuComponent){
+			MenuComponent comp = (MenuComponent)h;
+			ComponentLayout layout = comp.getLayout();
+			if(layout!=null){
+				layout.updateLayout(comp.getAnchor(), comp.getChildren());
+			}
 		}
 		for(MenuComponentHeirarchy com : h.getChildren()){
 			updateAllLayouts(com);

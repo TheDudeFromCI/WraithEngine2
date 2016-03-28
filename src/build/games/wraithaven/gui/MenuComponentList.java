@@ -14,9 +14,9 @@ import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -393,9 +393,7 @@ public class MenuComponentList extends JPanel{
 		JComboBox comboBox;
 		{
 			// Layout List
-			comboBox = new JComboBox(new Object[]{
-				"No Layout", "Mig Layout"
-			});
+			comboBox = new JComboBox(getLayoutList());
 			dialogComponent.add(comboBox);
 		}
 		dialog.setData(dialogComponent);
@@ -410,34 +408,61 @@ public class MenuComponentList extends JPanel{
 		builder.build(child);
 		parent.addChild(child);
 		child.setParent(parent);
-		switch((String)comboBox.getSelectedItem()){
-			case "No Layout":
-				// Do nothing.
-				break;
-			case "Mig Layout":
-				child.setLayout(new MigLayout());
-				break;
-			default:
-				// ???
-				System.out.println("Failed to load layout: '"+comboBox.getSelectedItem()+"'");
-				// Do nothing I guess...
-				break;
-		}
+		placeLayout(child, (String)comboBox.getSelectedItem());
 		menuEditor.updateAllLayouts();
 		menu.save();
 		repaint();
+	}
+	private String[] getLayoutList(){
+		return new String[]{
+			"No Layout", "Mig Layout"
+		};
+	}
+	private int getSelectedComponent(ComponentLayout layout){
+		if(layout==null){
+			return 0;
+		}
+		if(layout instanceof MigLayout){
+			return 1;
+		}
+		throw new RuntimeException("Unknown layout '"+layout.toString()+"'");
+	}
+	private void placeLayout(MenuComponent component, String response){
+		switch(response){
+			case "No Layout":
+				if(component.getLayout()!=null){
+					component.setLayout(null);
+				}
+				break;
+			case "Mig Layout":
+				if(!(component.getLayout() instanceof MigLayout)){
+					component.setLayout(new MigLayout());
+				}
+				break;
+			default:
+				// ???
+				System.out.println("Failed to load layout: '"+response+"'");
+				// Do nothing I guess...
+				break;
+		}
 	}
 	private void attemptEditComponet(MenuComponent com){
 		InputDialog dialog = new InputDialog();
 		MenuComponentDialog builder = com.getCreationDialog();
 		MenuComponentDialog builder2 = null;
-		JPanel dialogContent = builder;
+		JPanel dialogContent = new JPanel();
+		dialogContent.setLayout(new BorderLayout(5, 5));
+		dialogContent.add(builder, BorderLayout.CENTER);
 		if(com.getLayout()!=null){
-			dialogContent = new JPanel();
-			dialogContent.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 5));
-			dialogContent.add(builder);
 			builder2 = com.getLayout().getCreationDialog();
-			dialogContent.add(builder2);
+			dialogContent.add(builder2, BorderLayout.EAST);
+		}
+		JComboBox comboBox;
+		{
+			// Layout List
+			comboBox = new JComboBox(getLayoutList());
+			comboBox.setSelectedIndex(getSelectedComponent(com.getLayout()));
+			dialogContent.add(comboBox, BorderLayout.SOUTH);
 		}
 		dialog.setData(dialogContent);
 		dialog.setOkButton(true);
@@ -449,7 +474,10 @@ public class MenuComponentList extends JPanel{
 			return;
 		}
 		builder.build(com);
-		builder2.build(com.getLayout());
+		if(builder2!=null){
+			builder2.build(com.getLayout());
+		}
+		placeLayout(com, (String)comboBox.getSelectedItem());
 		menuEditor.updateAllLayouts();
 		menu.save();
 		repaint();

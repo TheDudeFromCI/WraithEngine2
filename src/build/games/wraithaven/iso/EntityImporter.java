@@ -141,20 +141,25 @@ public class EntityImporter extends JFrame{
 		TileCategory cat = chipsetList.getSelectedCategory();
 		int s = WraithEngine.projectBitSize;
 		if(tiles.size()==1){
-			int x, y, w, h;
+			int x, y, w, h, r;
 			Point t = tiles.get(0);
 			w = s;
 			h = layers*s;
 			x = t.x-s/2;
+			r = 0;
 			if(isBelow){
 				y = t.y;
 			}else{
 				y = t.y+s-h;
 			}
+			/*
+			 * The bug occurs when the cut out box is above the top of the image.
+			 */
 			if(y+h>temp.getHeight()){
 				h = temp.getHeight()-y;
 			}
 			if(y<0){
+				r = -y;
 				h += y;
 				y = 0;
 			}
@@ -174,7 +179,7 @@ public class EntityImporter extends JFrame{
 			if(col.getHeight()!=colHeight*s){
 				BufferedImage nCol = new BufferedImage(col.getWidth(), colHeight*s, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D g2 = nCol.createGraphics();
-				g2.drawImage(col, 0, 0, null);
+				g2.drawImage(col, 0, r, null);
 				g2.dispose();
 				col = nCol;
 			}
@@ -185,12 +190,13 @@ public class EntityImporter extends JFrame{
 			cat.addEntityType(entity, col);
 		}else{
 			EntityType entity;
-			int x, y, w, h;
+			int x, y, w, h, r;
 			ComplexEntityBuilder builder = new ComplexEntityBuilder();
 			for(Point t : tiles){
 				w = s;
 				h = layers*s;
 				x = t.x-s/2;
+				r = 0;
 				if(isBelow){
 					y = t.y;
 				}else{
@@ -200,6 +206,7 @@ public class EntityImporter extends JFrame{
 					h = temp.getHeight()-y;
 				}
 				if(y<0){
+					r = -y;
 					h += y;
 					y = 0;
 				}
@@ -218,7 +225,7 @@ public class EntityImporter extends JFrame{
 				if(col.getHeight()!=colHeight*s){
 					BufferedImage nCol = new BufferedImage(col.getWidth(), colHeight*s, BufferedImage.TYPE_INT_ARGB);
 					Graphics2D g2 = nCol.createGraphics();
-					g2.drawImage(col, 0, 0, null);
+					g2.drawImage(col, 0, r, null);
 					g2.dispose();
 					col = nCol;
 				}

@@ -18,6 +18,7 @@ public class WraithEngine{
 	private static String workspaceFolder;
 	private static String outputFolder;
 	private static String assetFolder;
+	private static String nativeFolder;
 	public static String projectName;
 	public static int projectBitSize;
 	public static String projectUUID;
@@ -41,6 +42,7 @@ public class WraithEngine{
 		workspaceFolder = dataFolder+File.separatorChar+workspaceName;
 		outputFolder = workspaceFolder;
 		assetFolder = dataFolder+File.separatorChar+"Assets";
+		nativeFolder = dataFolder+File.separatorChar+"Native";
 		Algorithms.initalize(outputFolder, assetFolder);
 		new ProjectList();
 	}
@@ -62,6 +64,9 @@ public class WraithEngine{
 	}
 	public static String getWorkspace(){
 		return workspaceFolder;
+	}
+	public static String getNativeFolder(){
+		return nativeFolder;
 	}
 	public static void updateFolders(String out, String asset){
 		outputFolder = out;

@@ -8,6 +8,7 @@
 package build.games.wraithaven.core.gameprep;
 
 import build.games.wraithaven.core.MapStyle;
+import build.games.wraithaven.core.WraithEngine;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class GameBuilder{
 			flags[i++] = "-data:\""+gameProperties.getAbsolutePath()+"\"";
 		}
 		Runtime rt = Runtime.getRuntime();
-		final Process process = rt.exec(flags, null, outFolder);
+		final Process process = rt.exec(flags, null, new File(WraithEngine.getNativeFolder()));
 		// This thread handles debug events.
 		Thread thread1 = new Thread(new Runnable(){
 			@Override

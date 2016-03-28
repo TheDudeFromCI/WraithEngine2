@@ -292,6 +292,7 @@ public class MenuComponentList extends JPanel{
 		};
 		addMouseListener(ia);
 		addMouseMotionListener(ia);
+		calculatePrefferedSize();
 	}
 	public Menu getMenu(){
 		return menu;
@@ -311,6 +312,7 @@ public class MenuComponentList extends JPanel{
 		if(this.menu!=null){
 			menu.load();
 		}
+		calculatePrefferedSize();
 		repaint();
 	}
 	@Override
@@ -333,6 +335,31 @@ public class MenuComponentList extends JPanel{
 		g.dispose();
 		// Just to make sure everything matches up over there.
 		menuEditor.repaint();
+		calculatePrefferedSize();
+	}
+	private void calculatePrefferedSize(){
+		int[] out = new int[2];
+		if(menu!=null){
+			findPrefferedSize(menu, out, 0);
+		}
+		out[0] = Math.max(out[0], 10);
+		out[1] = Math.max(out[1], 10);
+		Dimension pre = getPreferredSize();
+		if(pre.width==out[0]&&pre.height==out[1]){
+			return;
+		}
+		setPreferredSize(new Dimension(out[0], out[1]));
+	}
+	private void findPrefferedSize(MenuComponentHeirarchy h, int[] out, int indent){
+		FontMetrics fm = getFontMetrics(getFont());
+		out[0] = Math.max(out[0], fm.stringWidth(h.toString())+indent);
+		out[1] += TEXT_HEIGHT;
+		indent += TEXT_INDENT;
+		if(!h.isCollapsed()){
+			for(MenuComponentHeirarchy h2 : h.getChildren()){
+				findPrefferedSize(h2, out, indent);
+			}
+		}
 	}
 	private int drawComponentHeirarchy(Graphics2D g, MenuComponentHeirarchy com, int x, int y, FontMetrics fm){
 		// Draw

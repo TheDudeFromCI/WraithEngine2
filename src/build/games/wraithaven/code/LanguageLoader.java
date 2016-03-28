@@ -7,42 +7,11 @@
  */
 package build.games.wraithaven.code;
 
+import java.awt.Graphics2D;
+
 /**
  * @author thedudefromci
  */
-public class Snipet{
-	private final String uuid;
-	private String name;
-	private LanguageLoader language;
-	public Snipet(String uuid){
-		this.uuid = uuid;
-	}
-	public String getUuid(){
-		return uuid;
-	}
-	public String getName(){
-		return name;
-	}
-	public void setName(String name){
-		this.name = name;
-	}
-	@Override
-	public String toString(){
-		return name==null?"menu:"+uuid:name;
-	}
-	public void load(){
-		// TODO
-	}
-	public void save(){
-		// TODO
-	}
-	public void dispose(){
-		// TODO
-	}
-	public LanguageLoader getLanguage(){
-		return language;
-	}
-	public void setLanguage(LanguageLoader language){
-		this.language = language;
-	}
+public interface LanguageLoader{
+	public void draw(Graphics2D g, int width, int height, Snipet script);
 }

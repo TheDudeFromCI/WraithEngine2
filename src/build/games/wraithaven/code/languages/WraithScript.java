@@ -5,44 +5,20 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.code;
+package build.games.wraithaven.code.languages;
+
+import build.games.wraithaven.code.LanguageLoader;
+import build.games.wraithaven.code.Snipet;
+import java.awt.Color;
+import java.awt.Graphics2D;
 
 /**
  * @author thedudefromci
  */
-public class Snipet{
-	private final String uuid;
-	private String name;
-	private LanguageLoader language;
-	public Snipet(String uuid){
-		this.uuid = uuid;
-	}
-	public String getUuid(){
-		return uuid;
-	}
-	public String getName(){
-		return name;
-	}
-	public void setName(String name){
-		this.name = name;
-	}
+public class WraithScript implements LanguageLoader{
 	@Override
-	public String toString(){
-		return name==null?"menu:"+uuid:name;
-	}
-	public void load(){
-		// TODO
-	}
-	public void save(){
-		// TODO
-	}
-	public void dispose(){
-		// TODO
-	}
-	public LanguageLoader getLanguage(){
-		return language;
-	}
-	public void setLanguage(LanguageLoader language){
-		this.language = language;
+	public void draw(Graphics2D g, int width, int height, Snipet script){
+		g.setColor(Color.red);
+		g.fillRect(0, 0, width, height);
 	}
 }

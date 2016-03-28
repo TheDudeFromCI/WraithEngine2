@@ -7,9 +7,11 @@
  */
 package build.games.wraithaven.code;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  * @author thedudefromci
@@ -41,5 +43,13 @@ public class SnipetPreviewer{
 			frame = null;
 		}
 	}
-	private static void addComponents(){}
+	private static void addComponents(){
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		Renderer renderer = new Renderer();
+		SnipetList list = new SnipetList(renderer);
+		panel.add(list, BorderLayout.WEST);
+		panel.add(renderer, BorderLayout.CENTER);
+		frame.add(panel);
+	}
 }

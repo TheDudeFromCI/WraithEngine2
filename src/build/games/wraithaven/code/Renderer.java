@@ -7,42 +7,35 @@
  */
 package build.games.wraithaven.code;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JPanel;
+
 /**
  * @author thedudefromci
  */
-public class Snipet{
-	private final String uuid;
-	private String name;
-	private LanguageLoader language;
-	public Snipet(String uuid){
-		this.uuid = uuid;
-	}
-	public String getUuid(){
-		return uuid;
-	}
-	public String getName(){
-		return name;
-	}
-	public void setName(String name){
-		this.name = name;
-	}
+public class Renderer extends JPanel{
+	private Snipet snipet;
 	@Override
-	public String toString(){
-		return name==null?"menu:"+uuid:name;
+	public void paintComponent(Graphics g){
+		if(snipet==null||snipet.getLanguage()==null){
+			g.setColor(Color.lightGray);
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}else{
+			snipet.getLanguage().draw((Graphics2D)g, getWidth(), getHeight(), snipet);
+		}
+		g.dispose();
 	}
-	public void load(){
-		// TODO
-	}
-	public void save(){
-		// TODO
-	}
-	public void dispose(){
-		// TODO
-	}
-	public LanguageLoader getLanguage(){
-		return language;
-	}
-	public void setLanguage(LanguageLoader language){
-		this.language = language;
+	public void loadSnipet(Snipet snipet){
+		if(this.snipet!=null){
+			this.snipet.save();
+			this.snipet.dispose();
+		}
+		this.snipet = snipet;
+		if(this.snipet!=null){
+			this.snipet.load();
+		}
+		repaint();
 	}
 }

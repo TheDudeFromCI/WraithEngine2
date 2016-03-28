@@ -11,6 +11,7 @@ import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
+import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -402,7 +403,16 @@ public class MenuComponentList extends JPanel{
 	private void attemptEditComponet(MenuComponent com){
 		InputDialog dialog = new InputDialog();
 		MenuComponentDialog builder = com.getCreationDialog();
-		dialog.setData(builder);
+		MenuComponentDialog builder2 = null;
+		JPanel dialogContent = builder;
+		if(com.getLayout()!=null){
+			dialogContent = new JPanel();
+			dialogContent.setLayout(new VerticalFlowLayout(0, 5));
+			dialogContent.add(builder);
+			builder2 = com.getLayout().getCreationDialog();
+			dialogContent.add(builder2);
+		}
+		dialog.setData(dialogContent);
 		dialog.setOkButton(true);
 		dialog.setCancelButton(true);
 		dialog.setDefaultFocus(builder.getDefaultFocus());
@@ -412,6 +422,7 @@ public class MenuComponentList extends JPanel{
 			return;
 		}
 		builder.build(com);
+		builder2.build(com.getLayout());
 		menuEditor.updateAllLayouts();
 		menu.save();
 		repaint();

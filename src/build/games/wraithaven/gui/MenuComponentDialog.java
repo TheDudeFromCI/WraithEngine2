@@ -13,5 +13,5 @@ import build.games.wraithaven.core.InputDialogBuilder;
  * @author thedudefromci
  */
 public abstract class MenuComponentDialog extends InputDialogBuilder{
-	public abstract void build(MenuComponent component);
+	public abstract void build(Object component);
 }

@@ -83,7 +83,8 @@ public class Menu implements MenuComponentHeirarchy{
 			bin.decompress(true);
 			short version = bin.getShort();
 			switch(version){
-				case 0:{
+				case 0:
+				case 1:{
 					name = bin.getString();
 					components.clear();
 					int componentCount = bin.getInt();

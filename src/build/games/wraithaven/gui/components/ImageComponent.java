@@ -217,7 +217,7 @@ public class ImageComponent implements MenuComponent{
 				return nameInput;
 			}
 			@Override
-			public void build(MenuComponent component){
+			public void build(Object component){
 				ImageComponent c = (ImageComponent)component;
 				c.name = nameInput.getText();
 				if(c.image!=image){

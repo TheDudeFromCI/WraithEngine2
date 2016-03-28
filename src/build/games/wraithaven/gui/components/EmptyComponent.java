@@ -134,7 +134,7 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 				return nameInput;
 			}
 			@Override
-			public void build(MenuComponent component){
+			public void build(Object component){
 				EmptyComponent c = (EmptyComponent)component;
 				c.name = nameInput.getText();
 			}

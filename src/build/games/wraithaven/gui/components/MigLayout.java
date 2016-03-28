@@ -394,7 +394,7 @@ public class MigLayout implements ComponentLayout{
 				return null;
 			}
 			@Override
-			public void build(MenuComponent component){
+			public void build(Object component){
 				MigLayout c = (MigLayout)component;
 				c.cols = cols;
 				c.rows = rows;

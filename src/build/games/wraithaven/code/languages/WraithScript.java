@@ -11,14 +11,24 @@ import build.games.wraithaven.code.LanguageLoader;
 import build.games.wraithaven.code.Snipet;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public class WraithScript implements LanguageLoader{
+	private static final int ID = 0;
 	@Override
 	public void draw(Graphics2D g, int width, int height, Snipet script){
 		g.setColor(Color.red);
 		g.fillRect(0, 0, width, height);
+	}
+	@Override
+	public void save(BinaryFile bin){}
+	@Override
+	public void load(BinaryFile bin, short version){}
+	@Override
+	public int getId(){
+		return ID;
 	}
 }

@@ -8,10 +8,14 @@
 package build.games.wraithaven.code;
 
 import java.awt.Graphics2D;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public interface LanguageLoader{
 	public void draw(Graphics2D g, int width, int height, Snipet script);
+	public void save(BinaryFile bin);
+	public void load(BinaryFile bin, short version);
+	public int getId();
 }

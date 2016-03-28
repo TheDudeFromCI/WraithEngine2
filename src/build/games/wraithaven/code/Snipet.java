@@ -7,10 +7,16 @@
  */
 package build.games.wraithaven.code;
 
+import build.games.wraithaven.code.languages.WraithScript;
+import java.io.File;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
+
 /**
  * @author thedudefromci
  */
 public class Snipet{
+	private static final short FILE_VERSION = 0;
 	private final String uuid;
 	private String name;
 	private LanguageLoader language;
@@ -31,13 +37,49 @@ public class Snipet{
 		return name==null?"menu:"+uuid:name;
 	}
 	public void load(){
-		// TODO
+		File file = Algorithms.getFile("Scripts", uuid+".dat");
+		if(!file.exists()){
+			return;
+		}
+		BinaryFile bin = new BinaryFile(file);
+		bin.decompress(true);
+		short version = bin.getShort();
+		switch(version){
+			case 0:{
+				name = bin.getString();
+				int languageId = bin.getInt();
+				switch(languageId){
+					case -1:
+						// No script.
+						break;
+					case 0:
+						language = new WraithScript();
+						break;
+					default:
+						throw new RuntimeException("Unknown language! '"+languageId+"'");
+				}
+				if(language!=null){
+					language.load(bin, version);
+				}
+				break;
+			}
+			default:
+				throw new RuntimeException("Unknown file version! '"+version+"'");
+		}
 	}
 	public void save(){
-		// TODO
+		BinaryFile bin = new BinaryFile(2+4);
+		bin.addShort(FILE_VERSION);
+		bin.addStringAllocated(name);
+		bin.addInt(language==null?-1:language.getId());
+		if(language!=null){
+			language.save(bin);
+		}
+		bin.compress(true);
+		bin.compile(Algorithms.getFile("Scripts", uuid+".dat"));
 	}
 	public void dispose(){
-		// TODO
+		language = null;
 	}
 	public LanguageLoader getLanguage(){
 		return language;

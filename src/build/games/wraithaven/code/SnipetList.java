@@ -113,7 +113,9 @@ public class SnipetList extends JPanel{
 					int count = bin.getInt();
 					snipets.ensureCapacity(count);
 					for(int i = 0; i<count; i++){
-						snipets.add(new Snipet(bin.getString()));
+						Snipet s = new Snipet(bin.getString());
+						s.setName(bin.getString());
+						snipets.add(s);
 					}
 					break;
 				}
@@ -136,6 +138,7 @@ public class SnipetList extends JPanel{
 		bin.addInt(snipets.size());
 		for(Snipet s : snipets){
 			bin.addStringAllocated(s.getUuid());
+			bin.addStringAllocated(s.getName());
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("scripts.dat"));

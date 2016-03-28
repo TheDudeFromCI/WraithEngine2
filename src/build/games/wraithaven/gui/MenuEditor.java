@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
@@ -34,8 +33,8 @@ import wraith.lib.util.Algorithms;
  * @author thedudefromci
  */
 public class MenuEditor extends JPanel{
-	private static final int BORDER_SPACING = 35;
-	private static final int END_BSPACING = 20;
+	private static final int BORDER_SPACING = 10;
+	private static final int END_BSPACING = 10;
 	private static final int WINDOW_DRAG_ICON_R = 6;
 	private static final int COMP_DRAG_ICON_R = 5;
 	private static final int RESIZE_ICON_SIZE = 16;
@@ -302,26 +301,20 @@ public class MenuEditor extends JPanel{
 		drawPrettySphere(g1, x+w, y+h, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w, y, COMP_DRAG_ICON_R, Color.blue);
 		drawPrettySphere(g1, x+w*an.getChildX(), y+h*an.getChildY(), COMP_DRAG_ICON_R, Color.red);
-		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
-			9
-		}, 0));
-		int anchorX = Math.round(x+w*an.getChildX());
-		int anchorY = Math.round(y+h*an.getChildY());
-		g.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
-		g.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
-		String percentX = Math.round(an.getParentX()*100)+"%";
-		String percentY = Math.round(an.getParentY()*100)+"%";
+		{
+			// Draw anchor helper lines.
+			Graphics2D g2 = (Graphics2D)g.create();
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+			g2.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{
+				9
+			}, 0));
+			int anchorX = Math.round(x+w*an.getChildX());
+			int anchorY = Math.round(y+h*an.getChildY());
+			g2.drawLine(BORDER_SPACING, anchorY, anchorX, anchorY);
+			g2.drawLine(anchorX, BORDER_SPACING, anchorX, anchorY);
+			g2.dispose();
+		}
 		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D recX = fm.getStringBounds(percentX, g);
-		Rectangle2D recY = fm.getStringBounds(percentY, g);
-		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent()-fm.getHeight()/2);
-		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()-fm.getHeight()/2);
-		percentX = Math.round(an.getChildX()*100)+"%";
-		percentY = Math.round(an.getChildY()*100)+"%";
-		recX = fm.getStringBounds(percentX, g);
-		recY = fm.getStringBounds(percentY, g);
-		g.drawString(percentX, anchorX-(float)recX.getWidth()/2, (BORDER_SPACING-(float)recX.getHeight())/2+fm.getAscent()+fm.getHeight()/2);
-		g.drawString(percentY, (BORDER_SPACING-(float)recY.getWidth())/2, anchorY-(float)recX.getHeight()/2+fm.getAscent()+fm.getHeight()/2);
 		{
 			// Draw component position and scale.
 			String size = Math.round((float)selectedImageRegion[3])+"x"+Math.round((float)selectedImageRegion[4]);

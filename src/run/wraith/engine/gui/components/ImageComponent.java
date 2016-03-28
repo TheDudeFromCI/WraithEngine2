@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import run.wraith.engine.gui.Gui;
 import run.wraith.engine.gui.ImageModelInstance;
+import run.wraith.engine.gui.Layout;
 import run.wraith.engine.gui.Menu;
 import run.wraith.engine.gui.MenuComponent;
 import run.wraith.engine.opengl.renders.ModelInstance;
@@ -26,6 +27,7 @@ public class ImageComponent implements MenuComponent{
 	private final ArrayList<MenuComponent> children = new ArrayList(4);
 	private final ImageModelInstance model;
 	private final Anchor anchor;
+	private Layout layout;
 	public ImageComponent(Gui gui, Menu menu, String uuid, int depth){
 		Texture texture;
 		{
@@ -44,10 +46,21 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public void load(BinaryFile bin, short version){
 		switch(version){
-			case 0:{
+			case 1:{
 				bin.getString(); // Name
 				bin.getBoolean(); // Is !Default image.
 				anchor.load(bin);
+				if(bin.getBoolean()){
+					int id = bin.getInt();
+					switch(id){
+						case 0:
+							layout = new MigLayout();
+							break;
+						default:
+							throw new RuntimeException("Unknown layout! '"+id+"'");
+					}
+					layout.loadLayout(bin, version);
+				}
 				break;
 			}
 			default:
@@ -69,5 +82,9 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public Anchor getAnchor(){
 		return anchor;
+	}
+	@Override
+	public Layout getLayout(){
+		return layout;
 	}
 }

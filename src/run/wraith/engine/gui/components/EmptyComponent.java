@@ -8,6 +8,7 @@
 package run.wraith.engine.gui.components;
 
 import java.util.ArrayList;
+import run.wraith.engine.gui.Layout;
 import run.wraith.engine.gui.MenuComponent;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import wraith.lib.gui.Anchor;
@@ -19,6 +20,7 @@ import wraith.lib.util.BinaryFile;
 public class EmptyComponent implements MenuComponent{
 	private final ArrayList<MenuComponent> children = new ArrayList(4);
 	private final Anchor anchor;
+	private Layout layout;
 	public EmptyComponent(){
 		anchor = new Anchor();
 	}
@@ -35,9 +37,20 @@ public class EmptyComponent implements MenuComponent{
 	@Override
 	public void load(BinaryFile bin, short version){
 		switch(version){
-			case 0:{
+			case 1:{
 				bin.getString();// Name
 				anchor.load(bin);
+				if(bin.getBoolean()){
+					int id = bin.getInt();
+					switch(id){
+						case 0:
+							layout = new MigLayout();
+							break;
+						default:
+							throw new RuntimeException("Unknown layout! '"+id+"'");
+					}
+					layout.loadLayout(bin, version);
+				}
 				break;
 			}
 			default:
@@ -47,5 +60,9 @@ public class EmptyComponent implements MenuComponent{
 	@Override
 	public Anchor getAnchor(){
 		return anchor;
+	}
+	@Override
+	public Layout getLayout(){
+		return layout;
 	}
 }

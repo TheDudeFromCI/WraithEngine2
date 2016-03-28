@@ -7,9 +7,14 @@
  */
 package run.wraith.engine.gui;
 
+import java.util.ArrayList;
+import wraith.lib.gui.Anchor;
+import wraith.lib.util.BinaryFile;
+
 /**
  * @author thedudefromci
  */
 public interface Layout{
-	public void updateLayout();
+	public void loadLayout(BinaryFile bin, short version);
+	public void updateLayout(Anchor anchor, ArrayList<MenuComponent> children);
 }

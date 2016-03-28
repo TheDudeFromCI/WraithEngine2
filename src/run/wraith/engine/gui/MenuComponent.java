@@ -21,4 +21,5 @@ public interface MenuComponent{
 	public ModelInstance getModel();
 	public void load(BinaryFile bin, short version);
 	public Anchor getAnchor();
+	public Layout getLayout();
 }

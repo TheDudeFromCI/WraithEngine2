@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import org.joml.Matrix4f;
 import run.wraith.engine.gui.components.EmptyComponent;
 import run.wraith.engine.gui.components.ImageComponent;
-import run.wraith.engine.gui.components.MigLayout;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import run.wraith.engine.opengl.renders.Universe;
 import wraith.lib.gui.Anchor;
@@ -36,7 +35,7 @@ public class Menu{
 			bin.decompress(true);
 			short version = bin.getShort();
 			switch(version){
-				case 0:{
+				case 1:{
 					bin.getString(); // Menu Name (Not Important)
 					loadChildren(bin, children, version, 0);
 					break;
@@ -67,8 +66,6 @@ public class Menu{
 				return new ImageComponent(gui, this, uuid, depth);
 			case 1:
 				return new EmptyComponent();
-			case 2:
-				return new MigLayout();
 			default:
 				throw new RuntimeException("Unknown component type! '"+typeId+"'");
 		}
@@ -128,8 +125,8 @@ public class Menu{
 				pos.translate(x, y, 0);
 				pos.scale(w, h, 0);
 			}
-			if(current instanceof Layout){
-				((Layout)current).updateLayout();
+			if(current.getLayout()!=null){
+				current.getLayout().updateLayout(current.getAnchor(), current.getChildren());
 			}
 		}
 		for(MenuComponent child : children){

@@ -7,42 +7,24 @@
  */
 package run.wraith.engine.gui.components;
 
-import wraith.lib.gui.MigObjectLocation;
 import java.util.ArrayList;
 import run.wraith.engine.gui.Layout;
 import run.wraith.engine.gui.MenuComponent;
-import run.wraith.engine.opengl.renders.ModelInstance;
 import wraith.lib.gui.Anchor;
+import wraith.lib.gui.MigObjectLocation;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class MigLayout implements MenuComponent, Layout{
-	private final ArrayList<MenuComponent> children = new ArrayList(4);
-	private final Anchor anchor;
+public class MigLayout implements Layout{
 	private int[] cols;
 	private int[] rows;
 	private MigObjectLocation[] locs;
-	public MigLayout(){
-		anchor = new Anchor();
-	}
 	@Override
-	public void dispose(){}
-	@Override
-	public ArrayList<MenuComponent> getChildren(){
-		return children;
-	}
-	@Override
-	public ModelInstance getModel(){
-		return null;
-	}
-	@Override
-	public void load(BinaryFile bin, short version){
+	public void loadLayout(BinaryFile bin, short version){
 		switch(version){
-			case 0:{
-				bin.getString();// Name
-				anchor.load(bin);
+			case 1:{
 				cols = new int[bin.getInt()];
 				for(int i = 0; i<cols.length; i++){
 					cols[i] = bin.getInt();
@@ -66,17 +48,13 @@ public class MigLayout implements MenuComponent, Layout{
 		}
 	}
 	@Override
-	public Anchor getAnchor(){
-		return anchor;
-	}
-	@Override
-	public void updateLayout(){
+	public void updateLayout(Anchor anchor, ArrayList<MenuComponent> children){
 		int i = -1;
 		for(MenuComponent com : children){
 			i++;
 			Anchor a = com.getAnchor();
 			if(i>=locs.length){
-				setChildPos(a, 0, 0, 0, 0);
+				setChildPos(anchor, a, 0, 0, 0, 0);
 				continue;
 			}
 			int[] x = new int[2];
@@ -84,10 +62,10 @@ public class MigLayout implements MenuComponent, Layout{
 			MigObjectLocation l = locs[i];
 			getPos(cols, l.x, l.w, Math.round(anchor.getWidth()), x);
 			getPos(rows, l.y, l.h, Math.round(anchor.getHeight()), y);
-			setChildPos(a, x[0], y[0], x[1], y[1]);
+			setChildPos(anchor, a, x[0], y[0], x[1], y[1]);
 		}
 	}
-	private void setChildPos(Anchor a, float x, float y, float w, float h){
+	private void setChildPos(Anchor anchor, Anchor a, float x, float y, float w, float h){
 		a.setChildPosition(0, 0);
 		a.setParentPosition(x/anchor.getWidth(), y/anchor.getHeight());
 		a.setSize(w, h);

@@ -7,17 +7,20 @@
  */
 package build.games.wraithaven.core.os;
 
-import wraith.lib.util.Algorithms;
 import build.games.wraithaven.util.ResourceUtils;
 import java.io.File;
 import java.io.IOException;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.SortedMap;
 
 /**
  * @author thedudefromci
  */
 public class Installer{
 	private final OS os;
-	public Installer(){
+	private final SortedMap<String,String> args;
+	public Installer(SortedMap<String,String> args){
+		this.args = args;
 		os = OS.determineOS();
 	}
 	public void unloadAssets(){
@@ -43,6 +46,10 @@ public class Installer{
 		}
 	}
 	private boolean checkVersion(File assetFolder){
+		if(args.get("reloadAssets")!=null){
+			System.out.println("Forcing asset reload.");
+			return false;
+		}
 		File file = new File(assetFolder, "version.txt");
 		if(!file.exists()){
 			return false;

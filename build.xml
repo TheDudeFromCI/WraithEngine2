@@ -46,7 +46,9 @@
         </jar>
     </target>
     <target name="run" depends="clean-build">
-        <java jar="dist/WraithEngine.jar" fork="true"/>
+        <java jar="dist/WraithEngine.jar">
+            <arg value="reloadAssets"/>
+        </java>
     </target>
     <target name="clean-build" depends="clean,jar"/>
     <target name="main" depends="clean,run"/>

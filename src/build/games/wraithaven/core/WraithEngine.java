@@ -11,6 +11,7 @@ import build.games.wraithaven.core.os.Installer;
 import java.io.File;
 import javax.swing.UIManager;
 import wraith.lib.util.Algorithms;
+import wraith.lib.util.SortedMap;
 
 @SuppressWarnings("serial")
 public class WraithEngine{
@@ -26,12 +27,14 @@ public class WraithEngine{
 		}catch(Exception exception){
 			exception.printStackTrace();
 		}
-		Installer installer = new Installer();
+		SortedMap<String,String> map = new SortedMap(1);
+		loadProgramArguments(map, args);
+		Installer installer = new Installer(map);
 		installer.unloadAssets();
 		final String workspaceName = "Projects";
 		String dataFolder;
-		if(args.length>0){
-			dataFolder = args[0];
+		if(map.contains("path")){
+			dataFolder = map.get("path");
 		}else{
 			dataFolder = installer.getDataFolder().getAbsolutePath();
 		}
@@ -40,6 +43,16 @@ public class WraithEngine{
 		assetFolder = dataFolder+File.separatorChar+"Assets";
 		Algorithms.initalize(outputFolder, assetFolder);
 		new ProjectList();
+	}
+	private static void loadProgramArguments(SortedMap<String,String> map, String[] args){
+		for(String s : args){
+			String[] a = s.split(":");
+			if(a.length==1){
+				map.put(a[0], "true");
+			}else{
+				map.put(a[0], a[1]);
+			}
+		}
 	}
 	public static String getOutputFolder(){
 		return outputFolder;

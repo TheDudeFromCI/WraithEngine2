@@ -101,6 +101,12 @@ public class Menu implements MenuComponentHeirarchy{
 				default:
 					throw new RuntimeException();
 			}
+			// This used to be on the outside of the catch.
+			// But I soon realized that all assets would be deleted in the case a menu failed to load.
+			// Was not pretty...
+			deleteUnusedFiles();
+			// And just to save any updates and convertions that may have been made to the menu layout while loading.
+			save();
 		}catch(Exception exception){
 			exception.printStackTrace();
 			int response = JOptionPane.showConfirmDialog(null, "There has been an error attempting to load this file. Delete this file?", "Error",
@@ -112,7 +118,6 @@ public class Menu implements MenuComponentHeirarchy{
 			name = previousName;
 			components.clear();
 		}
-		deleteUnusedFiles();
 	}
 	private void loadChildren(BinaryFile bin, MenuComponent parent, short version){
 		int childCount = bin.getInt();

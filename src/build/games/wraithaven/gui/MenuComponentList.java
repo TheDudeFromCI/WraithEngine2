@@ -9,6 +9,7 @@ package build.games.wraithaven.gui;
 
 import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
+import build.games.wraithaven.gui.components.MigLayout;
 import build.games.wraithaven.util.InputAdapter;
 import build.games.wraithaven.util.InputDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
@@ -27,6 +28,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
+import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -384,7 +386,18 @@ public class MenuComponentList extends JPanel{
 	private void attemptCreateComponet(MenuComponentHeirarchy parent, MenuComponent child){
 		InputDialog dialog = new InputDialog();
 		MenuComponentDialog builder = child.getCreationDialog();
-		dialog.setData(builder);
+		JPanel dialogComponent = new JPanel();
+		dialogComponent.setLayout(new VerticalFlowLayout(0, 5));
+		dialogComponent.add(builder);
+		JComboBox comboBox;
+		{
+			// Layout List
+			comboBox = new JComboBox(new Object[]{
+				"No Layout", "Mig Layout"
+			});
+			dialogComponent.add(comboBox);
+		}
+		dialog.setData(dialogComponent);
 		dialog.setOkButton(true);
 		dialog.setCancelButton(true);
 		dialog.setDefaultFocus(builder.getDefaultFocus());
@@ -396,6 +409,19 @@ public class MenuComponentList extends JPanel{
 		builder.build(child);
 		parent.addChild(child);
 		child.setParent(parent);
+		switch((String)comboBox.getSelectedItem()){
+			case "No Layout":
+				// Do nothing.
+				break;
+			case "Mig Layout":
+				child.setLayout(new MigLayout());
+				break;
+			default:
+				// ???
+				System.out.println("Failed to load layout: '"+comboBox.getSelectedItem()+"'");
+				// Do nothing I guess...
+				break;
+		}
 		menuEditor.updateAllLayouts();
 		menu.save();
 		repaint();

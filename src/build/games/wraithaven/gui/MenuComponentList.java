@@ -16,6 +16,7 @@ import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -433,7 +434,7 @@ public class MenuComponentList extends JPanel{
 		JPanel dialogContent = builder;
 		if(com.getLayout()!=null){
 			dialogContent = new JPanel();
-			dialogContent.setLayout(new VerticalFlowLayout(0, 5));
+			dialogContent.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 5));
 			dialogContent.add(builder);
 			builder2 = com.getLayout().getCreationDialog();
 			dialogContent.add(builder2);

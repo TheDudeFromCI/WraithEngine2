@@ -24,32 +24,50 @@ public class Installer{
 		os = OS.determineOS();
 	}
 	public void unloadAssets(){
+		boolean forceReload = args.contains("reloadAssets");
 		File file = os.getFolder();
 		if(!file.exists()){
 			file.mkdirs();
 		}
 		File assetFolder = new File(file, "Assets");
-		if(!assetFolder.exists()){
+		File nativeFolder = new File(file, "Native");
+		if(forceReload){
+			Algorithms.deleteFile(assetFolder);
+			Algorithms.deleteFile(nativeFolder);
 			assetFolder.mkdirs();
-			extract(assetFolder);
+			extractAssets(assetFolder);
+			nativeFolder.mkdirs();
+			extractNative(nativeFolder);
+		}else if(!assetFolder.exists()){
+			assetFolder.mkdirs();
+			extractAssets(assetFolder);
+		}else if(!nativeFolder.exists()){
+			nativeFolder.mkdirs();
+			extractNative(nativeFolder);
 		}else if(!checkVersion(assetFolder)){
 			Algorithms.deleteFile(assetFolder);
+			Algorithms.deleteFile(nativeFolder);
 			assetFolder.mkdirs();
-			extract(assetFolder);
+			extractAssets(assetFolder);
+			nativeFolder.mkdirs();
+			extractNative(nativeFolder);
 		}
 	}
-	private void extract(File assetFolder){
+	private void extractAssets(File assetFolder){
 		try{
 			ResourceUtils.exportFolder("Assets", assetFolder);
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 	}
-	private boolean checkVersion(File assetFolder){
-		if(args.get("reloadAssets")!=null){
-			System.out.println("Forcing asset reload.");
-			return false;
+	private void extractNative(File assetFolder){
+		try{
+			ResourceUtils.exportFolder("Native", assetFolder);
+		}catch(Exception ex){
+			ex.printStackTrace();
 		}
+	}
+	private boolean checkVersion(File assetFolder){
 		File file = new File(assetFolder, "version.txt");
 		if(!file.exists()){
 			return false;

@@ -8,7 +8,6 @@
 package build.games.wraithaven.core.gameprep;
 
 import build.games.wraithaven.core.MapStyle;
-import build.games.wraithaven.util.ResourceUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +44,6 @@ public class GameBuilder{
 				Algorithms.deleteFile(outFolder);
 			}
 			outFolder.mkdirs();
-			ResourceUtils.exportFolder("Native", outFolder);
 			// TODO Export game properties files.
 		}catch(Exception exception){
 			exception.printStackTrace();

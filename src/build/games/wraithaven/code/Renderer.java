@@ -7,9 +7,8 @@
  */
 package build.games.wraithaven.code;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 /**
@@ -17,17 +16,12 @@ import javax.swing.JPanel;
  */
 public class Renderer extends JPanel{
 	private Snipet snipet;
-	@Override
-	public void paintComponent(Graphics g){
-		if(snipet==null||snipet.getLanguage()==null){
-			g.setColor(Color.lightGray);
-			g.fillRect(0, 0, getWidth(), getHeight());
-		}else{
-			snipet.getLanguage().draw((Graphics2D)g, getWidth(), getHeight(), snipet);
-		}
-		g.dispose();
+	public Renderer(){
+		setLayout(new BorderLayout());
+		setBackground(Color.lightGray);
 	}
 	public void loadSnipet(Snipet snipet){
+		removeAll();
 		if(this.snipet!=null){
 			this.snipet.save();
 			this.snipet.dispose();
@@ -35,7 +29,15 @@ public class Renderer extends JPanel{
 		this.snipet = snipet;
 		if(this.snipet!=null){
 			this.snipet.load();
+			LanguageLoader lan = this.snipet.getLanguage();
+			if(lan!=null){
+				JPanel panel = lan.getRenderComponent();
+				if(panel!=null){
+					add(panel, BorderLayout.CENTER);
+				}
+			}
 		}
+		revalidate();
 		repaint();
 	}
 }

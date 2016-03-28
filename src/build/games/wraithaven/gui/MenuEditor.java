@@ -11,17 +11,13 @@ import build.games.wraithaven.util.InputAdapter;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
@@ -43,6 +39,7 @@ public class MenuEditor extends JPanel{
 	private final BufferedImage autoResizeIcon;
 	private final Area resizeIconClip;
 	private final MenuComponentLocationPanel componentInfo;
+	private final Cursor[] cursors;
 	private Menu menu;
 	private ComponentDrag componentDrag;
 	private MenuComponentList componentList;
@@ -59,6 +56,11 @@ public class MenuEditor extends JPanel{
 			exception.printStackTrace();
 			autoResizeIconTemp = null;
 		}
+		cursors = new Cursor[]{
+			new Cursor(Cursor.DEFAULT_CURSOR), new Cursor(Cursor.NW_RESIZE_CURSOR), new Cursor(Cursor.NE_RESIZE_CURSOR),
+			new Cursor(Cursor.SW_RESIZE_CURSOR), new Cursor(Cursor.SE_RESIZE_CURSOR), new Cursor(Cursor.CROSSHAIR_CURSOR),
+			new Cursor(Cursor.MOVE_CURSOR)
+		};
 		autoResizeIcon = autoResizeIconTemp;
 		resizeIconClip = Algorithms.createClip(autoResizeIcon, RESIZE_ICON_SIZE, RESIZE_ICON_SIZE);
 		InputAdapter ia = new InputAdapter(){
@@ -74,6 +76,7 @@ public class MenuEditor extends JPanel{
 				}
 				if(windowDrag!=null){
 					windowDrag = null;
+					setCursor(cursors[0]);
 					repaint();
 				}
 				if(compResizeDrag!=null){
@@ -109,6 +112,7 @@ public class MenuEditor extends JPanel{
 				int height = getHeight();
 				if(Math.pow(x-(width-END_BSPACING), 2)+Math.pow(y-(height-END_BSPACING), 2)<WINDOW_DRAG_ICON_R*WINDOW_DRAG_ICON_R){
 					windowDrag = new WindowDrag(x, y, END_BSPACING);
+					setCursor(cursors[6]);
 					return;
 				}
 				if(event.isShiftDown()){
@@ -184,15 +188,36 @@ public class MenuEditor extends JPanel{
 			@Override
 			public void mouseMoved(MouseEvent event){
 				if(menu==null){
-					overResizeIcon = false;
-					return;
-				}
-				if(selectedImageRegion[0]==null||!(selectedImageRegion[0] instanceof AutoResizableComponent)){
+					setCursor(cursors[0]);
 					overResizeIcon = false;
 					return;
 				}
 				int x = event.getX();
 				int y = event.getY();
+				if(selectedImageRegion[0]!=null){
+					float a = (float)selectedImageRegion[1];
+					float b = (float)selectedImageRegion[2];
+					float c = (float)selectedImageRegion[3];
+					float d = (float)selectedImageRegion[4];
+					Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
+					if(Math.pow(x-(a+c*an.getChildX()), 2)+Math.pow(y-(b+d*an.getChildY()), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Center
+						setCursor(cursors[5]);
+					}else if(Math.pow(x-a, 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Left
+						setCursor(cursors[1]);
+					}else if(Math.pow(x-(a+c), 2)+Math.pow(y-b, 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Top Right
+						setCursor(cursors[2]);
+					}else if(Math.pow(x-a, 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Bottom Left
+						setCursor(cursors[3]);
+					}else if(Math.pow(x-(a+c), 2)+Math.pow(y-(b+d), 2)<COMP_DRAG_ICON_R*COMP_DRAG_ICON_R){ // Bottom Right
+						setCursor(cursors[4]);
+					}else{
+						setCursor(cursors[0]);
+					}
+				}
+				if(selectedImageRegion[0]==null||!(selectedImageRegion[0] instanceof AutoResizableComponent)){
+					overResizeIcon = false;
+					return;
+				}
 				float a = (float)selectedImageRegion[1]+(float)selectedImageRegion[3]+RESIZE_ICON_DISTANCE;
 				float b = (float)selectedImageRegion[2]+(float)selectedImageRegion[4]+RESIZE_ICON_DISTANCE;
 				boolean isOver = x>=a&&x<a+RESIZE_ICON_SIZE&&y>=b&&y<b+RESIZE_ICON_SIZE;
@@ -262,7 +287,8 @@ public class MenuEditor extends JPanel{
 			int bSpaceEndX = windowDrag==null?END_BSPACING:windowDrag.getSpacingX();
 			int bSpaceEndY = windowDrag==null?END_BSPACING:windowDrag.getSpacingY();
 			g.drawRect(BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY);
-			drawPrettySphere(g, width-bSpaceEndX, height-bSpaceEndY, WINDOW_DRAG_ICON_R, Color.gray);
+			g.setColor(Color.gray);
+			g.fillOval(width-bSpaceEndX-WINDOW_DRAG_ICON_R, height-bSpaceEndY-WINDOW_DRAG_ICON_R, WINDOW_DRAG_ICON_R*2, WINDOW_DRAG_ICON_R*2);
 			selectedImageRegion[0] = null;
 			ArrayList<MenuComponentDrawPosition> drawOrder = new ArrayList(64);
 			drawHeirachry(g, menu, BORDER_SPACING, BORDER_SPACING, width-BORDER_SPACING-bSpaceEndX, height-BORDER_SPACING-bSpaceEndY, drawOrder, 0);
@@ -296,11 +322,6 @@ public class MenuEditor extends JPanel{
 		float h = (float)selectedImageRegion[4];
 		Anchor an = ((MenuComponent)selectedImageRegion[0]).getAnchor();
 		g.drawRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
-		drawPrettySphere(g1, x, y, COMP_DRAG_ICON_R, Color.blue);
-		drawPrettySphere(g1, x, y+h, COMP_DRAG_ICON_R, Color.blue);
-		drawPrettySphere(g1, x+w, y+h, COMP_DRAG_ICON_R, Color.blue);
-		drawPrettySphere(g1, x+w, y, COMP_DRAG_ICON_R, Color.blue);
-		drawPrettySphere(g1, x+w*an.getChildX(), y+h*an.getChildY(), COMP_DRAG_ICON_R, Color.red);
 		{
 			// Draw anchor helper lines.
 			Graphics2D g2 = (Graphics2D)g.create();
@@ -337,46 +358,6 @@ public class MenuEditor extends JPanel{
 			}
 			g2.dispose();
 		}
-		g.dispose();
-	}
-	private void drawPrettySphere(Graphics2D g1, float x, float y, float r, Color color){
-		int size = Math.round(r*2);
-		Graphics2D g = (Graphics2D)g1.create(Math.round(x-r), Math.round(y-r), size, size);
-		g.setColor(color);
-		g.fillOval(0, 0, size-1, size-1);
-		// Adds shadows at the top
-		Paint p;
-		p = new GradientPaint(0, 0, new Color(0.0f, 0.0f, 0.0f, 0.4f), 0, size, new Color(0.0f, 0.0f, 0.0f, 0.0f));
-		g.setPaint(p);
-		g.fillOval(0, 0, size-1, size-1);
-		// Adds highlights at the bottom
-		p = new GradientPaint(0, 0, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0, size, new Color(1.0f, 1.0f, 1.0f, 0.4f));
-		g.setPaint(p);
-		g.fillOval(0, 0, size-1, size-1);
-		// Creates dark edges for 3D effect
-		p = new RadialGradientPaint(new Point2D.Double(r, r), r, new float[]{
-			0.0f, 1.0f
-		}, new Color[]{
-			new Color(6, 76, 160, 127), new Color(0.0f, 0.0f, 0.0f, 0.8f)
-		});
-		g.setPaint(p);
-		g.fillOval(0, 0, getWidth()-1, getHeight()-1);
-		// Adds oval inner highlight at the bottom
-		p = new RadialGradientPaint(new Point2D.Double(r, size*1.5), size/2.3f, new Point2D.Double(r, size*1.75+6), new float[]{
-			0.0f, 0.8f
-		}, new Color[]{
-			new Color(64, 142, 203, 255), new Color(64, 142, 203, 0)
-		}, RadialGradientPaint.CycleMethod.NO_CYCLE, RadialGradientPaint.ColorSpaceType.SRGB, AffineTransform.getScaleInstance(1.0, 0.5));
-		g.setPaint(p);
-		g.fillOval(0, 0, size-1, size-1);
-		// Adds oval specular highlight at the top left
-		p = new RadialGradientPaint(new Point2D.Double(r, r), size/1.4f, new Point2D.Double(45.0, 25.0), new float[]{
-			0.0f, 0.5f
-		}, new Color[]{
-			new Color(1.0f, 1.0f, 1.0f, 0.4f), new Color(1.0f, 1.0f, 1.0f, 0.0f)
-		}, RadialGradientPaint.CycleMethod.NO_CYCLE);
-		g.setPaint(p);
-		g.fillOval(0, 0, size-1, size-1);
 		g.dispose();
 	}
 	private void drawHeirachry(Graphics2D g, MenuComponentHeirarchy h, float x, float y, float width, float height,

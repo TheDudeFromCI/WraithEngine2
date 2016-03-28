@@ -16,7 +16,6 @@ import build.games.wraithaven.gui.MenuComponentHeirarchy;
 import build.games.wraithaven.util.ImagePanel;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -184,11 +183,8 @@ public class ImageComponent implements MenuComponent{
 					// Picture Importer
 					JPanel panel = new JPanel();
 					panel.setLayout(new BorderLayout());
-					JPanel panel2 = new JPanel();
-					panel2.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 					JButton button = new JButton("Select Image");
-					panel2.add(button);
-					panel.add(panel2, BorderLayout.EAST);
+					panel.add(button, BorderLayout.SOUTH);
 					image = ImageComponent.this.image;
 					ImagePanel imagePanel = new ImagePanel(image, 256, 256);
 					panel.add(imagePanel, BorderLayout.CENTER);

@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.code.SnipetPreviewer;
 import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
@@ -102,6 +103,7 @@ public class IsoMapStyle implements MapStyle{
 							@Override
 							public void actionPerformed(ActionEvent e){
 								GuiEditor.closeFrame();
+								SnipetPreviewer.closeFrame();
 								frame.dispose();
 								WraithEngine.updateFolders(WraithEngine.getWorkspace(), WraithEngine.getAssetFolder());
 								new ProjectList();
@@ -236,6 +238,7 @@ public class IsoMapStyle implements MapStyle{
 									}
 									// Close current window, and reload.
 									GuiEditor.closeFrame();
+									SnipetPreviewer.closeFrame();
 									frame.dispose();
 									new IsoMapStyle().buildWindow();
 								}
@@ -320,6 +323,17 @@ public class IsoMapStyle implements MapStyle{
 							@Override
 							public void actionPerformed(ActionEvent e){
 								GuiEditor.launch();
+							}
+						});
+						menu.add(item);
+					}
+					{
+						// Code
+						JMenuItem item = new JMenuItem("Code Snipets");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								SnipetPreviewer.launch();
 							}
 						});
 						menu.add(item);

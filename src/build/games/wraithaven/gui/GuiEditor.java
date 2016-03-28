@@ -48,7 +48,7 @@ public class GuiEditor{
 			}
 		});
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		addComponents(frame);
+		addComponents();
 		frame.setVisible(true);
 	}
 	public static void closeFrame(){
@@ -64,7 +64,7 @@ public class GuiEditor{
 		}
 		return menuList.getSelectedMenu();
 	}
-	private static void addComponents(JFrame frame){
+	private static void addComponents(){
 		frame.setLayout(new BorderLayout());
 		MenuComponentLocationPanel componentInfo = new MenuComponentLocationPanel();
 		MenuEditor editor = new MenuEditor(componentInfo);

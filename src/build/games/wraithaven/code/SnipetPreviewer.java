@@ -7,7 +7,39 @@
  */
 package build.games.wraithaven.code;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JFrame;
+
 /**
  * @author thedudefromci
  */
-public class SnipetPreviewer{}
+public class SnipetPreviewer{
+	private static JFrame frame;
+	public static void launch(){
+		if(frame!=null){
+			return;
+		}
+		frame = new JFrame();
+		frame.setTitle("Snipet Previewer");
+		frame.setSize(700, 525);
+		frame.setLocationRelativeTo(null);
+		frame.setResizable(true);
+		frame.addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent e){
+				frame = null;
+			}
+		});
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		addComponents();
+		frame.setVisible(true);
+	}
+	public static void closeFrame(){
+		if(frame!=null){
+			frame.dispose();
+			frame = null;
+		}
+	}
+	private static void addComponents(){}
+}

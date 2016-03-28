@@ -37,6 +37,7 @@ public class Snipet{
 		return name==null?"menu:"+uuid:name;
 	}
 	public void load(){
+		System.out.printf("Loaded script '%s'\n", uuid);
 		File file = Algorithms.getFile("Scripts", uuid+".dat");
 		if(!file.exists()){
 			return;

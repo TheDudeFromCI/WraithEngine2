@@ -59,7 +59,7 @@ public class SnipetList extends JPanel{
 				{
 					// Load menu
 					{
-						// New Snipet
+						// New
 						JMenuItem item = new JMenuItem("New Script");
 						item.addActionListener(new ActionListener(){
 							@Override
@@ -83,6 +83,27 @@ public class SnipetList extends JPanel{
 							}
 						});
 						menu.add(item);
+					}
+					if(selected!=null){
+						{
+							// Delete
+							JMenuItem item = new JMenuItem("Delete");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this script?", "Confirm Delete",
+										JOptionPane.YES_NO_OPTION);
+									if(response!=JOptionPane.YES_OPTION){
+										return;
+									}
+									snipets.remove(selected);
+									updateListModel();
+									save();
+									repaint();
+								}
+							});
+							menu.add(item);
+						}
 					}
 				}
 				menu.show(list, e.getX(), e.getY());

@@ -7,13 +7,15 @@
  */
 package build.games.wraithaven.gui.components;
 
-import wraith.lib.gui.MigObjectLocation;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JPanel;
+import wraith.lib.gui.MigObjectLocation;
 
 /**
  * @author thedudefromci
@@ -21,7 +23,7 @@ import javax.swing.JPanel;
 public class MigBuilder extends JPanel{
 	private static final int BORDER_SPACE = 10;
 	private static final float COLUMN_DARKNESS = 0.2f;
-	private static final float COMPONENT_THICKNESS = 0.8f;
+	private static final float COMPONENT_THICKNESS = 0.5f;
 	private int[] rows;
 	private int[] cols;
 	private MigObjectLocation[] locs;
@@ -52,15 +54,24 @@ public class MigBuilder extends JPanel{
 		}
 		{
 			// Draw Components
-			g.setColor(new Color(1f, 0f, 0f, COMPONENT_THICKNESS));
+			Color compColor = new Color(1f, 0f, 0f, COMPONENT_THICKNESS);
+			FontMetrics fm = g.getFontMetrics();
 			int[] x = new int[2];
 			int[] y = new int[2];
+			int i = 1;
 			for(MigObjectLocation loc : locs){
 				getPos(cols, loc.x, loc.w, sizeWidth, x);
 				getPos(rows, loc.y, loc.h, sizeHeight, y);
 				x[0] += BORDER_SPACE;
 				y[0] += BORDER_SPACE;
-				g.fillRect(x[0]+2, y[0]+2, x[1]-4, y[1]-4);
+				g.setColor(compColor);
+				g.fillRect(x[0]+1, y[0]+1, x[1]-2, y[1]-2);
+				g.setColor(Color.black);
+				Rectangle2D rec = fm.getStringBounds(String.valueOf(i), g);
+				int a = (x[1]-(int)rec.getWidth())/2;
+				int b = (y[1]-(int)rec.getHeight())/2+fm.getAscent();
+				g.drawString(String.valueOf(i), a+x[0], b+y[0]);
+				i++;
 			}
 		}
 		g.dispose();

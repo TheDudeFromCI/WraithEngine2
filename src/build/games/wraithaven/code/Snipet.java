@@ -54,7 +54,7 @@ public class Snipet{
 						// No script.
 						break;
 					case 0:
-						language = new WraithScript();
+						language = new WraithScript(this);
 						break;
 					default:
 						throw new RuntimeException("Unknown language! '"+languageId+"'");

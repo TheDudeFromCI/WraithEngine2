@@ -8,7 +8,10 @@
 package build.games.wraithaven.code.languages;
 
 import build.games.wraithaven.code.LanguageLoader;
+import build.games.wraithaven.code.Snipet;
+import java.awt.BorderLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -16,14 +19,29 @@ import wraith.lib.util.BinaryFile;
  */
 public class WraithScript implements LanguageLoader{
 	private static final int ID = 0;
-	@Override
-	public JPanel getRenderComponent(){
-		return null;
+	private final WraithScriptLogic logic;
+	private final Snipet snipet;
+	public WraithScript(Snipet snipet){
+		this.snipet = snipet;
+		logic = new WraithScriptLogic();
 	}
 	@Override
-	public void save(BinaryFile bin){}
+	public JPanel getRenderComponent(){
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		NodeLineLogic nodeLineLogic = new NodeLineLogic(snipet, logic);
+		JScrollPane scrollPane = new JScrollPane(nodeLineLogic);
+		panel.add(scrollPane, BorderLayout.CENTER);
+		return panel;
+	}
 	@Override
-	public void load(BinaryFile bin, short version){}
+	public void save(BinaryFile bin){
+		logic.save(bin);
+	}
+	@Override
+	public void load(BinaryFile bin, short version){
+		logic.load(bin, version);
+	}
 	@Override
 	public int getId(){
 		return ID;

@@ -32,18 +32,18 @@ public class NewScriptDialog extends JPanel{
 		add(text);
 		add(language);
 	}
-	private LanguageLoader getLanguage(){
+	private LanguageLoader getLanguage(Snipet snipet){
 		String lan = (String)language.getSelectedItem();
 		switch(lan){
 			case "WraithScript":
-				return new WraithScript();
+				return new WraithScript(snipet);
 			default:
 				throw new RuntimeException("Unknown language! '"+lan+"'");
 		}
 	}
 	public Snipet build(){
 		Snipet s = new Snipet(Algorithms.randomUUID());
-		s.setLanguage(getLanguage());
+		s.setLanguage(getLanguage(s));
 		s.setName(text.getText());
 		s.save();
 		return s;

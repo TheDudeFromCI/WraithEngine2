@@ -53,7 +53,7 @@ public class NodeLineLogic extends JList{
 				}
 				label.setOpaque(true);
 				if(isSelected){
-					label.setBackground(Color.blue);
+					label.setBackground(new Color(0, 230, 230));
 				}
 				return label;
 			}
@@ -104,6 +104,7 @@ public class NodeLineLogic extends JList{
 									nodes.remove(sel[i]);
 								}
 								updateModel();
+								setSelectedIndex(sel[0]);
 								script.save();
 							}
 						});
@@ -153,6 +154,7 @@ public class NodeLineLogic extends JList{
 					logic.getNodes().add(insertIndex, com);
 					updateModel();
 					script.save();
+					setSelectedIndex(insertIndex);
 				}catch(NoSuchMethodException|SecurityException|InstantiationException|IllegalAccessException|IllegalArgumentException
 					|InvocationTargetException ex){
 					// I'm sure this will never get called. But whatever. :P

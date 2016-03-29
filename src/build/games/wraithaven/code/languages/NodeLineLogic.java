@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.code.WSNode;
@@ -76,11 +77,59 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Comment Line", CommentLine.class, sel[0]);
 						menu.add(menu2);
 					}
+					{
+						// Edit
+						JMenuItem item = new JMenuItem("Edit");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								attemptEditNode(logic.getNodes().get(sel[0]));
+							}
+						});
+						menu.add(item);
+					}
+					{
+						// Delete
+						JMenuItem item = new JMenuItem("Delete");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete these lines?", "Confirm Delete",
+									JOptionPane.WARNING_MESSAGE);
+								if(response!=JOptionPane.YES_OPTION){
+									return;
+								}
+								ArrayList<WSNode> nodes = logic.getNodes();
+								for(int i = sel.length-1; i>=0; i--){
+									nodes.remove(sel[i]);
+								}
+								updateModel();
+								script.save();
+							}
+						});
+						menu.add(item);
+					}
 				}
 				menu.show(NodeLineLogic.this, e.getX(), e.getY());
 			}
 		});
 		updateModel();
+	}
+	private void attemptEditNode(WSNode node){
+		InputDialog dialog = new InputDialog();
+		MenuComponentDialog builder = node.getCreationDialog();
+		dialog.setData(builder);
+		dialog.setOkButton(true);
+		dialog.setCancelButton(true);
+		dialog.setDefaultFocus(builder.getDefaultFocus());
+		dialog.setTitle("Edit Line");
+		dialog.show();
+		if(dialog.getResponse()!=InputDialog.OK){
+			return;
+		}
+		builder.build(node);
+		script.save();
+		repaint();
 	}
 	private void attemptAddNode(JMenu menu, String name, Class<? extends WSNode> node, int insertIndex){
 		JMenuItem item = new JMenuItem(name);

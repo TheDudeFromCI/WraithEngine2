@@ -9,6 +9,7 @@ package build.games.wraithaven.code.languages;
 
 import java.util.ArrayList;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
 import wraith.lib.util.BinaryFile;
 
@@ -37,6 +38,8 @@ public class WraithScriptLogic{
 		switch(id){
 			case 0:
 				return new CommentLine();
+			case 1:
+				return new BlankLine();
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

@@ -29,6 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
 
 /**
@@ -49,6 +50,8 @@ public class NodeLineLogic extends JList{
 					label.setText("<html><font color=red>[]</font></html>");
 				}else if(value instanceof CommentLine){
 					label.setText("<html><font color=green>"+value.toString()+"</font></html>");
+				}else if(value instanceof BlankLine){
+					label.setText(" ");
 				}else{
 					label.setText("<html><font color=red>[] </font><font color=black>"+value.toString()+"</font></html>");
 				}
@@ -81,6 +84,7 @@ public class NodeLineLogic extends JList{
 						// New
 						JMenu menu2 = new JMenu("New");
 						attemptAddNode(menu2, "Comment Line", CommentLine.class, sel[0]);
+						attemptAddNode(menu2, "Blank Line", BlankLine.class, sel[0]);
 						menu.add(menu2);
 					}
 					{
@@ -145,18 +149,20 @@ public class NodeLineLogic extends JList{
 			public void actionPerformed(ActionEvent e){
 				try{
 					WSNode com = node.getDeclaredConstructor().newInstance();
-					InputDialog dialog = new InputDialog();
 					MenuComponentDialog builder = com.getCreationDialog();
-					dialog.setData(builder);
-					dialog.setOkButton(true);
-					dialog.setCancelButton(true);
-					dialog.setDefaultFocus(builder.getDefaultFocus());
-					dialog.setTitle(name);
-					dialog.show();
-					if(dialog.getResponse()!=InputDialog.OK){
-						return;
+					if(builder!=null){
+						InputDialog dialog = new InputDialog();
+						dialog.setData(builder);
+						dialog.setOkButton(true);
+						dialog.setCancelButton(true);
+						dialog.setDefaultFocus(builder.getDefaultFocus());
+						dialog.setTitle(name);
+						dialog.show();
+						if(dialog.getResponse()!=InputDialog.OK){
+							return;
+						}
+						builder.build(com);
 					}
-					builder.build(com);
 					logic.getNodes().add(insertIndex, com);
 					updateModel();
 					script.save();

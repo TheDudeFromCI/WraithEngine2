@@ -117,6 +117,10 @@ public class SnipetList extends JPanel{
 		list.setModel(new DefaultComboBoxModel(snipets.toArray()));
 	}
 	private void setSelected(Snipet snipet){
+		if(selected==snipet){
+			// Don't double up on load events!
+			return;
+		}
 		selected = snipet;
 		renderer.loadSnipet(snipet);
 	}

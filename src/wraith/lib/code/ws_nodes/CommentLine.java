@@ -49,6 +49,7 @@ public class CommentLine implements WSNode{
 			{
 				setLayout(new VerticalFlowLayout(0, 5));
 				text = new JTextField();
+				text.setColumns(20);
 				add(text);
 			}
 			@Override

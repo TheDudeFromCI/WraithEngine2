@@ -31,6 +31,7 @@ import javax.swing.ListSelectionModel;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
+import wraith.lib.code.ws_nodes.PrintToConsole;
 
 /**
  * @author thedudefromci
@@ -85,6 +86,7 @@ public class NodeLineLogic extends JList{
 						JMenu menu2 = new JMenu("New");
 						attemptAddNode(menu2, "Comment Line", CommentLine.class, sel[0]);
 						attemptAddNode(menu2, "Blank Line", BlankLine.class, sel[0]);
+						attemptAddNode(menu2, "Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
 					{

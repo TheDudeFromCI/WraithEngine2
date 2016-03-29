@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
+import wraith.lib.code.ws_nodes.PrintToConsole;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -40,6 +41,8 @@ public class WraithScriptLogic{
 				return new CommentLine();
 			case 1:
 				return new BlankLine();
+			case 2:
+				return new PrintToConsole();
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

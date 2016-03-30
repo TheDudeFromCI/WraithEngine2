@@ -97,6 +97,7 @@ public class SnipetList extends JPanel{
 										return;
 									}
 									snipets.remove(selected);
+									Algorithms.deleteFile(Algorithms.getFile("Scripts", selected.getUuid()+".dat"));
 									updateListModel();
 									save();
 									repaint();

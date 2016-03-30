@@ -8,6 +8,7 @@
 package run.wraith.engine.gui;
 
 import java.util.ArrayList;
+import run.wraith.engine.code.Clickable;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import wraith.lib.gui.Anchor;
 import wraith.lib.util.BinaryFile;
@@ -15,11 +16,13 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public interface MenuComponent{
+public interface MenuComponent extends Clickable{
 	public void dispose();
 	public ArrayList<MenuComponent> getChildren();
 	public ModelInstance getModel();
 	public void load(BinaryFile bin, short version);
 	public Anchor getAnchor();
 	public Layout getLayout();
+	public MenuPosLoc getPositionAndLocation();
+	public int getDepth();
 }

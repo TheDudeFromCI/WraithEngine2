@@ -5,10 +5,9 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.code.languages;
+package wraith.lib.code;
 
 import java.util.ArrayList;
-import wraith.lib.code.WSNode;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
 import wraith.lib.code.ws_nodes.PrintToConsole;
@@ -57,5 +56,10 @@ public class WraithScriptLogic{
 	}
 	public ArrayList<WSNode> getNodes(){
 		return nodes;
+	}
+	public void run(){
+		for(WSNode node : nodes){
+			node.run();
+		}
 	}
 }

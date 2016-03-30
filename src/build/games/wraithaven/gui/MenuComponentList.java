@@ -135,6 +135,32 @@ public class MenuComponentList extends JPanel{
 							}
 						}
 						{
+							// Edit Scrippts
+							if(selectedComponent instanceof MenuComponent){
+								// Is not root.
+								JMenuItem item = new JMenuItem("Edit Scripts");
+								item.addActionListener(new ActionListener(){
+									@Override
+									public void actionPerformed(ActionEvent e){
+										AttachScriptsDialog scriptsDialog = new AttachScriptsDialog();
+										InputDialog dialog = new InputDialog();
+										dialog.setTitle("Edit Component Scripts");
+										dialog.setOkButton(true);
+										dialog.setCancelButton(true);
+										dialog.setData(scriptsDialog);
+										dialog.setDefaultFocus(scriptsDialog.getFocus());
+										dialog.show();
+										if(dialog.getResponse()!=InputDialog.OK){
+											return;
+										}
+										scriptsDialog.compile((MenuComponent)selectedComponent);
+										MenuComponentList.this.menu.save();
+									}
+								});
+								menu.add(item);
+							}
+						}
+						{
 							// Delete
 							JMenuItem item = new JMenuItem("Delete");
 							item.addActionListener(new ActionListener(){

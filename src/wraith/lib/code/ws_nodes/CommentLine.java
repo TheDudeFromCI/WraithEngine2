@@ -64,4 +64,6 @@ public class CommentLine implements WSNode{
 			}
 		};
 	}
+	@Override
+	public void run(){}
 }

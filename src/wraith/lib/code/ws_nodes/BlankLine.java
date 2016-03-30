@@ -28,4 +28,6 @@ public class BlankLine implements WSNode{
 	public MenuComponentDialog getCreationDialog(){
 		return null;
 	}
+	@Override
+	public void run(){}
 }

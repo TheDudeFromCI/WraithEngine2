@@ -5,18 +5,32 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package wraith.lib.code;
-
-import build.games.wraithaven.gui.MenuComponentDialog;
-import wraith.lib.util.BinaryFile;
+package run.wraith.engine.gui;
 
 /**
  * @author thedudefromci
  */
-public interface WSNode{
-	public void save(BinaryFile bin);
-	public void load(BinaryFile bin, short version);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
-	public void run();
+public class MenuPosLoc{
+	private int x;
+	private int y;
+	private int w;
+	private int h;
+	public void update(int x, int y, int w, int h){
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+	}
+	public int getX(){
+		return x;
+	}
+	public int getY(){
+		return y;
+	}
+	public int getW(){
+		return w;
+	}
+	public int getH(){
+		return h;
+	}
 }

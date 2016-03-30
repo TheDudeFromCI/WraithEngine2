@@ -5,18 +5,14 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package wraith.lib.code;
+package run.wraith.engine.code;
 
-import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public interface WSNode{
-	public void save(BinaryFile bin);
+public interface CodeLanguage{
 	public void load(BinaryFile bin, short version);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
 	public void run();
 }

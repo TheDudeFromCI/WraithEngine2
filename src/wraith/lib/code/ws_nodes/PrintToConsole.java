@@ -70,4 +70,8 @@ public class PrintToConsole implements WSNode{
 			}
 		};
 	}
+	@Override
+	public void run(){
+		System.out.println(comment);
+	}
 }

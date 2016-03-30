@@ -30,6 +30,7 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	private static final int ID = 1;
 	private static final int CROSSHAIR_SIZE = 7;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
+	private final ArrayList<String> scripts = new ArrayList(1);
 	private final String uuid;
 	private final Anchor anchor;
 	private boolean collapsed;
@@ -57,6 +58,11 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 					int layoutId = bin.getInt();
 					layout = MenuComponentFactory.newLayoutInstance(layoutId, version, menu, bin);
 				}
+				int scriptCount = bin.getInt();
+				scripts.ensureCapacity(scriptCount);
+				for(int i = 0; i<scriptCount; i++){
+					scripts.add(bin.getString());
+				}
 				break;
 			}
 			default:
@@ -67,11 +73,15 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	public void save(Menu menu, BinaryFile bin){
 		bin.addStringAllocated(name);
 		anchor.save(bin);
-		bin.allocateBytes(1+(layout==null?0:4));
+		bin.allocateBytes(1+(layout==null?0:4)+4);
 		bin.addBoolean(layout!=null);
 		if(layout!=null){
 			bin.addInt(layout.getId());
 			layout.saveLayout(menu, bin);
+		}
+		bin.addInt(scripts.size());
+		for(String script : scripts){
+			bin.addStringAllocated(script);
 		}
 	}
 	@Override
@@ -228,5 +238,9 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 	@Override
 	public void setLayout(ComponentLayout layout){
 		this.layout = layout;
+	}
+	@Override
+	public ArrayList<String> getScripts(){
+		return scripts;
 	}
 }

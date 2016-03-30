@@ -5,19 +5,21 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.code.languages;
+package wraith.lib.code;
 
 import build.games.wraithaven.code.LanguageLoader;
 import build.games.wraithaven.code.Snipet;
+import build.games.wraithaven.code.languages.NodeLineLogic;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import run.wraith.engine.code.CodeLanguage;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class WraithScript implements LanguageLoader{
+public class WraithScript implements LanguageLoader, CodeLanguage{
 	private static final int ID = 0;
 	private final WraithScriptLogic logic;
 	private final Snipet snipet;
@@ -45,5 +47,9 @@ public class WraithScript implements LanguageLoader{
 	@Override
 	public int getId(){
 		return ID;
+	}
+	@Override
+	public void run(){
+		logic.run();
 	}
 }

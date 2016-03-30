@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.code.languages;
 
+import wraith.lib.code.WraithScriptLogic;
 import build.games.wraithaven.code.Snipet;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.InputDialog;

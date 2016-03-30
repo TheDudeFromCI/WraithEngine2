@@ -45,16 +45,17 @@ public class MapPreviewProtocol implements RunProtocol{
 		renderer.initalize();
 		Map map = new Map(mapId);
 		renderer.setMap(map);
-		inputHandler.loadMap(map);
+		Gui gui = null;
 		{
 			// Load menu, if available.
 			String menu = getArg("menu", null);
 			if(menu!=null){
-				Gui gui = new Gui();
+				gui = new Gui();
 				gui.loadMenu(menu);
 				renderer.setGui(gui);
 			}
 		}
+		inputHandler.load(map, gui);
 	}
 	@Override
 	public void dispose(){

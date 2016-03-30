@@ -8,6 +8,7 @@
 package run.wraith.engine.mapstyles.iso.preview;
 
 import org.lwjgl.glfw.GLFW;
+import run.wraith.engine.gui.Gui;
 import run.wraith.engine.mapstyles.iso.Map;
 import run.wraith.engine.opengl.loop.InputHandler;
 
@@ -16,6 +17,7 @@ import run.wraith.engine.opengl.loop.InputHandler;
  */
 public class MapPreviewInputHandler implements InputHandler{
 	private Map map;
+	private Gui gui;
 	private boolean mouseDown;
 	private double mouseX;
 	private double mouseY;
@@ -25,8 +27,9 @@ public class MapPreviewInputHandler implements InputHandler{
 	private double scrollY;
 	private double scrollXStart;
 	private double scrollYStart;
-	public void loadMap(Map map){
+	public void load(Map map, Gui gui){
 		this.map = map;
+		this.gui = gui;
 	}
 	@Override
 	public void keyPressed(long window, int key, int action){}
@@ -41,6 +44,9 @@ public class MapPreviewInputHandler implements InputHandler{
 			downY = mouseY;
 			scrollXStart = scrollX;
 			scrollYStart = scrollY;
+			if(gui!=null){
+				gui.processClick((int)Math.round(mouseX), (int)Math.round(mouseY));
+			}
 		}
 	}
 	@Override

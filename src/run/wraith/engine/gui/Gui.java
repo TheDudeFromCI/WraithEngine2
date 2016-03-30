@@ -119,4 +119,11 @@ public class Gui{
 		camera.setOrthographic(0, width, height, 0, -1, 1);
 		updateAllMenuLayouts();
 	}
+	public void processClick(int x, int y){
+		for(int i = activeMenus.size()-1; i>=0; i--){
+			if(activeMenus.get(i).processClick(x, y)){
+				return;
+			}
+		}
+	}
 }

@@ -5,18 +5,30 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package wraith.lib.code;
+package build.games.wraithaven.gui;
 
-import build.games.wraithaven.gui.MenuComponentDialog;
-import wraith.lib.util.BinaryFile;
+import build.games.wraithaven.util.VerticalFlowLayout;
+import java.util.ArrayList;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * @author thedudefromci
  */
-public interface WSNode{
-	public void save(BinaryFile bin);
-	public void load(BinaryFile bin, short version);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
-	public void run();
+public class AttachScriptsDialog extends JPanel{
+	public AttachScriptsDialog(){
+		setLayout(new VerticalFlowLayout(0, 5));
+		JLabel label = new JLabel("Note to self; do this later.");
+		add(label);
+	}
+	public JComponent getFocus(){
+		return null;
+	}
+	public void compile(MenuComponent component){
+		ArrayList<String> scripts = component.getScripts();
+		if(scripts.isEmpty()){
+			scripts.add("821760e9113d03328e041972");
+		}
+	}
 }

@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.code;
 
-import build.games.wraithaven.code.languages.WraithScript;
+import wraith.lib.code.WraithScript;
 import java.io.File;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;

@@ -7,7 +7,7 @@
  */
 package build.games.wraithaven.code;
 
-import build.games.wraithaven.code.languages.WraithScript;
+import wraith.lib.code.WraithScript;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;

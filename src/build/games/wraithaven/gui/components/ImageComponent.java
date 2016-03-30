@@ -38,6 +38,7 @@ import wraith.lib.util.BinaryFile;
 public class ImageComponent implements MenuComponent{
 	private static final int ID = 0;
 	private final ArrayList<MenuComponentHeirarchy> children = new ArrayList(4);
+	private final ArrayList<String> scripts = new ArrayList(1);
 	private final String uuid;
 	private final Anchor anchor;
 	private boolean collapsed;
@@ -96,6 +97,11 @@ public class ImageComponent implements MenuComponent{
 					int layoutId = bin.getInt();
 					layout = MenuComponentFactory.newLayoutInstance(layoutId, version, menu, bin);
 				}
+				int scriptCount = bin.getInt();
+				scripts.ensureCapacity(scriptCount);
+				for(int i = 0; i<scriptCount; i++){
+					scripts.add(bin.getString());
+				}
 				break;
 			}
 			default:
@@ -117,11 +123,15 @@ public class ImageComponent implements MenuComponent{
 				JOptionPane.showMessageDialog(null, "Image component image failed to save!", "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
-		bin.allocateBytes(1+(layout==null?0:4));
+		bin.allocateBytes(1+(layout==null?0:4)+4);
 		bin.addBoolean(layout!=null);
 		if(layout!=null){
 			bin.addInt(layout.getId());
 			layout.saveLayout(menu, bin);
+		}
+		bin.addInt(scripts.size());
+		for(String script : scripts){
+			bin.addStringAllocated(script);
 		}
 	}
 	@Override
@@ -258,5 +268,9 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public void setLayout(ComponentLayout layout){
 		this.layout = layout;
+	}
+	@Override
+	public ArrayList<String> getScripts(){
+		return scripts;
 	}
 }

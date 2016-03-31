@@ -13,7 +13,6 @@ import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
 import build.games.wraithaven.core.gameprep.GameBuilder;
 import build.games.wraithaven.core.window.BuilderTab;
-import build.games.wraithaven.gui.GuiEditor;
 import build.games.wraithaven.gui.Menu;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -80,7 +79,6 @@ public class MapEditorTab extends BuilderTab{
 				switchProject.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
-						GuiEditor.closeFrame();
 						SnipetPreviewer.closeFrame();
 						mapStyle.getFrame().dispose();
 						WraithEngine.updateFolders(WraithEngine.getWorkspace(), WraithEngine.getAssetFolder());
@@ -213,7 +211,6 @@ public class MapEditorTab extends BuilderTab{
 									JOptionPane.ERROR_MESSAGE);
 							}
 							// Close current window, and reload.
-							GuiEditor.closeFrame();
 							SnipetPreviewer.closeFrame();
 							mapStyle.getFrame().dispose();
 							new IsoMapStyle().buildWindow();
@@ -292,17 +289,6 @@ public class MapEditorTab extends BuilderTab{
 				}
 			}
 			{
-				// Gui
-				JMenuItem item = new JMenuItem("Menus");
-				item.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e){
-						GuiEditor.launch();
-					}
-				});
-				menu.add(item);
-			}
-			{
 				// Code
 				JMenuItem item = new JMenuItem("Code Snipets");
 				item.addActionListener(new ActionListener(){
@@ -350,7 +336,7 @@ public class MapEditorTab extends BuilderTab{
 									JOptionPane.WARNING_MESSAGE);
 								return;
 							}
-							Menu menu = GuiEditor.getSelectedMenu();
+							Menu menu = mapStyle.getGuiEditorTab().getSelectedMenu();
 							GameBuilder builder = new GameBuilder(mapStyle);
 							builder.compile();
 							ArrayList<String> args = new ArrayList(4);

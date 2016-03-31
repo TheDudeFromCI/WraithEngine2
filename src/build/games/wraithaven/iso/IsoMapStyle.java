@@ -12,6 +12,7 @@ import build.games.wraithaven.core.gameprep.SaveHandler;
 import build.games.wraithaven.core.window.BuilderTab;
 import build.games.wraithaven.core.window.WindowStructure;
 import build.games.wraithaven.core.window.WindowStructureBuilder;
+import build.games.wraithaven.gui.GuiEditor;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -21,10 +22,12 @@ import javax.swing.JOptionPane;
 public class IsoMapStyle implements MapStyle{
 	private final WindowStructure windowStructure;
 	private final MapEditorTab mapEditorTab;
+	private final GuiEditor guiEditorTab;
 	public IsoMapStyle(){
 		mapEditorTab = new MapEditorTab(this);
+		guiEditorTab = new GuiEditor();
 		BuilderTab[] tabs = new BuilderTab[]{
-			mapEditorTab
+			mapEditorTab, guiEditorTab
 		};
 		WindowStructureBuilder builder = new WindowStructureBuilder(){
 			@Override
@@ -44,6 +47,12 @@ public class IsoMapStyle implements MapStyle{
 	@Override
 	public void buildWindow(){
 		windowStructure.show();
+	}
+	public MapEditorTab getMapEditorTab(){
+		return mapEditorTab;
+	}
+	public GuiEditor getGuiEditorTab(){
+		return guiEditorTab;
 	}
 	@Override
 	public SaveHandler getSaveHandler(){

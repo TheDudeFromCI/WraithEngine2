@@ -8,7 +8,9 @@
 package run.wraith.engine.gui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import org.joml.Matrix4f;
+import run.wraith.engine.code.Clickable;
 import run.wraith.engine.gui.components.EmptyComponent;
 import run.wraith.engine.gui.components.ImageComponent;
 import run.wraith.engine.opengl.renders.ModelInstance;
@@ -65,7 +67,7 @@ public class Menu{
 			case 0:
 				return new ImageComponent(gui, this, uuid, depth);
 			case 1:
-				return new EmptyComponent();
+				return new EmptyComponent(depth);
 			default:
 				throw new RuntimeException("Unknown component type! '"+typeId+"'");
 		}
@@ -118,6 +120,8 @@ public class Menu{
 			y = y+h*a.getParentY()-a.getHeight()*a.getChildY();
 			w = a.getWidth();
 			h = a.getHeight();
+			MenuPosLoc posLoc = current.getPositionAndLocation();
+			posLoc.update(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
 			ModelInstance model = current.getModel();
 			if(model!=null){
 				Matrix4f pos = model.getPosition();
@@ -131,6 +135,36 @@ public class Menu{
 		}
 		for(MenuComponent child : children){
 			updateHeirarchy(child.getChildren(), child, x, y, w, h);
+		}
+	}
+	public boolean processClick(int x, int y){
+		// Get possible clicked components.
+		ArrayList<Clickable> clickers = new ArrayList(4);
+		addClickers(clickers, x, y, children, null);
+		if(clickers.isEmpty()){ // We have no clicked components in this menu.
+			return false;
+		}
+		clickers.sort(new Comparator<Clickable>(){ // Sort by render order.
+			@Override
+			public int compare(Clickable o1, Clickable o2){
+				MenuComponent a = (MenuComponent)o1;
+				MenuComponent b = (MenuComponent)o2;
+				return Integer.compare(a.getDepth(), b.getDepth());
+			}
+		});
+		// Run the last.
+		clickers.get(clickers.size()-1).onClick();
+		return true;
+	}
+	private void addClickers(ArrayList<Clickable> clickers, int x, int y, ArrayList<MenuComponent> children, MenuComponent current){
+		if(current!=null){
+			MenuPosLoc posLoc = current.getPositionAndLocation();
+			if(current instanceof Clickable&&x>=posLoc.getX()&&x<posLoc.getX()+posLoc.getW()&&y>=posLoc.getY()&&y<posLoc.getY()+posLoc.getH()){
+				clickers.add((Clickable)current);
+			}
+		}
+		for(MenuComponent comp : children){
+			addClickers(clickers, x, y, comp.getChildren(), comp);
 		}
 	}
 }

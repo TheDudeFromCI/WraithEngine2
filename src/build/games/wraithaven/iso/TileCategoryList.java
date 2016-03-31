@@ -7,18 +7,18 @@
  */
 package build.games.wraithaven.iso;
 
-import wraith.lib.util.Algorithms;
-import wraith.lib.util.BinaryFile;
 import java.io.File;
 import java.util.ArrayList;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
 public class TileCategoryList{
 	private final ArrayList<TileCategory> categories = new ArrayList(32);
-	private final IsoMapStyle mapStyle;
-	public TileCategoryList(IsoMapStyle mapStyle){
+	private final MapEditorTab mapStyle;
+	public TileCategoryList(MapEditorTab mapStyle){
 		this.mapStyle = mapStyle;
 		load();
 	}

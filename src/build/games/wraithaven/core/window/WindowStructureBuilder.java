@@ -5,24 +5,12 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.gui;
-
-import java.util.ArrayList;
-import run.wraith.engine.code.Clickable;
-import run.wraith.engine.opengl.renders.ModelInstance;
-import wraith.lib.gui.Anchor;
-import wraith.lib.util.BinaryFile;
+package build.games.wraithaven.core.window;
 
 /**
  * @author thedudefromci
  */
-public interface MenuComponent extends Clickable{
-	public void dispose();
-	public ArrayList<MenuComponent> getChildren();
-	public ModelInstance getModel();
-	public void load(BinaryFile bin, short version);
-	public Anchor getAnchor();
-	public Layout getLayout();
-	public MenuPosLoc getPositionAndLocation();
-	public int getDepth();
+public interface WindowStructureBuilder{
+	public BuilderTab[] getTabs();
+	public boolean confirmExit();
 }

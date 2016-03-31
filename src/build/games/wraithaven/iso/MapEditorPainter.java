@@ -31,7 +31,7 @@ public class MapEditorPainter extends JPanel{
 	private final CursorSelection cursorSelection;
 	private final Toolbar toolbar;
 	private final MapEditor mapEditor;
-	private final IsoMapStyle mapStyle;
+	private final MapEditorTab mapStyle;
 	private Map map;
 	private int tileSize;
 	private int tileWidth;
@@ -43,7 +43,7 @@ public class MapEditorPainter extends JPanel{
 	private Polygon isoCubeBorder;
 	private Polygon dragSelectionSquare;
 	private Tool tool;
-	public MapEditorPainter(IsoMapStyle mapStyle, Toolbar toolbar, MapEditor mapEditor){
+	public MapEditorPainter(MapEditorTab mapStyle, Toolbar toolbar, MapEditor mapEditor){
 		this.mapStyle = mapStyle;
 		this.toolbar = toolbar;
 		this.mapEditor = mapEditor;

@@ -50,7 +50,7 @@ public class MenuList extends JPanel{
 			public void mouseClicked(MouseEvent e){
 				int button = e.getButton();
 				if(button==MouseEvent.BUTTON1){
-					if(e.getClickCount()==2){
+					if(e.getClickCount()==1){
 						int index = list.locationToIndex(e.getPoint());
 						if(index==-1){
 							return;

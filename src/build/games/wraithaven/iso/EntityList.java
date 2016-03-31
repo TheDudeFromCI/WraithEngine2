@@ -40,9 +40,9 @@ public class EntityList extends JPanel{
 	private static final int PREVIEW_WIDTH = 4;
 	private static final int PREVIEW_ICON_SIZE = 64;
 	private final Polygon cursor;
-	private final IsoMapStyle mapStyle;
+	private final MapEditorTab mapStyle;
 	private final ArrayList<EntityInterface> entities = new ArrayList(16);
-	public EntityList(IsoMapStyle mapStyle){
+	public EntityList(MapEditorTab mapStyle){
 		this.mapStyle = mapStyle;
 		cursor = generateCursor();
 		updatePrefferedSize();

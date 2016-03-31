@@ -5,24 +5,39 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package run.wraith.engine.gui;
+package build.games.wraithaven.code;
 
-import java.util.ArrayList;
-import run.wraith.engine.code.Clickable;
-import run.wraith.engine.opengl.renders.ModelInstance;
-import wraith.lib.gui.Anchor;
-import wraith.lib.util.BinaryFile;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import javax.swing.JPanel;
 
 /**
  * @author thedudefromci
  */
-public interface MenuComponent extends Clickable{
-	public void dispose();
-	public ArrayList<MenuComponent> getChildren();
-	public ModelInstance getModel();
-	public void load(BinaryFile bin, short version);
-	public Anchor getAnchor();
-	public Layout getLayout();
-	public MenuPosLoc getPositionAndLocation();
-	public int getDepth();
+public class Renderer extends JPanel{
+	private Snipet snipet;
+	public Renderer(){
+		setLayout(new BorderLayout());
+		setBackground(Color.lightGray);
+	}
+	public void loadSnipet(Snipet snipet){
+		removeAll();
+		if(this.snipet!=null){
+			this.snipet.save();
+			this.snipet.dispose();
+		}
+		this.snipet = snipet;
+		if(this.snipet!=null){
+			this.snipet.load();
+			LanguageLoader lan = this.snipet.getLanguage();
+			if(lan!=null){
+				JPanel panel = lan.getRenderComponent();
+				if(panel!=null){
+					add(panel, BorderLayout.CENTER);
+				}
+			}
+		}
+		revalidate();
+		repaint();
+	}
 }

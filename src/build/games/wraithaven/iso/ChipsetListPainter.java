@@ -39,8 +39,8 @@ public class ChipsetListPainter extends JPanel{
 	private static final int PREVIEW_TILE_SCALE = 32;
 	private final CursorSelection cursorSelection;
 	private final Polygon cursor;
-	private final IsoMapStyle mapStyle;
-	public ChipsetListPainter(IsoMapStyle mapStyle){
+	private final MapEditorTab mapStyle;
+	public ChipsetListPainter(MapEditorTab mapStyle){
 		this.mapStyle = mapStyle;
 		cursorSelection = new CursorSelection();
 		cursor = generateCursor();

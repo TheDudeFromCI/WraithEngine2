@@ -9,11 +9,13 @@ package run.wraith.engine.gui.components;
 
 import java.io.File;
 import java.util.ArrayList;
+import run.wraith.engine.code.Snipet;
 import run.wraith.engine.gui.Gui;
 import run.wraith.engine.gui.ImageModelInstance;
 import run.wraith.engine.gui.Layout;
 import run.wraith.engine.gui.Menu;
 import run.wraith.engine.gui.MenuComponent;
+import run.wraith.engine.gui.MenuPosLoc;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import run.wraith.engine.opengl.renders.Texture;
 import wraith.lib.gui.Anchor;
@@ -25,10 +27,14 @@ import wraith.lib.util.BinaryFile;
  */
 public class ImageComponent implements MenuComponent{
 	private final ArrayList<MenuComponent> children = new ArrayList(4);
+	private final ArrayList<Snipet> scripts = new ArrayList(1);
 	private final ImageModelInstance model;
 	private final Anchor anchor;
+	private final MenuPosLoc posLoc;
+	private final int depth;
 	private Layout layout;
 	public ImageComponent(Gui gui, Menu menu, String uuid, int depth){
+		this.depth = depth;
 		Texture texture;
 		{
 			// Load Texture
@@ -42,6 +48,7 @@ public class ImageComponent implements MenuComponent{
 		}
 		model = new ImageModelInstance(gui.getModel(), texture, menu, depth);
 		anchor = new Anchor();
+		posLoc = new MenuPosLoc();
 	}
 	@Override
 	public void load(BinaryFile bin, short version){
@@ -60,6 +67,11 @@ public class ImageComponent implements MenuComponent{
 							throw new RuntimeException("Unknown layout! '"+id+"'");
 					}
 					layout.loadLayout(bin, version);
+				}
+				int scriptCount = bin.getInt();
+				scripts.ensureCapacity(scriptCount);
+				for(int i = 0; i<scriptCount; i++){
+					scripts.add(new Snipet(bin.getString()));
 				}
 				break;
 			}
@@ -86,5 +98,19 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public Layout getLayout(){
 		return layout;
+	}
+	@Override
+	public void onClick(){
+		for(Snipet s : scripts){
+			s.run();
+		}
+	}
+	@Override
+	public MenuPosLoc getPositionAndLocation(){
+		return posLoc;
+	}
+	@Override
+	public int getDepth(){
+		return depth;
 	}
 }

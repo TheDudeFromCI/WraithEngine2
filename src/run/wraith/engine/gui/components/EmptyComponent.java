@@ -8,8 +8,10 @@
 package run.wraith.engine.gui.components;
 
 import java.util.ArrayList;
+import run.wraith.engine.code.Snipet;
 import run.wraith.engine.gui.Layout;
 import run.wraith.engine.gui.MenuComponent;
+import run.wraith.engine.gui.MenuPosLoc;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import wraith.lib.gui.Anchor;
 import wraith.lib.util.BinaryFile;
@@ -19,10 +21,15 @@ import wraith.lib.util.BinaryFile;
  */
 public class EmptyComponent implements MenuComponent{
 	private final ArrayList<MenuComponent> children = new ArrayList(4);
+	private final ArrayList<Snipet> scripts = new ArrayList(1);
 	private final Anchor anchor;
+	private final MenuPosLoc posLoc;
+	private final int depth;
 	private Layout layout;
-	public EmptyComponent(){
+	public EmptyComponent(int depth){
+		this.depth = depth;
 		anchor = new Anchor();
+		posLoc = new MenuPosLoc();
 	}
 	@Override
 	public void dispose(){}
@@ -51,6 +58,11 @@ public class EmptyComponent implements MenuComponent{
 					}
 					layout.loadLayout(bin, version);
 				}
+				int scriptCount = bin.getInt();
+				scripts.ensureCapacity(scriptCount);
+				for(int i = 0; i<scriptCount; i++){
+					scripts.add(new Snipet(bin.getString()));
+				}
 				break;
 			}
 			default:
@@ -64,5 +76,19 @@ public class EmptyComponent implements MenuComponent{
 	@Override
 	public Layout getLayout(){
 		return layout;
+	}
+	@Override
+	public MenuPosLoc getPositionAndLocation(){
+		return posLoc;
+	}
+	@Override
+	public int getDepth(){
+		return depth;
+	}
+	@Override
+	public void onClick(){
+		for(Snipet s : scripts){
+			s.run();
+		}
 	}
 }

@@ -10,14 +10,12 @@ package build.games.wraithaven.util;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.LayoutManager2;
-import java.util.ArrayList;
+import java.awt.LayoutManager;
 
 /**
  * @author TheDudeFromCI
  */
-public class VerticalFlowLayout implements LayoutManager2{
-	private final ArrayList<Component> components = new ArrayList(4);
+public class VerticalFlowLayout implements LayoutManager{
 	private int hgap = 0;
 	private int vgap = 0;
 	public VerticalFlowLayout(){}
@@ -32,29 +30,12 @@ public class VerticalFlowLayout implements LayoutManager2{
 		this.vgap = vgap;
 	}
 	@Override
-	public void addLayoutComponent(Component comp, Object constraints){
-		this.components.add(comp);
-	}
-	@Override
-	public float getLayoutAlignmentX(Container target){
-		return 0;
-	}
-	@Override
-	public float getLayoutAlignmentY(Container target){
-		return 0;
-	}
-	@Override
-	public void invalidateLayout(Container target){}
-	@Override
-	public void addLayoutComponent(String name, Component comp){
-		this.components.add(comp);
-	}
-	@Override
 	public void layoutContainer(Container parent){
 		int x = 0;
 		int y = 0;
 		int columnWidth = 0;
-		for(Component c : this.components){
+		Component[] components = parent.getComponents();
+		for(Component c : components){
 			if(c.isVisible()){
 				Dimension d = c.getPreferredSize();
 				columnWidth = Math.max(columnWidth, d.width);
@@ -68,13 +49,10 @@ public class VerticalFlowLayout implements LayoutManager2{
 		}
 	}
 	@Override
-	public Dimension minimumLayoutSize(Container parent){
-		return new Dimension(0, 0);
-	}
-	@Override
 	public Dimension preferredLayoutSize(Container parent){
 		int width = 0;
 		int height = 0;
+		Component[] components = parent.getComponents();
 		for(Component c : components){
 			width = (int)Math.max(width, c.getPreferredSize().getWidth());
 			if(height>0){
@@ -85,11 +63,11 @@ public class VerticalFlowLayout implements LayoutManager2{
 		return new Dimension(width, height);
 	}
 	@Override
-	public Dimension maximumLayoutSize(Container target){
-		return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+	public Dimension minimumLayoutSize(Container parent){
+		return new Dimension(0, 0);
 	}
 	@Override
-	public void removeLayoutComponent(Component comp){
-		this.components.remove(comp);
-	}
+	public void addLayoutComponent(String name, Component comp){}
+	@Override
+	public void removeLayoutComponent(Component comp){}
 }

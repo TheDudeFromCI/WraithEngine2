@@ -7,22 +7,30 @@
  */
 package run.wraith.engine.gui;
 
-import java.util.ArrayList;
-import run.wraith.engine.code.Clickable;
-import run.wraith.engine.opengl.renders.ModelInstance;
-import wraith.lib.gui.Anchor;
-import wraith.lib.util.BinaryFile;
-
 /**
  * @author thedudefromci
  */
-public interface MenuComponent extends Clickable{
-	public void dispose();
-	public ArrayList<MenuComponent> getChildren();
-	public ModelInstance getModel();
-	public void load(BinaryFile bin, short version);
-	public Anchor getAnchor();
-	public Layout getLayout();
-	public MenuPosLoc getPositionAndLocation();
-	public int getDepth();
+public class MenuPosLoc{
+	private int x;
+	private int y;
+	private int w;
+	private int h;
+	public void update(int x, int y, int w, int h){
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+	}
+	public int getX(){
+		return x;
+	}
+	public int getY(){
+		return y;
+	}
+	public int getW(){
+		return w;
+	}
+	public int getH(){
+		return h;
+	}
 }

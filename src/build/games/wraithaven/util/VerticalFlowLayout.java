@@ -44,7 +44,9 @@ public class VerticalFlowLayout implements LayoutManager2{
 		return 0;
 	}
 	@Override
-	public void invalidateLayout(Container target){}
+	public void invalidateLayout(Container target){
+		components.clear();
+	}
 	@Override
 	public void addLayoutComponent(String name, Component comp){
 		this.components.add(comp);

@@ -39,7 +39,7 @@ public class SnipetList extends JPanel{
 	private Snipet selected;
 	public SnipetList(Renderer renderer){
 		this.renderer = renderer;
-		load();
+		load(snipets);
 		list = new JList();
 		updateListModel();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -125,7 +125,7 @@ public class SnipetList extends JPanel{
 		selected = snipet;
 		renderer.loadSnipet(snipet);
 	}
-	private void load(){
+	public static void load(ArrayList<Snipet> snipets){
 		File file = Algorithms.getFile("scripts.dat");
 		if(!file.exists()){
 			return;

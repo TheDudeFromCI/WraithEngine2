@@ -142,7 +142,7 @@ public class MenuComponentList extends JPanel{
 								item.addActionListener(new ActionListener(){
 									@Override
 									public void actionPerformed(ActionEvent e){
-										AttachScriptsDialog scriptsDialog = new AttachScriptsDialog();
+										AttachScriptsDialog scriptsDialog = new AttachScriptsDialog((MenuComponent)selectedComponent);
 										InputDialog dialog = new InputDialog();
 										dialog.setTitle("Edit Component Scripts");
 										dialog.setOkButton(true);

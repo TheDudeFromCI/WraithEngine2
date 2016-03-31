@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.iso;
 
+import build.games.wraithaven.code.SnipetPreviewer;
 import build.games.wraithaven.core.MapStyle;
 import build.games.wraithaven.core.gameprep.SaveHandler;
 import build.games.wraithaven.core.window.BuilderTab;
@@ -23,11 +24,13 @@ public class IsoMapStyle implements MapStyle{
 	private final WindowStructure windowStructure;
 	private final MapEditorTab mapEditorTab;
 	private final GuiEditor guiEditorTab;
+	private final SnipetPreviewer snipetPreviewerTab;
 	public IsoMapStyle(){
 		mapEditorTab = new MapEditorTab(this);
 		guiEditorTab = new GuiEditor();
+		snipetPreviewerTab = new SnipetPreviewer();
 		BuilderTab[] tabs = new BuilderTab[]{
-			mapEditorTab, guiEditorTab
+			mapEditorTab, guiEditorTab, snipetPreviewerTab
 		};
 		WindowStructureBuilder builder = new WindowStructureBuilder(){
 			@Override
@@ -53,6 +56,9 @@ public class IsoMapStyle implements MapStyle{
 	}
 	public GuiEditor getGuiEditorTab(){
 		return guiEditorTab;
+	}
+	public SnipetPreviewer getSnipetPreviewer(){
+		return snipetPreviewerTab;
 	}
 	@Override
 	public SaveHandler getSaveHandler(){

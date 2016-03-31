@@ -7,7 +7,6 @@
  */
 package build.games.wraithaven.iso;
 
-import build.games.wraithaven.code.SnipetPreviewer;
 import build.games.wraithaven.core.ProjectList;
 import build.games.wraithaven.core.WorldList;
 import build.games.wraithaven.core.WraithEngine;
@@ -79,7 +78,6 @@ public class MapEditorTab extends BuilderTab{
 				switchProject.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
-						SnipetPreviewer.closeFrame();
 						mapStyle.getFrame().dispose();
 						WraithEngine.updateFolders(WraithEngine.getWorkspace(), WraithEngine.getAssetFolder());
 						new ProjectList();
@@ -211,7 +209,6 @@ public class MapEditorTab extends BuilderTab{
 									JOptionPane.ERROR_MESSAGE);
 							}
 							// Close current window, and reload.
-							SnipetPreviewer.closeFrame();
 							mapStyle.getFrame().dispose();
 							new IsoMapStyle().buildWindow();
 						}
@@ -287,17 +284,6 @@ public class MapEditorTab extends BuilderTab{
 					});
 					menu2.add(item);
 				}
-			}
-			{
-				// Code
-				JMenuItem item = new JMenuItem("Code Snipets");
-				item.addActionListener(new ActionListener(){
-					@Override
-					public void actionPerformed(ActionEvent e){
-						SnipetPreviewer.launch();
-					}
-				});
-				menu.add(item);
 			}
 		}
 		{

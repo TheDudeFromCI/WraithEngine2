@@ -7,49 +7,36 @@
  */
 package build.games.wraithaven.code;
 
+import build.games.wraithaven.core.window.BuilderTab;
 import java.awt.BorderLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 
 /**
  * @author thedudefromci
  */
-public class SnipetPreviewer{
-	private static JFrame frame;
-	public static void launch(){
-		if(frame!=null){
-			return;
-		}
-		frame = new JFrame();
-		frame.setTitle("Snipet Previewer");
-		frame.setSize(700, 525);
-		frame.setLocationRelativeTo(null);
-		frame.setResizable(true);
-		frame.addWindowListener(new WindowAdapter(){
-			@Override
-			public void windowClosing(WindowEvent e){
-				frame = null;
-			}
-		});
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+public class SnipetPreviewer extends BuilderTab{
+	private final Renderer renderer;
+	private final SnipetList list;
+	public SnipetPreviewer(){
+		super("Script Editor");
+		renderer = new Renderer();
+		list = new SnipetList(renderer);
 		addComponents();
-		frame.setVisible(true);
 	}
-	public static void closeFrame(){
-		if(frame!=null){
-			frame.dispose();
-			frame = null;
-		}
+	private void addComponents(){
+		setLayout(new BorderLayout());
+		JScrollPane scroll1 = new JScrollPane(list);
+		JScrollPane scroll2 = new JScrollPane(renderer);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, scroll1, scroll2);
+		splitPane.setResizeWeight(0.2);
+		add(splitPane, BorderLayout.CENTER);
 	}
-	private static void addComponents(){
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		Renderer renderer = new Renderer();
-		SnipetList list = new SnipetList(renderer);
-		panel.add(list, BorderLayout.WEST);
-		panel.add(renderer, BorderLayout.CENTER);
-		frame.add(panel);
+	@Override
+	public void buildTabs(JMenuBar menuBar){
+		// We don't have any menu bar commands yet.
+		menuBar.add(new JMenu("Place Holder"));
 	}
 }

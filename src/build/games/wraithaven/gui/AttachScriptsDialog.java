@@ -15,6 +15,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,10 +56,11 @@ public class AttachScriptsDialog extends JPanel{
 				Component center = compCount>=3?parent.getComponent(2):null;
 				int width = 0;
 				int height = 0;
+				int sideWidth = 0;
 				Dimension pref;
 				if(left!=null){
 					pref = left.getPreferredSize();
-					width += pref.width;
+					sideWidth = Math.max(sideWidth, pref.width);
 					height = Math.max(height, pref.height);
 				}
 				if(center!=null){
@@ -68,9 +70,10 @@ public class AttachScriptsDialog extends JPanel{
 				}
 				if(right!=null){
 					pref = right.getPreferredSize();
-					width += pref.width;
+					sideWidth = Math.max(sideWidth, pref.width);
 					height = Math.max(height, pref.height);
 				}
+				width += sideWidth*2;
 				return new Dimension(width, height);
 			}
 			@Override
@@ -79,10 +82,8 @@ public class AttachScriptsDialog extends JPanel{
 			}
 			@Override
 			public void layoutContainer(Container parent){
-				System.out.println("Updated layout.");
-				Dimension p = preferredLayoutSize(parent);
-				int width = (int)p.getWidth();
-				int height = (int)p.getHeight();
+				int width = parent.getWidth();
+				int height = parent.getHeight();
 				int extra = width;
 				int compCount = parent.getComponentCount();
 				Component left = compCount>=1?parent.getComponent(0):null;
@@ -91,17 +92,14 @@ public class AttachScriptsDialog extends JPanel{
 				if(center!=null&&center.isVisible()){
 					Dimension pref = center.getPreferredSize();
 					center.setBounds((width-(int)pref.getWidth())/2, 0, (int)pref.getWidth(), height);
-					System.out.println(center.getBounds().toString());
 					extra -= (int)pref.getWidth();
 				}
 				extra /= 2;
 				if(left!=null&&left.isVisible()){
 					left.setBounds(0, 0, extra, height);
-					System.out.println(left.getBounds().toString());
 				}
 				if(right!=null&&right.isVisible()){
 					right.setBounds(width-extra, 0, extra, height);
-					System.out.println(right.getBounds().toString());
 				}
 			}
 		});
@@ -154,32 +152,66 @@ public class AttachScriptsDialog extends JPanel{
 				JPanel panel = new JPanel();
 				panel.setLayout(new GridBagLayout());
 				JPanel panel2 = new JPanel();
-				panel2.setLayout(new GridLayout(2, 1, 5, 0));
-				BufferedImage arrow1 = null;
-				BufferedImage arrow2 = null;
+				panel2.setLayout(new GridLayout(4, 1, 5, 0));
+				ImageIcon[] images = new ImageIcon[12];
 				try{
-					arrow1 = ImageIO.read(Algorithms.getAsset("BlueArrow1.png"));
-					arrow2 = ImageIO.read(Algorithms.getAsset("BlueArrow2.png"));
+					BufferedImage image = ImageIO.read(Algorithms.getAsset("BlueArrow.png"));
+					for(int i = 0; i<images.length; i++){
+						images[i] =
+							new ImageIcon(image.getSubimage(image.getWidth()/images.length*i, 0, image.getWidth()/images.length, image.getHeight())
+								.getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+					}
 				}catch(Exception exception){
 					exception.printStackTrace();
 					JOptionPane.showMessageDialog(null, "There has been an error loading some of the assets for this window.", "Error",
 						JOptionPane.ERROR_MESSAGE);
 				}
-				JButton moveRight = new JButton(new ImageIcon(arrow1));
+				JButton moveUp = new JButton(images[3]);
+				moveUp.setPressedIcon(images[4]);
+				moveUp.setRolloverIcon(images[5]);
+				moveUp.setOpaque(false);
+				moveUp.setBorderPainted(false);
+				moveUp.setContentAreaFilled(false);
+				moveUp.setFocusPainted(false);
+				panel2.add(moveUp);
+				JButton moveRight = new JButton(images[0]);
+				moveRight.setPressedIcon(images[1]);
+				moveRight.setRolloverIcon(images[2]);
+				moveRight.setOpaque(false);
+				moveRight.setBorderPainted(false);
+				moveRight.setContentAreaFilled(false);
+				moveRight.setFocusPainted(false);
 				panel2.add(moveRight);
-				JButton moveLeft = new JButton(new ImageIcon(arrow2));
+				JButton moveLeft = new JButton(images[6]);
+				moveLeft.setPressedIcon(images[7]);
+				moveLeft.setRolloverIcon(images[8]);
+				moveLeft.setOpaque(false);
+				moveLeft.setBorderPainted(false);
+				moveLeft.setContentAreaFilled(false);
+				moveLeft.setFocusPainted(false);
 				panel2.add(moveLeft);
+				JButton moveDown = new JButton(images[9]);
+				moveDown.setPressedIcon(images[10]);
+				moveDown.setRolloverIcon(images[11]);
+				moveDown.setOpaque(false);
+				moveDown.setBorderPainted(false);
+				moveDown.setContentAreaFilled(false);
+				moveDown.setFocusPainted(false);
+				panel2.add(moveDown);
 				panel.add(panel2);
 				add(panel);
-				moveLeft.addActionListener(new ActionListener(){
+				moveUp.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent e){
 						int[] sel = rightList.getSelectedIndices();
 						if(sel.length==0){
 							return;
 						}
-						for(int i = sel.length-1; i>=0; i--){
-							allSnipets.add(usedSnipets.remove(sel[i]));
+						for(int i : sel){
+							if(i==0){
+								break;
+							}
+							usedSnipets.add(i-1, usedSnipets.remove(i));
 						}
 						updateLists();
 					}
@@ -193,6 +225,35 @@ public class AttachScriptsDialog extends JPanel{
 						}
 						for(int i = sel.length-1; i>=0; i--){
 							usedSnipets.add(allSnipets.remove(sel[i]));
+						}
+						updateLists();
+					}
+				});
+				moveLeft.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						int[] sel = rightList.getSelectedIndices();
+						if(sel.length<=0){
+							return;
+						}
+						for(int i = sel.length-1; i>=0; i--){
+							allSnipets.add(usedSnipets.remove(sel[i]));
+						}
+						updateLists();
+					}
+				});
+				moveDown.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent e){
+						int[] sel = rightList.getSelectedIndices();
+						if(sel.length==0){
+							return;
+						}
+						for(int i = sel.length-1; i>=0; i--){
+							if(sel[i]>=usedSnipets.size()-1){
+								break;
+							}
+							usedSnipets.add(sel[i]+1, usedSnipets.remove(sel[i]));
 						}
 						updateLists();
 					}

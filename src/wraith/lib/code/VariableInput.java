@@ -101,6 +101,9 @@ public class VariableInput extends JPanel{
 		((JSpinner)inputType).setModel(new SpinnerNumberModel(0, null, null, 1));
 		((JSpinner)inputType).setPreferredSize(new Dimension(75, 20));
 		updateInputType();
+		((JSpinner.DefaultEditor)((JSpinner)inputType).getEditor()).getTextField().addMouseListener(mouseAdapter);
+		((JSpinner)inputType).getComponent(0).addMouseListener(mouseAdapter);
+		((JSpinner)inputType).getComponent(1).addMouseListener(mouseAdapter);
 	}
 	private void updateInputType(){
 		inputType.addMouseListener(mouseAdapter);
@@ -108,6 +111,7 @@ public class VariableInput extends JPanel{
 		add(inputType, BorderLayout.CENTER);
 		revalidate();
 		repaint();
+		inputType.requestFocusInWindow();
 	}
 	public Object getValue(){
 		if(inputType instanceof JTextField){

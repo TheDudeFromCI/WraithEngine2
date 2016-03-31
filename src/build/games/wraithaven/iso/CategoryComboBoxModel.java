@@ -7,11 +7,11 @@
  */
 package build.games.wraithaven.iso;
 
-import wraith.lib.util.Algorithms;
 import java.util.ArrayList;
 import javax.swing.ComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListDataListener;
+import wraith.lib.util.Algorithms;
 
 /**
  * @author thedudefromci
@@ -19,10 +19,10 @@ import javax.swing.event.ListDataListener;
 public class CategoryComboBoxModel implements ComboBoxModel{
 	private final ArrayList<ListDataListener> listeners = new ArrayList(1);
 	private final TileCategoryList list;
-	private final IsoMapStyle mapStyle;
+	private final MapEditorTab mapStyle;
 	private TileCategory selected;
 	private String lastName;
-	public CategoryComboBoxModel(IsoMapStyle mapStyle){
+	public CategoryComboBoxModel(MapEditorTab mapStyle){
 		this.mapStyle = mapStyle;
 		list = new TileCategoryList(mapStyle);
 		if(list.getSize()==0){

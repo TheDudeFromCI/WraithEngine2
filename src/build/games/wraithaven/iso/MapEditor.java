@@ -18,8 +18,8 @@ import javax.swing.JPanel;
 public class MapEditor extends JPanel implements MapContainer{
 	private final Toolbar toolbar;
 	private final MapEditorPainter painter;
-	private final IsoMapStyle iso;
-	public MapEditor(IsoMapStyle iso){
+	private final MapEditorTab iso;
+	public MapEditor(MapEditorTab iso){
 		this.iso = iso;
 		toolbar = new Toolbar(this);
 		painter = new MapEditorPainter(iso, toolbar, this);

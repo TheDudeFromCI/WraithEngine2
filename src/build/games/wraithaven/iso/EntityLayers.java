@@ -42,7 +42,7 @@ public class EntityLayers extends JPanel{
 	private static final int EYE_POS = (EYE_ICON_SIZE-EYE_ICON_IMAGE_SIZE)/2;
 	private final ArrayList<Layer> layers = new ArrayList(8);
 	private final Font font = new Font("Tahoma", Font.PLAIN, 15);
-	private final IsoMapStyle mapStyle;
+	private final MapEditorTab mapStyle;
 	private BufferedImage eyeOpen;
 	private BufferedImage eyeClosed;
 	private String uuid;
@@ -50,7 +50,7 @@ public class EntityLayers extends JPanel{
 	private TextEditor textEditor;
 	private Timer timer;
 	private Layer layerDown;
-	public EntityLayers(IsoMapStyle mapStyle){
+	public EntityLayers(MapEditorTab mapStyle){
 		this.mapStyle = mapStyle;
 		try{
 			eyeOpen = ImageIO.read(Algorithms.getAsset("Eye Open.png"));

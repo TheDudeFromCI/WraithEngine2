@@ -7,12 +7,12 @@
  */
 package build.games.wraithaven.iso;
 
-import wraith.lib.util.Algorithms;
-import wraith.lib.util.BinaryFile;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import wraith.lib.util.Algorithms;
+import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
@@ -20,12 +20,12 @@ import javax.imageio.ImageIO;
 public class TileCategory{
 	private static final short FILE_VERSION = 0;
 	private final String uuid;
-	private final IsoMapStyle mapStyle;
+	private final MapEditorTab mapStyle;
 	private final ComplexEntityList complexEntityList;
 	private ArrayList<Tile> tiles;
 	private ArrayList<EntityType> entities;
 	private String name;
-	public TileCategory(IsoMapStyle mapStyle, String uuid){
+	public TileCategory(MapEditorTab mapStyle, String uuid){
 		this.mapStyle = mapStyle;
 		this.uuid = uuid;
 		load();

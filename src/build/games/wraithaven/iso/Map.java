@@ -25,7 +25,7 @@ public class Map implements MapInterface{
 	private static final short FILE_VERSION_TILES = 0;
 	private final String uuid;
 	private final ArrayList<Map> childMaps = new ArrayList(1);
-	private final IsoMapStyle iso;
+	private final MapEditorTab iso;
 	private TileInstance[] tiles;
 	private int width;
 	private int height;
@@ -34,12 +34,12 @@ public class Map implements MapInterface{
 	private boolean needsSaving;
 	private String parent;
 	private BufferedImage backgroundImage;
-	public Map(IsoMapStyle iso, String uuid){
+	public Map(MapEditorTab iso, String uuid){
 		this.iso = iso;
 		this.uuid = uuid;
 		loadProperties();
 	}
-	public Map(IsoMapStyle iso, String uuid, String name, int width, int height){
+	public Map(MapEditorTab iso, String uuid, String name, int width, int height){
 		this.iso = iso;
 		this.uuid = uuid;
 		this.name = name;

@@ -47,7 +47,7 @@ public class ChipsetList extends JPanel{
 	private final JTabbedPane tabbedPane;
 	private final JComboBox categoryComboBox;
 	private final CategoryComboBoxModel categoryComboBoxModel;
-	public ChipsetList(IsoMapStyle mapStyle){
+	public ChipsetList(MapEditorTab mapStyle){
 		categoryComboBoxModel = new CategoryComboBoxModel(mapStyle);
 		entityLayers = new EntityLayers(mapStyle);
 		painter = new ChipsetListPainter(mapStyle);

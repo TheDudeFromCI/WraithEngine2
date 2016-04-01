@@ -47,7 +47,7 @@ public class PrintToConsole implements WSNode{
 		return new MenuComponentDialog(){
 			private final VariableInput input;
 			{
-				setLayout(new VerticalFlowLayout(0, 5));
+				setLayout(new VerticalFlowLayout(5));
 				input = new VariableInput();
 				input.setValue(comment);
 				add(input);

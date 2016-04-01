@@ -441,7 +441,7 @@ public class MenuComponentList extends JPanel{
 		InputDialog dialog = new InputDialog();
 		MenuComponentDialog builder = child.getCreationDialog();
 		JPanel dialogComponent = new JPanel();
-		dialogComponent.setLayout(new VerticalFlowLayout(0, 5));
+		dialogComponent.setLayout(new VerticalFlowLayout(5));
 		dialogComponent.add(builder);
 		JComboBox comboBox;
 		{

@@ -25,7 +25,7 @@ public class NewScriptDialog extends JPanel{
 	private final JComboBox language;
 	private final JTextField des;
 	public NewScriptDialog(){
-		setLayout(new VerticalFlowLayout(0, 5));
+		setLayout(new VerticalFlowLayout(5, VerticalFlowLayout.FILL_SPACE));
 		{
 			// Name
 			JPanel panel = new JPanel();

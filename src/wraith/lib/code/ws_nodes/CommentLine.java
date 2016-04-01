@@ -47,7 +47,7 @@ public class CommentLine implements WSNode{
 		return new MenuComponentDialog(){
 			private final JTextField text;
 			{
-				setLayout(new VerticalFlowLayout(0, 5));
+				setLayout(new VerticalFlowLayout(5));
 				text = new JTextField();
 				text.setColumns(20);
 				text.setText(comment);

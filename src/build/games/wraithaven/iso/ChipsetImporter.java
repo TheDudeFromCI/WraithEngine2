@@ -131,7 +131,7 @@ public class ChipsetImporter{
 			}
 			{
 				JPanel panel = new JPanel();
-				panel.setLayout(new VerticalFlowLayout(0, 5));
+				panel.setLayout(new VerticalFlowLayout(5));
 				JButton chooseNewTopButton = new JButton("Load New Top");
 				JButton chooseNewLeftButton = new JButton("Choose New Left");
 				JButton chooseNewRightButton = new JButton("Choose New Right");

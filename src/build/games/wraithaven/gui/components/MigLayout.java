@@ -101,7 +101,7 @@ public class MigLayout implements ComponentLayout{
 			private MigObjectLocation[] locs;
 			{
 				// Builder
-				setLayout(new VerticalFlowLayout(0, 5));
+				setLayout(new VerticalFlowLayout(5));
 				{
 					// Preview
 					JPanel panel = new JPanel();

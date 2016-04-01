@@ -21,7 +21,7 @@ import wraith.lib.util.Algorithms;
 public class NewMenuDialog extends JPanel{
 	private final JTextField nameInput;
 	public NewMenuDialog(){
-		setLayout(new VerticalFlowLayout(0, 5));
+		setLayout(new VerticalFlowLayout(5));
 		{
 			// Name
 			JPanel panel = new JPanel();

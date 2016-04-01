@@ -11,8 +11,14 @@ import build.games.wraithaven.core.window.BuilderTab;
 import java.awt.BorderLayout;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * @author thedudefromci
@@ -28,11 +34,46 @@ public class SnipetPreviewer extends BuilderTab{
 	}
 	private void addComponents(){
 		setLayout(new BorderLayout());
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(renderer, BorderLayout.CENTER);
+		JTextField description = new JTextField();
+		description.setEnabled(false);
+		list.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e){
+				Snipet script = list.getSelectedScript();
+				boolean enabled = script!=null;
+				if(enabled!=description.isEnabled()){
+					description.setEnabled(enabled);
+				}
+				if(enabled){
+					description.setText(script.getDescription());
+				}else{
+					description.setText("");
+				}
+			}
+		});
+		description.addCaretListener(new CaretListener(){
+			@Override
+			public void caretUpdate(CaretEvent e){
+				Snipet script = list.getSelectedScript();
+				if(script!=null){
+					String des = description.getText();
+					if(!des.equals(script.getDescription())){
+						script.setDescription(des);
+						script.save();
+						list.save();
+					}
+				}
+			}
+		});
+		panel.add(description, BorderLayout.NORTH);
 		JScrollPane scroll1 = new JScrollPane(list);
-		JScrollPane scroll2 = new JScrollPane(renderer);
+		JScrollPane scroll2 = new JScrollPane(panel);
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, scroll1, scroll2);
-		splitPane.setResizeWeight(0.2);
 		add(splitPane, BorderLayout.CENTER);
+		splitPane.setResizeWeight(0.2);
 	}
 	@Override
 	public void buildTabs(JMenuBar menuBar){

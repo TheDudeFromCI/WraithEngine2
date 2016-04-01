@@ -9,7 +9,7 @@ package wraith.lib.code;
 
 import build.games.wraithaven.code.LanguageLoader;
 import build.games.wraithaven.code.Snipet;
-import build.games.wraithaven.code.languages.NodeLineLogic;
+import build.games.wraithaven.code.NodeLineLogic;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;

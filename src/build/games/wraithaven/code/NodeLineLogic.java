@@ -5,10 +5,8 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.code.languages;
+package build.games.wraithaven.code;
 
-import wraith.lib.code.WraithScriptLogic;
-import build.games.wraithaven.code.Snipet;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.InputDialog;
 import java.awt.Color;
@@ -30,9 +28,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.WraithScriptLogic;
+import wraith.lib.code.ws_nodes.BeginFunction;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
+import wraith.lib.code.ws_nodes.End;
 import wraith.lib.code.ws_nodes.PrintToConsole;
+import wraith.lib.code.ws_nodes.Return;
 
 /**
  * @author thedudefromci
@@ -85,9 +87,12 @@ public class NodeLineLogic extends JList{
 					{
 						// New
 						JMenu menu2 = new JMenu("New");
-						attemptAddNode(menu2, "Comment Line", CommentLine.class, sel[0]);
-						attemptAddNode(menu2, "Blank Line", BlankLine.class, sel[0]);
-						attemptAddNode(menu2, "Print to Console", PrintToConsole.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Comment Line", CommentLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Blank Line", BlankLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Return", Return.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/End Function", End.class, sel[0]);
+						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
 					{
@@ -146,7 +151,21 @@ public class NodeLineLogic extends JList{
 		repaint();
 	}
 	private void attemptAddNode(JMenu menu, String name, Class<? extends WSNode> node, int insertIndex){
-		JMenuItem item = new JMenuItem(name);
+		String[] nameParts = name.split("/");
+		JMenu m = menu;
+		full:for(int i = 0; i<nameParts.length-1; i++){
+			for(Component comp : m.getMenuComponents()){
+				if(comp instanceof JMenu&&((JMenu)comp).getText().equals(nameParts[i])){
+					m = (JMenu)comp;
+					continue full;
+				}
+			}
+			// If we're here, then the sub menu we need doesn't exist.
+			JMenu m2 = new JMenu(nameParts[i]);
+			m.add(m2);
+			m = m2;
+		}
+		JMenuItem item = new JMenuItem(nameParts[nameParts.length-1]);
 		item.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
@@ -177,7 +196,7 @@ public class NodeLineLogic extends JList{
 				}
 			}
 		});
-		menu.add(item);
+		m.add(item);
 	}
 	private void updateModel(){
 		ArrayList<WSNode> nodes = logic.getNodes();

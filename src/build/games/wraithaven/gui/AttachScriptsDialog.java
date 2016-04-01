@@ -31,7 +31,10 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import wraith.lib.util.Algorithms;
 
 /**
@@ -54,6 +57,7 @@ public class AttachScriptsDialog extends JPanel{
 				Component left = compCount>=1?parent.getComponent(0):null;
 				Component right = compCount>=2?parent.getComponent(1):null;
 				Component center = compCount>=3?parent.getComponent(2):null;
+				Component bottom = compCount>=4?parent.getComponent(3):null;
 				int width = 0;
 				int height = 0;
 				int sideWidth = 0;
@@ -73,6 +77,10 @@ public class AttachScriptsDialog extends JPanel{
 					sideWidth = Math.max(sideWidth, pref.width);
 					height = Math.max(height, pref.height);
 				}
+				if(bottom!=null){
+					pref = bottom.getPreferredSize();
+					height += pref.height;
+				}
 				width += sideWidth*2;
 				return new Dimension(width, height);
 			}
@@ -84,22 +92,28 @@ public class AttachScriptsDialog extends JPanel{
 			public void layoutContainer(Container parent){
 				int width = parent.getWidth();
 				int height = parent.getHeight();
-				int extra = width;
+				int extraWidth = width;
 				int compCount = parent.getComponentCount();
 				Component left = compCount>=1?parent.getComponent(0):null;
 				Component right = compCount>=2?parent.getComponent(1):null;
 				Component center = compCount>=3?parent.getComponent(2):null;
+				Component bottom = compCount>=4?parent.getComponent(3):null;
+				if(bottom!=null&&bottom.isVisible()){
+					Dimension pref = bottom.getPreferredSize();
+					height -= pref.height;
+					bottom.setBounds(0, height, width, pref.height);
+				}
 				if(center!=null&&center.isVisible()){
 					Dimension pref = center.getPreferredSize();
-					center.setBounds((width-(int)pref.getWidth())/2, 0, (int)pref.getWidth(), height);
-					extra -= (int)pref.getWidth();
+					center.setBounds((width-pref.width)/2, 0, pref.width, height);
+					extraWidth -= pref.width;
 				}
-				extra /= 2;
+				extraWidth /= 2;
 				if(left!=null&&left.isVisible()){
-					left.setBounds(0, 0, extra, height);
+					left.setBounds(0, 0, extraWidth, height);
 				}
 				if(right!=null&&right.isVisible()){
-					right.setBounds(width-extra, 0, extra, height);
+					right.setBounds(width-extraWidth, 0, extraWidth, height);
 				}
 			}
 		});
@@ -256,6 +270,28 @@ public class AttachScriptsDialog extends JPanel{
 							usedSnipets.add(sel[i]+1, usedSnipets.remove(sel[i]));
 						}
 						updateLists();
+					}
+				});
+			}
+			{
+				// Bottom
+				JTextArea des = new JTextArea();
+				des.setEditable(false);
+				des.setLineWrap(true);
+				des.setWrapStyleWord(true);
+				JScrollPane scroll = new JScrollPane(des);
+				scroll.setPreferredSize(new Dimension(10, 50));
+				scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				add(scroll);
+				rightList.addListSelectionListener(new ListSelectionListener(){
+					@Override
+					public void valueChanged(ListSelectionEvent e){
+						int[] sel = rightList.getSelectedIndices();
+						if(sel.length!=1){
+							des.setText("Description:\n");
+							return;
+						}
+						des.setText("Description:\n"+usedSnipets.get(sel[0]).getDescription());
 					}
 				});
 			}

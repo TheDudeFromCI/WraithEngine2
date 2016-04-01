@@ -19,4 +19,5 @@ public interface WSNode{
 	public int getId();
 	public MenuComponentDialog getCreationDialog();
 	public void run();
+	public String getHtml(int indent);
 }

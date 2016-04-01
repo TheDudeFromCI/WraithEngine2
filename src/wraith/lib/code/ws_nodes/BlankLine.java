@@ -30,4 +30,8 @@ public class BlankLine implements WSNode{
 	}
 	@Override
 	public void run(){}
+	@Override
+	public String getHtml(int indent){
+		return "<html><pre><font face=\"Courier\" size=\"3\"> </font></pre></html>";
+	}
 }

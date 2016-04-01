@@ -54,28 +54,20 @@ public class NodeLineLogic extends JList{
 			@Override
 			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus){
 				JLabel label = new JLabel();
-				String indent;
-				boolean enabled;
-				if(indents[index]>=0){
-					StringBuilder sb = new StringBuilder(indents[index]);
-					for(int i = 0; i<indents[index]; i++){
-						sb.append(' ');
-					}
-					indent = sb.toString();
-					enabled = true;
-				}else{
-					indent = "";
-					enabled = false;
-				}
 				if(value instanceof String){
+					String indent;
+					if(indents[index]>=0){
+						StringBuilder sb = new StringBuilder(indents[index]);
+						for(int i = 0; i<indents[index]; i++){
+							sb.append(' ');
+						}
+						indent = sb.toString();
+					}else{
+						indent = "";
+					}
 					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=red>"+indent+"[]</font></pre></html>");
-				}else if(value instanceof CommentLine){
-					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=green>"+indent+value.toString()+"</font></pre></html>");
-				}else if(value instanceof BlankLine){
-					label.setText("<html><pre><font face=\"Courier\" size=\"3\"> </font></pre></html>");
 				}else{
-					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent+value.toString()
-						+"</font></pre></html>");
+					label.setText(((WSNode)value).getHtml(indents[index]));
 				}
 				if(isSelected){
 					label.setBackground(new Color(0, 230, 230));

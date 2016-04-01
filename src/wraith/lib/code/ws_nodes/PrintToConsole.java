@@ -39,10 +39,6 @@ public class PrintToConsole implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public String toString(){
-		return "Print to Console("+comment+")";
-	}
-	@Override
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final VariableInput input;
@@ -73,5 +69,23 @@ public class PrintToConsole implements WSNode{
 	@Override
 	public void run(){
 		System.out.println(comment);
+	}
+	@Override
+	public String getHtml(int in){
+		String indent;
+		boolean enabled;
+		if(in>=0){
+			StringBuilder sb = new StringBuilder(in);
+			for(int i = 0; i<in; i++){
+				sb.append(' ');
+			}
+			indent = sb.toString();
+			enabled = true;
+		}else{
+			indent = "";
+			enabled = false;
+		}
+		return "<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent+"Print To Console("+comment
+			+")</font></pre></html>";
 	}
 }

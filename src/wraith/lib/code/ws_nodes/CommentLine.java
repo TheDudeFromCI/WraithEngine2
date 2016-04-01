@@ -39,10 +39,6 @@ public class CommentLine implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public String toString(){
-		return "# "+comment;
-	}
-	@Override
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final JTextField text;
@@ -66,4 +62,18 @@ public class CommentLine implements WSNode{
 	}
 	@Override
 	public void run(){}
+	@Override
+	public String getHtml(int in){
+		String indent;
+		if(in>=0){
+			StringBuilder sb = new StringBuilder(in);
+			for(int i = 0; i<in; i++){
+				sb.append(' ');
+			}
+			indent = sb.toString();
+		}else{
+			indent = "";
+		}
+		return "<html><pre><font face=\"Courier\" size=\"3\" color=green>"+indent+"# "+comment+"</font></pre></html>";
+	}
 }

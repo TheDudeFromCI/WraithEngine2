@@ -32,7 +32,20 @@ public class BeginFunction implements WSNode, Indenter{
 	@Override
 	public void run(){}
 	@Override
-	public String toString(){
-		return "Function()";
+	public String getHtml(int in){
+		String indent;
+		boolean enabled;
+		if(in>=0){
+			StringBuilder sb = new StringBuilder(in);
+			for(int i = 0; i<in; i++){
+				sb.append(' ');
+			}
+			indent = sb.toString();
+			enabled = true;
+		}else{
+			indent = "";
+			enabled = false;
+		}
+		return "<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent+"Function()</font></pre></html>";
 	}
 }

@@ -10,6 +10,7 @@ package wraith.lib.code.ws_nodes;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
+import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.VariableInput;
 import wraith.lib.code.WSNode;
 import wraith.lib.util.BinaryFile;
@@ -72,20 +73,6 @@ public class PrintToConsole implements WSNode{
 	}
 	@Override
 	public String getHtml(int in){
-		String indent;
-		boolean enabled;
-		if(in>=0){
-			StringBuilder sb = new StringBuilder(in);
-			for(int i = 0; i<in; i++){
-				sb.append(' ');
-			}
-			indent = sb.toString();
-			enabled = true;
-		}else{
-			indent = "";
-			enabled = false;
-		}
-		return "<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent
-			+"Print To Console(<font face=\"Courier\" size=\"3\" color="+(enabled?"blue":"gray")+">"+comment+"</font>)</font></pre></html>";
+		return FunctionUtils.generateHtml("Print To Console("+comment+")", in);
 	}
 }

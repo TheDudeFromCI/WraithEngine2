@@ -85,7 +85,7 @@ public class PrintToConsole implements WSNode{
 			indent = "";
 			enabled = false;
 		}
-		return "<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent+"Print To Console("+comment
-			+")</font></pre></html>";
+		return "<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent
+			+"Print To Console(<font face=\"Courier\" size=\"3\" color="+(enabled?"blue":"gray")+">"+comment+"</font>)</font></pre></html>";
 	}
 }

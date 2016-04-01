@@ -8,9 +8,12 @@
 package wraith.lib.code;
 
 import java.util.ArrayList;
+import wraith.lib.code.ws_nodes.BeginFunction;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
+import wraith.lib.code.ws_nodes.End;
 import wraith.lib.code.ws_nodes.PrintToConsole;
+import wraith.lib.code.ws_nodes.Return;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -42,6 +45,12 @@ public class WraithScriptLogic{
 				return new BlankLine();
 			case 2:
 				return new PrintToConsole();
+			case 3:
+				return new Return();
+			case 4:
+				return new BeginFunction();
+			case 5:
+				return new End();
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

@@ -30,4 +30,8 @@ public class Return implements WSNode{
 	}
 	@Override
 	public void run(){}
+	@Override
+	public String toString(){
+		return "Return";
+	}
 }

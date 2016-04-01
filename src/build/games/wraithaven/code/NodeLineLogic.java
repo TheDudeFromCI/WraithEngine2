@@ -11,6 +11,7 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.InputDialog;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
+import wraith.lib.code.Indenter;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScriptLogic;
 import wraith.lib.code.ws_nodes.BeginFunction;
@@ -40,8 +42,10 @@ import wraith.lib.code.ws_nodes.Return;
  * @author thedudefromci
  */
 public class NodeLineLogic extends JList{
+	private static final int INDENT_SIZE = 3;
 	private final WraithScriptLogic logic;
 	private final Snipet script;
+	private int[] indents;
 	public NodeLineLogic(Snipet script, WraithScriptLogic logic){
 		this.script = script;
 		this.logic = logic;
@@ -50,19 +54,34 @@ public class NodeLineLogic extends JList{
 			@Override
 			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus){
 				JLabel label = new JLabel();
-				if(value instanceof String){
-					label.setText("<html><font color=red>[]</font></html>");
-				}else if(value instanceof CommentLine){
-					label.setText("<html><font color=green>"+value.toString()+"</font></html>");
-				}else if(value instanceof BlankLine){
-					label.setText(" ");
+				String indent;
+				boolean enabled;
+				if(indents[index]>=0){
+					StringBuilder sb = new StringBuilder(indents[index]);
+					for(int i = 0; i<indents[index]; i++){
+						sb.append(' ');
+					}
+					indent = sb.toString();
+					enabled = true;
 				}else{
-					label.setText("<html><font color=red>[] </font><font color=black>"+value.toString()+"</font></html>");
+					indent = "";
+					enabled = false;
 				}
-				label.setOpaque(true);
+				if(value instanceof String){
+					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=red>"+indent+"[]</font></pre></html>");
+				}else if(value instanceof CommentLine){
+					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=green>"+indent+value.toString()+"</font></pre></html>");
+				}else if(value instanceof BlankLine){
+					label.setText("<html><pre><font face=\"Courier\" size=\"3\"> </font></pre></html>");
+				}else{
+					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent+value.toString()
+						+"</font></pre></html>");
+				}
 				if(isSelected){
 					label.setBackground(new Color(0, 230, 230));
 				}
+				label.setOpaque(true);
+				label.setPreferredSize(new Dimension(label.getPreferredSize().width, 15));
 				return label;
 			}
 		});
@@ -201,6 +220,18 @@ public class NodeLineLogic extends JList{
 	private void updateModel(){
 		ArrayList<WSNode> nodes = logic.getNodes();
 		Object[] lines = new Object[nodes.size()+1];
+		indents = new int[lines.length];
+		int i = 0;
+		int a = 0;
+		for(WSNode node : nodes){
+			if(node instanceof End){
+				i -= INDENT_SIZE;
+			}
+			indents[a++] = i;
+			if(node instanceof Indenter){
+				i += INDENT_SIZE;
+			}
+		}
 		nodes.toArray(lines);
 		lines[nodes.size()] = "";
 		setModel(new DefaultComboBoxModel(lines));

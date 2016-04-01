@@ -8,13 +8,14 @@
 package wraith.lib.code.ws_nodes;
 
 import build.games.wraithaven.gui.MenuComponentDialog;
+import wraith.lib.code.Indenter;
 import wraith.lib.code.WSNode;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class BeginFunction implements WSNode{
+public class BeginFunction implements WSNode, Indenter{
 	private static final int ID = 4;
 	@Override
 	public void save(BinaryFile bin){}
@@ -30,4 +31,8 @@ public class BeginFunction implements WSNode{
 	}
 	@Override
 	public void run(){}
+	@Override
+	public String toString(){
+		return "Function()";
+	}
 }

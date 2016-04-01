@@ -11,6 +11,7 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.WSNode;
 import wraith.lib.util.BinaryFile;
 
@@ -64,16 +65,6 @@ public class CommentLine implements WSNode{
 	public void run(){}
 	@Override
 	public String getHtml(int in){
-		String indent;
-		if(in>=0){
-			StringBuilder sb = new StringBuilder(in);
-			for(int i = 0; i<in; i++){
-				sb.append(' ');
-			}
-			indent = sb.toString();
-		}else{
-			indent = "";
-		}
-		return "<html><pre><font face=\"Courier\" size=\"3\" color=green>"+indent+"# "+comment+"</font></pre></html>";
+		return FunctionUtils.generateHtml("# "+comment, in);
 	}
 }

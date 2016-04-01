@@ -8,6 +8,7 @@
 package wraith.lib.code.ws_nodes;
 
 import build.games.wraithaven.gui.MenuComponentDialog;
+import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.WSNode;
 import wraith.lib.util.BinaryFile;
 
@@ -32,19 +33,6 @@ public class Return implements WSNode{
 	public void run(){}
 	@Override
 	public String getHtml(int in){
-		String indent;
-		boolean enabled;
-		if(in>=0){
-			StringBuilder sb = new StringBuilder(in);
-			for(int i = 0; i<in; i++){
-				sb.append(' ');
-			}
-			indent = sb.toString();
-			enabled = true;
-		}else{
-			indent = "";
-			enabled = false;
-		}
-		return "<html><pre><font face=\"Courier\" size=\"3\" color="+(enabled?"black":"gray")+">"+indent+"Return</font></pre></html>";
+		return FunctionUtils.generateHtml("Return", in);
 	}
 }

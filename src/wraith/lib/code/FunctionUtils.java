@@ -28,7 +28,7 @@ public class FunctionUtils{
 		StringBuilder sb = new StringBuilder(16);
 		sb.append("<html>");
 		sb.append("<pre>");
-		sb.append(coloredString(original, enabled?"black":"gray", enabled));
+		sb.append(coloredString(indent+original, enabled?"black":"gray", enabled));
 		sb.append("</pre>");
 		sb.append("</html>");
 		return sb.toString();
@@ -45,6 +45,7 @@ public class FunctionUtils{
 							case '"':
 								all += coloredString(s, "black", false);
 								s = "";
+								s += '"';
 								mode = 2;
 								break;
 							case '0':
@@ -67,6 +68,12 @@ public class FunctionUtils{
 								s = "";
 								s += c;
 								mode = 1;
+								break;
+							case '#':
+								all += coloredString(s, "black", false);
+								s = "";
+								s += c;
+								mode = 4;
 								break;
 							default:
 								s += c;
@@ -120,10 +127,33 @@ public class FunctionUtils{
 						}
 						break;
 					}
+					case 4:{
+						s += c;
+					}
 				}
 			}
 			if(!s.isEmpty()){
-				all += coloredString(s, "black", false);
+				switch(mode){
+					case 0:
+						color = "black";
+						break;
+					case 1:
+						color = "purple";
+						break;
+					case 2:
+						color = "blue";
+						break;
+					case 3:
+						color = "orange";
+						break;
+					case 4:
+						color = "green";
+						break;
+					default:
+						color = "black";
+						break;
+				}
+				all += coloredString(s, color, false);
 			}
 		}else{
 			all = text;

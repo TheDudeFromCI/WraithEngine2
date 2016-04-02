@@ -63,7 +63,7 @@ public class FunctionUtils{
 								s += c;
 								mode = 3;
 								break;
-							case '$':
+							case '@':
 								all += coloredString(s, "black", false);
 								s = "";
 								s += c;

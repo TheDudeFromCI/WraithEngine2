@@ -29,6 +29,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.code.Indenter;
+import wraith.lib.code.LocalVariable;
+import wraith.lib.code.Variable;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScriptLogic;
 import wraith.lib.code.ws_nodes.BeginFunction;
@@ -45,6 +47,7 @@ public class NodeLineLogic extends JList{
 	private static final int INDENT_SIZE = 3;
 	private final WraithScriptLogic logic;
 	private final Snipet script;
+	private final ArrayList<LocalVariable> localVariables = new ArrayList(4);
 	private int[] indents;
 	public NodeLineLogic(Snipet script, WraithScriptLogic logic){
 		this.script = script;
@@ -138,6 +141,37 @@ public class NodeLineLogic extends JList{
 							}
 						});
 						menu.add(item);
+					}
+					{
+						// Edit Variables
+						JMenu menu2 = new JMenu("Edit Variables");
+						{
+							// Local
+							JMenuItem item = new JMenuItem("Local");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									VariableListDialog data = new VariableListDialog(localVariables, LocalVariable.class);
+									InputDialog dialog = new InputDialog();
+									dialog.setTitle("Edit Variables");
+									dialog.setOkButton(true);
+									dialog.setCancelButton(true);
+									dialog.setData(data);
+									dialog.show();
+									if(dialog.getResponse()!=InputDialog.OK){
+										return;
+									}
+									ArrayList<Variable> vars = data.getVariables();
+									localVariables.clear();
+									for(Variable v : vars){
+										localVariables.add((LocalVariable)v);
+									}
+									script.save();
+								}
+							});
+							menu2.add(item);
+						}
+						menu.add(menu2);
 					}
 				}
 				menu.show(NodeLineLogic.this, e.getX(), e.getY());

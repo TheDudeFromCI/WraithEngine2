@@ -8,8 +8,8 @@
 package wraith.lib.code;
 
 import build.games.wraithaven.code.LanguageLoader;
-import build.games.wraithaven.code.Snipet;
 import build.games.wraithaven.code.NodeLineLogic;
+import build.games.wraithaven.code.Snipet;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,7 +30,7 @@ public class WraithScript implements LanguageLoader, CodeLanguage{
 	@Override
 	public JPanel getRenderComponent(){
 		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
+		panel.setLayout(new BorderLayout(0, 5));
 		NodeLineLogic nodeLineLogic = new NodeLineLogic(snipet, logic);
 		JScrollPane scrollPane = new JScrollPane(nodeLineLogic);
 		panel.add(scrollPane, BorderLayout.CENTER);

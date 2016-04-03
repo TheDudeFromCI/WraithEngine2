@@ -8,6 +8,7 @@
 package wraith.lib.code;
 
 import java.util.ArrayList;
+import wraith.lib.code.ws_nodes.AssignVariable;
 import wraith.lib.code.ws_nodes.BeginFunction;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
@@ -59,6 +60,8 @@ public class WraithScriptLogic{
 				return new BeginFunction();
 			case 5:
 				return new End();
+			case 6:
+				return new AssignVariable();
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

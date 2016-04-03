@@ -33,12 +33,7 @@ import wraith.lib.code.LocalVariable;
 import wraith.lib.code.Variable;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScriptLogic;
-import wraith.lib.code.ws_nodes.BeginFunction;
-import wraith.lib.code.ws_nodes.BlankLine;
-import wraith.lib.code.ws_nodes.CommentLine;
-import wraith.lib.code.ws_nodes.End;
-import wraith.lib.code.ws_nodes.PrintToConsole;
-import wraith.lib.code.ws_nodes.Return;
+import wraith.lib.code.ws_nodes.*;
 
 /**
  * @author thedudefromci
@@ -105,6 +100,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Return", Return.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/End Function", End.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}

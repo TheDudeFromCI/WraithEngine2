@@ -12,41 +12,53 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.Variable;
 import wraith.lib.code.VariableInput;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
+import wraith.lib.util.InverseBorderLayout;
 
 /**
  * @author thedudefromci
  */
-public class AssignVariable implements WSNode{
-	private static final int ID = 6;
-	private String input = "";
+public class Compare implements WSNode{
+	private static final int ID = 7;
+	private String input1 = "";
+	private String input2 = "";
 	private String output = "";
 	private Variable outVar;
-	private Object inRaw;
+	private Object inRaw1;
+	private Object inRaw2;
 	@Override
 	public void save(BinaryFile bin){
-		bin.addStringAllocated(input);
+		bin.addStringAllocated(input1);
+		bin.addStringAllocated(input2);
 		bin.addStringAllocated(output);
 	}
 	@Override
 	public void load(BinaryFile bin, short version){
-		input = bin.getString();
+		input1 = bin.getString();
+		input2 = bin.getString();
 		output = bin.getString();
 	}
 	@Override
 	public int getId(){
 		return ID;
 	}
-	public String getInput(){
-		return input;
+	public String getInput1(){
+		return input1;
 	}
-	public void setInput(String input){
-		this.input = input;
+	public String getInput2(){
+		return input2;
+	}
+	public void setInput1(String input){
+		this.input1 = input;
+	}
+	public void setInput2(String input){
+		this.input2 = input;
 	}
 	public String getOuput(){
 		return output;
@@ -57,7 +69,8 @@ public class AssignVariable implements WSNode{
 	@Override
 	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
 		return new MenuComponentDialog(){
-			private final VariableInput in;
+			private final VariableInput in1;
+			private final VariableInput in2;
 			private final VariableInput out;
 			{
 				setLayout(new VerticalFlowLayout(5, VerticalFlowLayout.FILL_SPACE));
@@ -70,14 +83,23 @@ public class AssignVariable implements WSNode{
 				JLabel label2 = new JLabel("To");
 				label2.setHorizontalAlignment(JLabel.CENTER);
 				add(label2);
-				in = new VariableInput(logic.getLocalVariables());
-				in.setValue(input);
-				add(in);
+				JPanel panel = new JPanel();
+				panel.setLayout(new InverseBorderLayout(4));
+				in1 = new VariableInput(logic.getLocalVariables());
+				in1.setValue(input1);
+				panel.add(in1);
+				in2 = new VariableInput(logic.getLocalVariables());
+				in2.setValue(input2);
+				panel.add(in2);
+				JLabel label3 = new JLabel("==");
+				panel.add(label3);
+				add(panel);
 			}
 			@Override
 			public void build(Object component){
-				AssignVariable c = (AssignVariable)component;
-				c.input = VariableInput.toStorageState(in.getValue());
+				Compare c = (Compare)component;
+				c.input1 = VariableInput.toStorageState(in1.getValue());
+				c.input2 = VariableInput.toStorageState(in2.getValue());
 				c.output = VariableInput.toStorageState(out.getValue());
 			}
 			@Override
@@ -89,20 +111,32 @@ public class AssignVariable implements WSNode{
 	@Override
 	public void run(){
 		if(outVar!=null){
-			if(inRaw instanceof Variable){
-				outVar.setValue(((Variable)inRaw).getValue());
+			if(inRaw1==null||inRaw2==null){
+				outVar.setValue(inRaw1==inRaw2);
 			}else{
-				outVar.setValue(inRaw);
+				Object i1, i2;
+				if(inRaw1 instanceof Variable){
+					i1 = ((Variable)inRaw1).getValue();
+				}else{
+					i1 = inRaw1;
+				}
+				if(inRaw2 instanceof Variable){
+					i2 = ((Variable)inRaw2).getValue();
+				}else{
+					i2 = inRaw2;
+				}
+				outVar.setValue(i1.equals(i2));
 			}
 		}
 	}
 	@Override
 	public String getHtml(int in){
-		return FunctionUtils.generateHtml("Set "+output+" = "+input, in);
+		return FunctionUtils.generateHtml("Set "+output+" = "+input1+" equals "+input2, in);
 	}
 	@Override
 	public void initalizeRuntime(WraithScript wraithScript){
-		inRaw = VariableInput.fromStorageState(input, wraithScript);
+		inRaw1 = VariableInput.fromStorageState(input1, wraithScript);
+		inRaw2 = VariableInput.fromStorageState(input2, wraithScript);
 		outVar = VariableInput.getVariable(output, wraithScript);
 	}
 }

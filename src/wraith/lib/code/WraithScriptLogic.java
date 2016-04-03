@@ -13,6 +13,7 @@ import wraith.lib.code.ws_nodes.BeginFunction;
 import wraith.lib.code.ws_nodes.BlankLine;
 import wraith.lib.code.ws_nodes.CommentLine;
 import wraith.lib.code.ws_nodes.End;
+import wraith.lib.code.ws_nodes.Compare;
 import wraith.lib.code.ws_nodes.PrintToConsole;
 import wraith.lib.code.ws_nodes.Return;
 import wraith.lib.util.BinaryFile;
@@ -62,6 +63,8 @@ public class WraithScriptLogic{
 				return new End();
 			case 6:
 				return new AssignVariable();
+			case 7:
+				return new Compare();
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

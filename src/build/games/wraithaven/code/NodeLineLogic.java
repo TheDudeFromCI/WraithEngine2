@@ -101,6 +101,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/End Function", End.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Equals", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
@@ -228,7 +229,7 @@ public class NodeLineLogic extends JList{
 					logic.getNodes().add(insertIndex, com);
 					updateModel();
 					script.save();
-					setSelectedIndex(insertIndex);
+					setSelectedIndex(insertIndex+1);
 				}catch(NoSuchMethodException|SecurityException|InstantiationException|IllegalAccessException|IllegalArgumentException
 					|InvocationTargetException ex){
 					// I'm sure this will never get called. But whatever. :P

@@ -12,7 +12,6 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
 import wraith.lib.code.FunctionUtils;
-import wraith.lib.code.LocalVariable;
 import wraith.lib.code.Variable;
 import wraith.lib.code.VariableInput;
 import wraith.lib.code.WSNode;
@@ -79,14 +78,6 @@ public class PrintToConsole implements WSNode{
 	}
 	@Override
 	public void initalizeRuntime(WraithScript wraithScript){
-		if(comment.startsWith("@")){ // Is variable?
-			comment = comment.substring(1);
-			for(LocalVariable var : wraithScript.getLogic().getLocalVariables()){
-				if(var.getName().equals(comment)){
-					varValue = var;
-					return;
-				}
-			}
-		}
+		varValue = VariableInput.getVariable(comment, wraithScript);
 	}
 }

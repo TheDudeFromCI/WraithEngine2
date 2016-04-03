@@ -76,7 +76,7 @@ public class WraithScriptLogic{
 			case 4:
 				return new BeginFunction();
 			case 5:
-				return new End();
+				return new End(script);
 			case 6:
 				return new AssignVariable(script);
 			case 7:

@@ -54,17 +54,11 @@ public class NodeLineLogic extends JList{
 			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus){
 				JLabel label = new JLabel();
 				if(value instanceof String){
-					String indent;
-					if(indents[index]>=0){
-						StringBuilder sb = new StringBuilder(indents[index]);
-						for(int i = 0; i<indents[index]; i++){
-							sb.append(' ');
-						}
-						indent = sb.toString();
-					}else{
-						indent = "";
+					StringBuilder sb = new StringBuilder(indents[index]);
+					for(int i = 0; i<indents[index]; i++){
+						sb.append(' ');
 					}
-					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=red>"+indent+"[]</font></pre></html>");
+					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=red>"+sb.toString()+"[]</font></pre></html>");
 				}else{
 					label.setText(((WSNode)value).getHtml(indents[index]));
 				}

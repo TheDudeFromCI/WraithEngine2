@@ -13,27 +13,31 @@ package wraith.lib.code;
 public class FunctionUtils{
 	public static String generateHtml(String original, int in){
 		String indent;
-		boolean enabled;
-		if(in>=0){
+		{
 			StringBuilder sb = new StringBuilder(in);
 			for(int i = 0; i<in; i++){
 				sb.append(' ');
 			}
 			indent = sb.toString();
-			enabled = true;
-		}else{
-			indent = "";
-			enabled = false;
 		}
-		StringBuilder sb = new StringBuilder(16);
+		StringBuilder sb = new StringBuilder(64);
 		sb.append("<html>");
 		sb.append("<pre>");
-		sb.append(coloredString(indent+original, enabled?"black":"gray", enabled));
+		sb.append(coloredString(indent+original, "black", true));
 		sb.append("</pre>");
 		sb.append("</html>");
 		return sb.toString();
 	}
-	private static String coloredString(String text, String color, boolean renderColor){
+	public static String generateHtml(String original, String color){
+		StringBuilder sb = new StringBuilder(64);
+		sb.append("<html>");
+		sb.append("<pre>");
+		sb.append(coloredString(original, color, false));
+		sb.append("</pre>");
+		sb.append("</html>");
+		return sb.toString();
+	}
+	public static String coloredString(String text, String color, boolean renderColor){
 		String all = "";
 		if(renderColor){
 			String s = "";

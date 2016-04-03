@@ -98,7 +98,7 @@ public class AssignVariable implements WSNode{
 	}
 	@Override
 	public String getHtml(int in){
-		return FunctionUtils.generateHtml("Set "+output+" = "+input, in);
+		return FunctionUtils.generateHtml("Set "+output+", To "+input, in);
 	}
 	@Override
 	public void initalizeRuntime(WraithScript wraithScript){

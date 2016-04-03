@@ -10,6 +10,7 @@ package wraith.lib.code.ws_nodes;
 import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,23 +27,33 @@ import wraith.lib.util.InverseBorderLayout;
  */
 public class Compare implements WSNode{
 	private static final int ID = 7;
+	private static final int EQUALS = 0;
+	private static final int GREATER_THAN = 1;
+	private static final int LESS_THAN = 2;
+	private static final int GREATER_THAN_OR_EQUAL = 3;
+	private static final int LESS_THAN_OR_EQUAL = 4;
+	private static final int NOT_EQUAL = 5;
 	private String input1 = "";
 	private String input2 = "";
 	private String output = "";
 	private Variable outVar;
 	private Object inRaw1;
 	private Object inRaw2;
+	private int compareType;
 	@Override
 	public void save(BinaryFile bin){
 		bin.addStringAllocated(input1);
 		bin.addStringAllocated(input2);
 		bin.addStringAllocated(output);
+		bin.allocateBytes(1);
+		bin.addByte((byte)compareType);
 	}
 	@Override
 	public void load(BinaryFile bin, short version){
 		input1 = bin.getString();
 		input2 = bin.getString();
 		output = bin.getString();
+		compareType = bin.getByte();
 	}
 	@Override
 	public int getId(){
@@ -72,6 +83,7 @@ public class Compare implements WSNode{
 			private final VariableInput in1;
 			private final VariableInput in2;
 			private final VariableInput out;
+			private final JComboBox compareType;
 			{
 				setLayout(new VerticalFlowLayout(5, VerticalFlowLayout.FILL_SPACE));
 				JLabel label1 = new JLabel("Set");
@@ -84,15 +96,17 @@ public class Compare implements WSNode{
 				label2.setHorizontalAlignment(JLabel.CENTER);
 				add(label2);
 				JPanel panel = new JPanel();
-				panel.setLayout(new InverseBorderLayout(4));
+				panel.setLayout(new InverseBorderLayout(5));
 				in1 = new VariableInput(logic.getLocalVariables());
 				in1.setValue(input1);
 				panel.add(in1);
 				in2 = new VariableInput(logic.getLocalVariables());
 				in2.setValue(input2);
 				panel.add(in2);
-				JLabel label3 = new JLabel("==");
-				panel.add(label3);
+				compareType = new JComboBox(new String[]{
+					"==", ">", "<", ">=", "=<", "!="
+				});
+				panel.add(compareType);
 				add(panel);
 			}
 			@Override
@@ -101,6 +115,7 @@ public class Compare implements WSNode{
 				c.input1 = VariableInput.toStorageState(in1.getValue());
 				c.input2 = VariableInput.toStorageState(in2.getValue());
 				c.output = VariableInput.toStorageState(out.getValue());
+				c.compareType = compareType.getSelectedIndex();
 			}
 			@Override
 			public JComponent getDefaultFocus(){
@@ -111,27 +126,66 @@ public class Compare implements WSNode{
 	@Override
 	public void run(){
 		if(outVar!=null){
-			if(inRaw1==null||inRaw2==null){
-				outVar.setValue(inRaw1==inRaw2);
-			}else{
-				Object i1, i2;
-				if(inRaw1 instanceof Variable){
-					i1 = ((Variable)inRaw1).getValue();
-				}else{
-					i1 = inRaw1;
+			switch(compareType){
+				case EQUALS:{
+					outVar.setValue(VariableInput.areValuesEqual(inRaw1, inRaw2));
+					break;
 				}
-				if(inRaw2 instanceof Variable){
-					i2 = ((Variable)inRaw2).getValue();
-				}else{
-					i2 = inRaw2;
+				case GREATER_THAN:{
+					outVar.setValue(VariableInput.isGreaterThan(inRaw1, inRaw2));
+					break;
 				}
-				outVar.setValue(i1.equals(i2));
+				case GREATER_THAN_OR_EQUAL:{
+					outVar.setValue(VariableInput.isGreaterThan(inRaw1, inRaw2)||VariableInput.areValuesEqual(inRaw1, inRaw2));
+					break;
+				}
+				case LESS_THAN:{
+					outVar.setValue(!VariableInput.isGreaterThan(inRaw1, inRaw2));
+					break;
+				}
+				case LESS_THAN_OR_EQUAL:{
+					outVar.setValue(!VariableInput.isGreaterThan(inRaw1, inRaw2)||VariableInput.areValuesEqual(inRaw1, inRaw2));
+					break;
+				}
+				case NOT_EQUAL:{
+					outVar.setValue(!VariableInput.areValuesEqual(inRaw1, inRaw2));
+					break;
+				}
 			}
 		}
 	}
 	@Override
 	public String getHtml(int in){
-		return FunctionUtils.generateHtml("Set "+output+" = "+input1+" equals "+input2, in);
+		String com;
+		switch(compareType){
+			case EQUALS:{
+				com = " == ";
+				break;
+			}
+			case GREATER_THAN:{
+				com = " > ";
+				break;
+			}
+			case GREATER_THAN_OR_EQUAL:{
+				com = " >= ";
+				break;
+			}
+			case LESS_THAN:{
+				com = " < ";
+				break;
+			}
+			case LESS_THAN_OR_EQUAL:{
+				com = " <= ";
+				break;
+			}
+			case NOT_EQUAL:{
+				com = " != ";
+				break;
+			}
+			default:
+				com = "  ";
+		}
+		return FunctionUtils.generateHtml("Set "+output+", To "+input1+com+input2, in);
 	}
 	@Override
 	public void initalizeRuntime(WraithScript wraithScript){

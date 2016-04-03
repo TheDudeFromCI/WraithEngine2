@@ -78,6 +78,54 @@ public class VariableInput extends JPanel{
 		}
 		return null;
 	}
+	public static boolean areValuesEqual(Object in1, Object in2){
+		if(in1==null||in2==null){
+			return in1==in2;
+		}
+		Object i1, i2;
+		if(in1 instanceof Variable){
+			i1 = ((Variable)in1).getValue();
+		}else{
+			i1 = in1;
+		}
+		if(in2 instanceof Variable){
+			i2 = ((Variable)in2).getValue();
+		}else{
+			i2 = in2;
+		}
+		if(i1 instanceof Number&&i2 instanceof Number){
+			return ((Number)i1).doubleValue()==((Number)i2).doubleValue();
+		}
+		if(i1 instanceof String&&i2 instanceof String){
+			return ((String)i1).equals((String)i2);
+		}
+		if(i1 instanceof Boolean&&i2 instanceof Boolean){
+			return (boolean)i1==(boolean)i2;
+		}
+		// Different types.
+		return false;
+	}
+	public static boolean isGreaterThan(Object in1, Object in2){
+		if(in1==null||in2==null){
+			return in1!=null;
+		}
+		Object i1, i2;
+		if(in1 instanceof Variable){
+			i1 = ((Variable)in1).getValue();
+		}else{
+			i1 = in1;
+		}
+		if(in2 instanceof Variable){
+			i2 = ((Variable)in2).getValue();
+		}else{
+			i2 = in2;
+		}
+		if(i1 instanceof Number&&i2 instanceof Number){
+			return ((Number)i1).doubleValue()>((Number)i2).doubleValue();
+		}
+		// Non numbers always return false.
+		return false;
+	}
 	private static final int INPUT_NULL = 0;
 	private static final int INPUT_TEXT = 1;
 	private static final int INPUT_NUMBER = 2;

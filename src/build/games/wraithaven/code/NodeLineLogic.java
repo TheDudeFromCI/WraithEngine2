@@ -101,7 +101,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/End Function", End.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Equals", Compare.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}

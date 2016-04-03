@@ -81,7 +81,7 @@ public class FunctionUtils{
 						break;
 					}
 					case 1:{
-						if(Character.isAlphabetic(c)||Character.isDigit(c)||c==' '||c=='?'||c=='.'||c=='!'||c=='_'){ // Allowed variable characters.
+						if(Character.isAlphabetic(c)||Character.isDigit(c)||c==' '||c=='?'||c=='.'||c=='_'||c=='-'){ // Allowed variable characters.
 							s += c;
 						}else{
 							all += coloredString(s, "purple", false);

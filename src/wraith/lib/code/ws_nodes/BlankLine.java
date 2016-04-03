@@ -10,6 +10,7 @@ package wraith.lib.code.ws_nodes;
 import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -35,4 +36,6 @@ public class BlankLine implements WSNode{
 	public String getHtml(int indent){
 		return "<html><pre><font face=\"Courier\" size=\"3\"> </font></pre></html>";
 	}
+	@Override
+	public void initalizeRuntime(WraithScript wraithScript){}
 }

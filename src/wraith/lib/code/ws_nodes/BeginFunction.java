@@ -12,6 +12,7 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.Indenter;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -37,4 +38,6 @@ public class BeginFunction implements WSNode, Indenter{
 	public String getHtml(int in){
 		return FunctionUtils.generateHtml("BeginFunction()", in);
 	}
+	@Override
+	public void initalizeRuntime(WraithScript wraithScript){}
 }

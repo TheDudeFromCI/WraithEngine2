@@ -11,6 +11,7 @@ import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -36,4 +37,6 @@ public class End implements WSNode{
 	public String getHtml(int in){
 		return FunctionUtils.generateHtml("End", in);
 	}
+	@Override
+	public void initalizeRuntime(WraithScript wraithScript){}
 }

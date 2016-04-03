@@ -27,6 +27,7 @@ public class Snipet{
 			switch(version){
 				case 0:
 					bin.getString(); // Name
+					bin.getString(); // Description
 					int lanId = bin.getInt();
 					switch(lanId){
 						case -1:{ // Empty Script. Do nothing.
@@ -42,6 +43,7 @@ public class Snipet{
 					}
 					if(tempLan!=null){
 						tempLan.load(bin, version);
+						tempLan.initalizeRuntime();
 					}
 					break;
 				default:

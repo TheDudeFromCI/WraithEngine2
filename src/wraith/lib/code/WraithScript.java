@@ -52,4 +52,13 @@ public class WraithScript implements LanguageLoader, CodeLanguage{
 	public void run(){
 		logic.run();
 	}
+	public WraithScriptLogic getLogic(){
+		return logic;
+	}
+	@Override
+	public void initalizeRuntime(){
+		for(WSNode node : logic.getNodes()){
+			node.initalizeRuntime(this);
+		}
+	}
 }

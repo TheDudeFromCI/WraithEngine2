@@ -20,5 +20,6 @@ public interface WSNode{
 	public int getId();
 	public MenuComponentDialog getCreationDialog(NodeLineLogic logic);
 	public void run();
+	public void initalizeRuntime(WraithScript wraithScript);
 	public String getHtml(int indent);
 }

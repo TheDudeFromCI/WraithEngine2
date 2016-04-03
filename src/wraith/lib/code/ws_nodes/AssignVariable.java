@@ -13,7 +13,6 @@ import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import wraith.lib.code.FunctionUtils;
-import wraith.lib.code.LocalVariable;
 import wraith.lib.code.Variable;
 import wraith.lib.code.VariableInput;
 import wraith.lib.code.WSNode;
@@ -28,7 +27,6 @@ public class AssignVariable implements WSNode{
 	private String input = "";
 	private String output = "";
 	private Variable outVar;
-	private Variable inVar;
 	private Object inRaw;
 	@Override
 	public void save(BinaryFile bin){
@@ -79,36 +77,8 @@ public class AssignVariable implements WSNode{
 			@Override
 			public void build(Object component){
 				AssignVariable c = (AssignVariable)component;
-				{
-					// Input
-					Object val = in.getValue();
-					if(val instanceof String){
-						if(((String)val).startsWith("@")){ // Is Variable
-							c.input = val.toString();
-						}else{
-							c.input = "\""+val.toString()+"\"";
-						}
-					}else if(val instanceof Number){
-						c.input = val.toString();
-					}else{
-						c.input = "";
-					}
-				}
-				{
-					// Output
-					Object val = out.getValue();
-					if(val instanceof String){
-						if(((String)val).startsWith("@")){ // Is Variable
-							c.output = val.toString();
-						}else{
-							c.output = "\""+val.toString()+"\"";
-						}
-					}else if(val instanceof Number){
-						c.output = val.toString();
-					}else{
-						c.output = "";
-					}
-				}
+				c.input = VariableInput.toStorageState(in.getValue());
+				c.output = VariableInput.toStorageState(out.getValue());
 			}
 			@Override
 			public JComponent getDefaultFocus(){
@@ -119,8 +89,8 @@ public class AssignVariable implements WSNode{
 	@Override
 	public void run(){
 		if(outVar!=null){
-			if(inVar!=null){
-				outVar.setValue(inVar.getValue());
+			if(inRaw instanceof Variable){
+				outVar.setValue(((Variable)inRaw).getValue());
 			}else{
 				outVar.setValue(inRaw);
 			}
@@ -132,36 +102,7 @@ public class AssignVariable implements WSNode{
 	}
 	@Override
 	public void initalizeRuntime(WraithScript wraithScript){
-		if(input.startsWith("@")){ // Is variable?
-			input = input.substring(1);
-			for(LocalVariable var : wraithScript.getLogic().getLocalVariables()){
-				if(var.getName().equals(input)){
-					inVar = var;
-					break;
-				}
-			}
-		}else // Assign raw input.
-		{
-			if(input.startsWith("\"")){ // Text
-				inRaw = input;
-			}else{ // Number
-				try{
-					inRaw = Integer.valueOf(input);
-				}catch(Exception exception){
-					try{
-						inRaw = Float.valueOf(input);
-					}catch(Exception exception1){}
-				}
-			}
-		}
-		if(output.startsWith("@")){ // Is variable?
-			output = output.substring(1);
-			for(LocalVariable var : wraithScript.getLogic().getLocalVariables()){
-				if(var.getName().equals(output)){
-					outVar = var;
-					break;
-				}
-			}
-		}
+		inRaw = VariableInput.fromStorageState(input, wraithScript);
+		outVar = VariableInput.getVariable(output, wraithScript);
 	}
 }

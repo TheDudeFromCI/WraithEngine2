@@ -57,18 +57,7 @@ public class PrintToConsole implements WSNode{
 			@Override
 			public void build(Object component){
 				PrintToConsole c = (PrintToConsole)component;
-				Object val = input.getValue();
-				if(val instanceof String){
-					if(((String)val).startsWith("@")){ // Is Variable
-						c.comment = val.toString();
-					}else{
-						c.comment = "\""+val.toString()+"\"";
-					}
-				}else if(val instanceof Number){
-					c.comment = val.toString();
-				}else{
-					c.comment = "";
-				}
+				c.comment = VariableInput.toStorageState(input.getValue());
 			}
 			@Override
 			public JComponent getDefaultFocus(){

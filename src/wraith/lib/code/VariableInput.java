@@ -29,10 +29,60 @@ import javax.swing.SpinnerNumberModel;
  * @author thedudefromci
  */
 public class VariableInput extends JPanel{
+	public static String toStorageState(Object val){
+		if(val instanceof String){
+			if(((String)val).startsWith("@")){ // Is Variable
+				return val.toString();
+			}else{
+				return "\""+val.toString()+"\"";
+			}
+		}else if(val instanceof Number){
+			return val.toString();
+		}else if(val instanceof Boolean){
+			return (boolean)val?"True":"False";
+		}else{
+			// Null, or no value.
+			return "Nothing";
+		}
+	}
+	public static Variable getVariable(String line, WraithScript script){
+		if(line.startsWith("@")){
+			line = line.substring(1);
+			for(LocalVariable var : script.getLogic().getLocalVariables()){
+				if(var.getName().equals(line)){
+					return var;
+				}
+			}
+		}
+		return null;
+	}
+	public static Object fromStorageState(String line, WraithScript script){
+		if(line.startsWith("@")){
+			return getVariable(line, script);
+		}
+		if(line.startsWith("\"")){ // Text
+			return line.substring(1, line.length()-1);
+		}
+		if(line.equals("True")){
+			return true;
+		}
+		if(line.equals("False")){
+			return false;
+		}
+		try{
+			return Integer.valueOf(line);
+		}catch(Exception exception){
+			try{
+				return Float.valueOf(line);
+			}catch(Exception exception1){}
+		}
+		return null;
+	}
 	private static final int INPUT_NULL = 0;
 	private static final int INPUT_TEXT = 1;
 	private static final int INPUT_NUMBER = 2;
 	private static final int INPUT_LOCAL_VAR = 3;
+	private static final int INPUT_BOOLEAN = 4;
 	private final MouseAdapter mouseAdapter;
 	private final Object[] localVariables;
 	private JComponent inputType;
@@ -104,6 +154,20 @@ public class VariableInput extends JPanel{
 							item.setEnabled(false);
 						}
 					}
+					{
+						// Boolean
+						JMenuItem item = new JMenuItem("Change to Boolean");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								setAsBoolean();
+							}
+						});
+						menu.add(item);
+						if(inputMode==INPUT_BOOLEAN){
+							item.setEnabled(false);
+						}
+					}
 				}
 				menu.show(inputType, e.getX(), e.getY());
 			}
@@ -136,6 +200,11 @@ public class VariableInput extends JPanel{
 		((JComboBox)inputType).setModel(new DefaultComboBoxModel(localVariables));
 		updateInputType();
 	}
+	private void setAsBoolean(){
+		inputMode = INPUT_BOOLEAN;
+		inputType = new TrueFalseComponent();
+		updateInputType();
+	}
 	private void updateInputType(){
 		inputType.addMouseListener(mouseAdapter);
 		inputType.setPreferredSize(new Dimension(240, 20));
@@ -154,6 +223,9 @@ public class VariableInput extends JPanel{
 		}
 		if(inputMode==INPUT_TEXT){
 			return ((JTextField)inputType).getText();
+		}
+		if(inputMode==INPUT_BOOLEAN){
+			return ((TrueFalseComponent)inputType).getState();
 		}
 		return null;
 	}

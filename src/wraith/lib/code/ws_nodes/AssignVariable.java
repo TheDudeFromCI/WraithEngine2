@@ -7,7 +7,6 @@
  */
 package wraith.lib.code.ws_nodes;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
@@ -24,10 +23,14 @@ import wraith.lib.util.BinaryFile;
  */
 public class AssignVariable implements WSNode{
 	private static final int ID = 6;
+	private final WraithScript script;
 	private String input = "";
 	private String output = "";
 	private Variable outVar;
 	private Object inRaw;
+	public AssignVariable(WraithScript script){
+		this.script = script;
+	}
 	@Override
 	public void save(BinaryFile bin){
 		bin.addStringAllocated(input);
@@ -55,7 +58,7 @@ public class AssignVariable implements WSNode{
 		this.output = output;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
+	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final VariableInput in;
 			private final VariableInput out;
@@ -64,13 +67,13 @@ public class AssignVariable implements WSNode{
 				JLabel label1 = new JLabel("Set");
 				label1.setHorizontalAlignment(JLabel.CENTER);
 				add(label1);
-				out = new VariableInput(logic.getLocalVariables());
+				out = new VariableInput(script.getLogic().getLocalVariables());
 				out.setValue(output);
 				add(out);
 				JLabel label2 = new JLabel("To");
 				label2.setHorizontalAlignment(JLabel.CENTER);
 				add(label2);
-				in = new VariableInput(logic.getLocalVariables());
+				in = new VariableInput(script.getLogic().getLocalVariables());
 				in.setValue(input);
 				add(in);
 			}
@@ -101,8 +104,8 @@ public class AssignVariable implements WSNode{
 		return FunctionUtils.generateHtml("Set "+output+", To "+input, in);
 	}
 	@Override
-	public void initalizeRuntime(WraithScript wraithScript){
-		inRaw = VariableInput.fromStorageState(input, wraithScript);
-		outVar = VariableInput.getVariable(output, wraithScript);
+	public void initalizeRuntime(){
+		inRaw = VariableInput.fromStorageState(input, script);
+		outVar = VariableInput.getVariable(output, script);
 	}
 }

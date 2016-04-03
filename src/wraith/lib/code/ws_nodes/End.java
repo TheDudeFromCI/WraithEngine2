@@ -7,17 +7,16 @@
  */
 package wraith.lib.code.ws_nodes;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.code.FunctionUtils;
+import wraith.lib.code.Unindenter;
 import wraith.lib.code.WSNode;
-import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class End implements WSNode{
+public class End implements WSNode, Unindenter{
 	private static final int ID = 5;
 	@Override
 	public void save(BinaryFile bin){}
@@ -28,7 +27,7 @@ public class End implements WSNode{
 		return ID;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
+	public MenuComponentDialog getCreationDialog(){
 		return null;
 	}
 	@Override
@@ -38,5 +37,5 @@ public class End implements WSNode{
 		return FunctionUtils.generateHtml("End", in);
 	}
 	@Override
-	public void initalizeRuntime(WraithScript wraithScript){}
+	public void initalizeRuntime(){}
 }

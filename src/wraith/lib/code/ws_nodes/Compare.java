@@ -7,7 +7,6 @@
  */
 package wraith.lib.code.ws_nodes;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComboBox;
@@ -33,6 +32,7 @@ public class Compare implements WSNode{
 	private static final int GREATER_THAN_OR_EQUAL = 3;
 	private static final int LESS_THAN_OR_EQUAL = 4;
 	private static final int NOT_EQUAL = 5;
+	private final WraithScript script;
 	private String input1 = "";
 	private String input2 = "";
 	private String output = "";
@@ -40,6 +40,9 @@ public class Compare implements WSNode{
 	private Object inRaw1;
 	private Object inRaw2;
 	private int compareType;
+	public Compare(WraithScript script){
+		this.script = script;
+	}
 	@Override
 	public void save(BinaryFile bin){
 		bin.addStringAllocated(input1);
@@ -78,7 +81,7 @@ public class Compare implements WSNode{
 		this.output = output;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
+	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final VariableInput in1;
 			private final VariableInput in2;
@@ -89,7 +92,7 @@ public class Compare implements WSNode{
 				JLabel label1 = new JLabel("Set");
 				label1.setHorizontalAlignment(JLabel.CENTER);
 				add(label1);
-				out = new VariableInput(logic.getLocalVariables());
+				out = new VariableInput(script.getLogic().getLocalVariables());
 				out.setValue(output);
 				add(out);
 				JLabel label2 = new JLabel("To");
@@ -97,10 +100,10 @@ public class Compare implements WSNode{
 				add(label2);
 				JPanel panel = new JPanel();
 				panel.setLayout(new InverseBorderLayout(5));
-				in1 = new VariableInput(logic.getLocalVariables());
+				in1 = new VariableInput(script.getLogic().getLocalVariables());
 				in1.setValue(input1);
 				panel.add(in1);
-				in2 = new VariableInput(logic.getLocalVariables());
+				in2 = new VariableInput(script.getLogic().getLocalVariables());
 				in2.setValue(input2);
 				panel.add(in2);
 				compareType = new JComboBox(new String[]{
@@ -159,38 +162,38 @@ public class Compare implements WSNode{
 		String com;
 		switch(compareType){
 			case EQUALS:{
-				com = " == ";
+				com = " equal to ";
 				break;
 			}
 			case GREATER_THAN:{
-				com = " > ";
+				com = " greater than ";
 				break;
 			}
 			case GREATER_THAN_OR_EQUAL:{
-				com = " >= ";
+				com = " greater than or equal to ";
 				break;
 			}
 			case LESS_THAN:{
-				com = " < ";
+				com = " less than ";
 				break;
 			}
 			case LESS_THAN_OR_EQUAL:{
-				com = " <= ";
+				com = " less than or equal to ";
 				break;
 			}
 			case NOT_EQUAL:{
-				com = " != ";
+				com = " not equal to ";
 				break;
 			}
 			default:
 				com = "  ";
 		}
-		return FunctionUtils.generateHtml("Set "+output+", To "+input1+com+input2, in);
+		return FunctionUtils.generateHtml("Is '"+input1+"'"+com+"'"+input2+"'? Set '"+output+"' to the result.", in);
 	}
 	@Override
-	public void initalizeRuntime(WraithScript wraithScript){
-		inRaw1 = VariableInput.fromStorageState(input1, wraithScript);
-		inRaw2 = VariableInput.fromStorageState(input2, wraithScript);
-		outVar = VariableInput.getVariable(output, wraithScript);
+	public void initalizeRuntime(){
+		inRaw1 = VariableInput.fromStorageState(input1, script);
+		inRaw2 = VariableInput.fromStorageState(input2, script);
+		outVar = VariableInput.getVariable(output, script);
 	}
 }

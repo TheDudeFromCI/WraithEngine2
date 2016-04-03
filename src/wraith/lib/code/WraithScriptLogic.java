@@ -8,14 +8,7 @@
 package wraith.lib.code;
 
 import java.util.ArrayList;
-import wraith.lib.code.ws_nodes.AssignVariable;
-import wraith.lib.code.ws_nodes.BeginFunction;
-import wraith.lib.code.ws_nodes.BlankLine;
-import wraith.lib.code.ws_nodes.CommentLine;
-import wraith.lib.code.ws_nodes.End;
-import wraith.lib.code.ws_nodes.Compare;
-import wraith.lib.code.ws_nodes.PrintToConsole;
-import wraith.lib.code.ws_nodes.Return;
+import wraith.lib.code.ws_nodes.*;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -24,6 +17,11 @@ import wraith.lib.util.BinaryFile;
 public class WraithScriptLogic{
 	private final ArrayList<WSNode> nodes = new ArrayList(32);
 	private final ArrayList<LocalVariable> localVariables = new ArrayList(4);
+	private final WraithScript script;
+	private int[] indents;
+	public WraithScriptLogic(WraithScript script){
+		this.script = script;
+	}
 	public void load(BinaryFile bin, short version){
 		switch(version){
 			case 0:{
@@ -46,6 +44,24 @@ public class WraithScriptLogic{
 			default:
 				throw new RuntimeException("Unknown file version! '"+version+"'");
 		}
+		// Load indents.
+		// As indents are only used by the runner, we know the node list won't be edited.
+		// Therefore, the indents will not change. So we can load these here.
+		indents = new int[nodes.size()];
+		int i, a;
+		i = 0;
+		for(a = 0; a<nodes.size(); a++){
+			if(nodes.get(a) instanceof Unindenter){
+				i--;
+				if(i<0){
+					i = 0; // No negative indents.
+				}
+			}
+			indents[a] = i;
+			if(nodes.get(a) instanceof Indenter){
+				i++;
+			}
+		}
 	}
 	private WSNode getNodeInstance(int id){
 		switch(id){
@@ -54,7 +70,7 @@ public class WraithScriptLogic{
 			case 1:
 				return new BlankLine();
 			case 2:
-				return new PrintToConsole();
+				return new PrintToConsole(script);
 			case 3:
 				return new Return();
 			case 4:
@@ -62,9 +78,11 @@ public class WraithScriptLogic{
 			case 5:
 				return new End();
 			case 6:
-				return new AssignVariable();
+				return new AssignVariable(script);
 			case 7:
-				return new Compare();
+				return new Compare(script);
+			case 8:
+				return new CallFunction(script);
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}
@@ -86,11 +104,22 @@ public class WraithScriptLogic{
 		return nodes;
 	}
 	public void run(){
-		for(WSNode node : nodes){
-			node.run();
+		run(0);
+	}
+	public void run(int line){
+		int indent = indents[line];
+		for(; line<nodes.size(); line++){
+			if(indents[line]==indent){
+				nodes.get(line).run();
+			}else if(indents[line]<indent){
+				return;
+			}
 		}
 	}
 	public ArrayList<LocalVariable> getLocalVariables(){
 		return localVariables;
+	}
+	public WraithScript getWraithScript(){
+		return script;
 	}
 }

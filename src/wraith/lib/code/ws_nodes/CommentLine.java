@@ -7,14 +7,12 @@
  */
 package wraith.lib.code.ws_nodes;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.WSNode;
-import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -42,7 +40,7 @@ public class CommentLine implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
+	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final JTextField text;
 			{
@@ -70,5 +68,5 @@ public class CommentLine implements WSNode{
 		return FunctionUtils.generateHtml("# "+comment, in);
 	}
 	@Override
-	public void initalizeRuntime(WraithScript wraithScript){}
+	public void initalizeRuntime(){}
 }

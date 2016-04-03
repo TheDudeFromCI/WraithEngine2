@@ -7,10 +7,8 @@
  */
 package wraith.lib.code.ws_nodes;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.code.WSNode;
-import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -27,7 +25,7 @@ public class BlankLine implements WSNode{
 		return ID;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
+	public MenuComponentDialog getCreationDialog(){
 		return null;
 	}
 	@Override
@@ -37,5 +35,5 @@ public class BlankLine implements WSNode{
 		return "<html><pre><font face=\"Courier\" size=\"3\"> </font></pre></html>";
 	}
 	@Override
-	public void initalizeRuntime(WraithScript wraithScript){}
+	public void initalizeRuntime(){}
 }

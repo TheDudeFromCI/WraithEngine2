@@ -25,7 +25,7 @@ public class WraithScript implements LanguageLoader, CodeLanguage{
 	private final Snipet snipet;
 	public WraithScript(Snipet snipet){
 		this.snipet = snipet;
-		logic = new WraithScriptLogic();
+		logic = new WraithScriptLogic(this);
 	}
 	@Override
 	public JPanel getRenderComponent(){
@@ -58,7 +58,7 @@ public class WraithScript implements LanguageLoader, CodeLanguage{
 	@Override
 	public void initalizeRuntime(){
 		for(WSNode node : logic.getNodes()){
-			node.initalizeRuntime(this);
+			node.initalizeRuntime();
 		}
 	}
 }

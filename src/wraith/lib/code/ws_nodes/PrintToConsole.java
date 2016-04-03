@@ -7,7 +7,6 @@
  */
 package wraith.lib.code.ws_nodes;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
@@ -23,8 +22,12 @@ import wraith.lib.util.BinaryFile;
  */
 public class PrintToConsole implements WSNode{
 	private static final int ID = 2;
+	private final WraithScript script;
 	private String comment = "";
 	private Variable varValue;
+	public PrintToConsole(WraithScript script){
+		this.script = script;
+	}
 	@Override
 	public void save(BinaryFile bin){
 		bin.addStringAllocated(comment);
@@ -44,12 +47,12 @@ public class PrintToConsole implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
+	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final VariableInput input;
 			{
 				setLayout(new VerticalFlowLayout(5));
-				input = new VariableInput(logic.getLocalVariables());
+				input = new VariableInput(script.getLogic().getLocalVariables());
 				input.setValue(comment);
 				add(input);
 			}
@@ -77,7 +80,7 @@ public class PrintToConsole implements WSNode{
 		return FunctionUtils.generateHtml("Print To Console("+comment+")", in);
 	}
 	@Override
-	public void initalizeRuntime(WraithScript wraithScript){
-		varValue = VariableInput.getVariable(comment, wraithScript);
+	public void initalizeRuntime(){
+		varValue = VariableInput.getVariable(comment, script);
 	}
 }

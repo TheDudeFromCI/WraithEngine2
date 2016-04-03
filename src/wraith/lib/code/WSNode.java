@@ -7,7 +7,6 @@
  */
 package wraith.lib.code;
 
-import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.util.BinaryFile;
 
@@ -18,8 +17,8 @@ public interface WSNode{
 	public void save(BinaryFile bin);
 	public void load(BinaryFile bin, short version);
 	public int getId();
-	public MenuComponentDialog getCreationDialog(NodeLineLogic logic);
+	public MenuComponentDialog getCreationDialog();
 	public void run();
-	public void initalizeRuntime(WraithScript wraithScript);
+	public void initalizeRuntime();
 	public String getHtml(int indent);
 }

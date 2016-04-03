@@ -30,8 +30,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.code.Indenter;
 import wraith.lib.code.LocalVariable;
+import wraith.lib.code.Unindenter;
 import wraith.lib.code.Variable;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.WraithScript;
 import wraith.lib.code.WraithScriptLogic;
 import wraith.lib.code.ws_nodes.*;
 
@@ -102,6 +104,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/End Function", End.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Call Function", CallFunction.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
@@ -177,7 +180,7 @@ public class NodeLineLogic extends JList{
 	}
 	private void attemptEditNode(WSNode node){
 		InputDialog dialog = new InputDialog();
-		MenuComponentDialog builder = node.getCreationDialog(this);
+		MenuComponentDialog builder = node.getCreationDialog();
 		dialog.setData(builder);
 		dialog.setOkButton(true);
 		dialog.setCancelButton(true);
@@ -211,8 +214,13 @@ public class NodeLineLogic extends JList{
 			@Override
 			public void actionPerformed(ActionEvent e){
 				try{
-					WSNode com = node.getDeclaredConstructor().newInstance();
-					MenuComponentDialog builder = com.getCreationDialog(NodeLineLogic.this);
+					WSNode com;
+					try{
+						com = node.getDeclaredConstructor().newInstance();
+					}catch(Exception exception){
+						com = node.getDeclaredConstructor(WraithScript.class).newInstance(logic.getWraithScript());
+					}
+					MenuComponentDialog builder = com.getCreationDialog();
 					if(builder!=null){
 						InputDialog dialog = new InputDialog();
 						dialog.setData(builder);
@@ -246,8 +254,11 @@ public class NodeLineLogic extends JList{
 		int i = 0;
 		int a = 0;
 		for(WSNode node : nodes){
-			if(node instanceof End){
+			if(node instanceof Unindenter){
 				i -= INDENT_SIZE;
+				if(i<0){
+					i = 0; // No negative indents.
+				}
 			}
 			indents[a++] = i;
 			if(node instanceof Indenter){

@@ -13,6 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -26,9 +29,16 @@ import javax.swing.SpinnerNumberModel;
  * @author thedudefromci
  */
 public class VariableInput extends JPanel{
+	private static final int INPUT_NULL = 0;
+	private static final int INPUT_TEXT = 1;
+	private static final int INPUT_NUMBER = 2;
+	private static final int INPUT_LOCAL_VAR = 3;
 	private final MouseAdapter mouseAdapter;
+	private final Object[] localVariables;
 	private JComponent inputType;
-	public VariableInput(){
+	private int inputMode;
+	public VariableInput(ArrayList<LocalVariable> localVariables){
+		this.localVariables = localVariables.toArray();
 		mouseAdapter = new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e){
@@ -48,7 +58,7 @@ public class VariableInput extends JPanel{
 							}
 						});
 						menu.add(item);
-						if(inputType instanceof JLabel){
+						if(inputMode==INPUT_NULL){
 							item.setEnabled(false);
 						}
 					}
@@ -62,7 +72,7 @@ public class VariableInput extends JPanel{
 							}
 						});
 						menu.add(item);
-						if(inputType instanceof JTextField){
+						if(inputMode==INPUT_TEXT){
 							item.setEnabled(false);
 						}
 					}
@@ -76,7 +86,21 @@ public class VariableInput extends JPanel{
 							}
 						});
 						menu.add(item);
-						if(inputType instanceof JSpinner){
+						if(inputMode==INPUT_NUMBER){
+							item.setEnabled(false);
+						}
+					}
+					{
+						// Local Variable
+						JMenuItem item = new JMenuItem("Change to Local Variable");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								setAsLocalVariable();
+							}
+						});
+						menu.add(item);
+						if(inputMode==INPUT_LOCAL_VAR){
 							item.setEnabled(false);
 						}
 					}
@@ -88,25 +112,33 @@ public class VariableInput extends JPanel{
 		setAsNull();
 	}
 	private void setAsNull(){
+		inputMode = INPUT_NULL;
 		inputType = new JLabel("Nothing");
 		updateInputType();
 	}
 	private void setAsTextField(){
+		inputMode = INPUT_TEXT;
 		inputType = new JTextField();
-		((JTextField)inputType).setColumns(20);
 		updateInputType();
 	}
 	private void setAsNumber(){
+		inputMode = INPUT_NUMBER;
 		inputType = new JSpinner();
 		((JSpinner)inputType).setModel(new SpinnerNumberModel(0, null, null, 1));
-		((JSpinner)inputType).setPreferredSize(new Dimension(75, 20));
 		updateInputType();
 		((JSpinner.DefaultEditor)((JSpinner)inputType).getEditor()).getTextField().addMouseListener(mouseAdapter);
 		((JSpinner)inputType).getComponent(0).addMouseListener(mouseAdapter);
 		((JSpinner)inputType).getComponent(1).addMouseListener(mouseAdapter);
 	}
+	private void setAsLocalVariable(){
+		inputMode = INPUT_LOCAL_VAR;
+		inputType = new JComboBox();
+		((JComboBox)inputType).setModel(new DefaultComboBoxModel(localVariables));
+		updateInputType();
+	}
 	private void updateInputType(){
 		inputType.addMouseListener(mouseAdapter);
+		inputType.setPreferredSize(new Dimension(240, 20));
 		removeAll();
 		add(inputType, BorderLayout.CENTER);
 		revalidate();
@@ -114,11 +146,14 @@ public class VariableInput extends JPanel{
 		inputType.requestFocusInWindow();
 	}
 	public Object getValue(){
-		if(inputType instanceof JTextField){
-			return ((JTextField)inputType).getText();
+		if(inputMode==INPUT_LOCAL_VAR){
+			return "@"+((JComboBox)inputType).getSelectedItem();
 		}
-		if(inputType instanceof JSpinner){
+		if(inputMode==INPUT_NUMBER){
 			return ((JSpinner)inputType).getValue();
+		}
+		if(inputMode==INPUT_TEXT){
+			return ((JTextField)inputType).getText();
 		}
 		return null;
 	}
@@ -140,6 +175,18 @@ public class VariableInput extends JPanel{
 				((JSpinner)inputType).setValue(a);
 				return;
 			}catch(Exception exception1){}
+		}
+		if(value.startsWith("@")){ // Is Local Variable?
+			setAsLocalVariable();
+			value = value.substring(1);
+			int i = 0;
+			for(Object var : localVariables){
+				if(((Variable)var).getName().equals(value)){
+					((JComboBox)inputType).setSelectedIndex(i);
+					return;
+				}
+				i++;
+			}
 		}
 		// It's null, then.
 		setAsNull();

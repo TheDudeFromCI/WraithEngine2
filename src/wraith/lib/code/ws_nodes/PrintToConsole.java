@@ -7,6 +7,7 @@
  */
 package wraith.lib.code.ws_nodes;
 
+import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
@@ -40,12 +41,12 @@ public class PrintToConsole implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(){
+	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
 		return new MenuComponentDialog(){
 			private final VariableInput input;
 			{
 				setLayout(new VerticalFlowLayout(5));
-				input = new VariableInput();
+				input = new VariableInput(logic.getLocalVariables());
 				input.setValue(comment);
 				add(input);
 			}
@@ -54,7 +55,11 @@ public class PrintToConsole implements WSNode{
 				PrintToConsole c = (PrintToConsole)component;
 				Object val = input.getValue();
 				if(val instanceof String){
-					c.comment = "\""+val.toString()+"\"";
+					if(((String)val).startsWith("@")){ // Is Variable
+						c.comment = val.toString();
+					}else{
+						c.comment = "\""+val.toString()+"\"";
+					}
 				}else if(val instanceof Number){
 					c.comment = val.toString();
 				}else{

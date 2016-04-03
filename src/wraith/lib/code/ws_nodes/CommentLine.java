@@ -7,6 +7,7 @@
  */
 package wraith.lib.code.ws_nodes;
 
+import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
@@ -40,7 +41,7 @@ public class CommentLine implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(){
+	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
 		return new MenuComponentDialog(){
 			private final JTextField text;
 			{

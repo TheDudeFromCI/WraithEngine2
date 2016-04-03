@@ -47,7 +47,6 @@ public class NodeLineLogic extends JList{
 	private static final int INDENT_SIZE = 3;
 	private final WraithScriptLogic logic;
 	private final Snipet script;
-	private final ArrayList<LocalVariable> localVariables = new ArrayList(4);
 	private int[] indents;
 	public NodeLineLogic(Snipet script, WraithScriptLogic logic){
 		this.script = script;
@@ -151,7 +150,7 @@ public class NodeLineLogic extends JList{
 							item.addActionListener(new ActionListener(){
 								@Override
 								public void actionPerformed(ActionEvent e){
-									VariableListDialog data = new VariableListDialog(localVariables, LocalVariable.class);
+									VariableListDialog data = new VariableListDialog(getLocalVariables(), LocalVariable.class);
 									InputDialog dialog = new InputDialog();
 									dialog.setTitle("Edit Variables");
 									dialog.setOkButton(true);
@@ -162,9 +161,9 @@ public class NodeLineLogic extends JList{
 										return;
 									}
 									ArrayList<Variable> vars = data.getVariables();
-									localVariables.clear();
+									getLocalVariables().clear();
 									for(Variable v : vars){
-										localVariables.add((LocalVariable)v);
+										getLocalVariables().add((LocalVariable)v);
 									}
 									script.save();
 								}
@@ -181,7 +180,7 @@ public class NodeLineLogic extends JList{
 	}
 	private void attemptEditNode(WSNode node){
 		InputDialog dialog = new InputDialog();
-		MenuComponentDialog builder = node.getCreationDialog();
+		MenuComponentDialog builder = node.getCreationDialog(this);
 		dialog.setData(builder);
 		dialog.setOkButton(true);
 		dialog.setCancelButton(true);
@@ -216,7 +215,7 @@ public class NodeLineLogic extends JList{
 			public void actionPerformed(ActionEvent e){
 				try{
 					WSNode com = node.getDeclaredConstructor().newInstance();
-					MenuComponentDialog builder = com.getCreationDialog();
+					MenuComponentDialog builder = com.getCreationDialog(NodeLineLogic.this);
 					if(builder!=null){
 						InputDialog dialog = new InputDialog();
 						dialog.setData(builder);
@@ -261,5 +260,8 @@ public class NodeLineLogic extends JList{
 		nodes.toArray(lines);
 		lines[nodes.size()] = "";
 		setModel(new DefaultComboBoxModel(lines));
+	}
+	public ArrayList<LocalVariable> getLocalVariables(){
+		return logic.getLocalVariables();
 	}
 }

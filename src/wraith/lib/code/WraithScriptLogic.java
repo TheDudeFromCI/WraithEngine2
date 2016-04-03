@@ -21,6 +21,7 @@ import wraith.lib.util.BinaryFile;
  */
 public class WraithScriptLogic{
 	private final ArrayList<WSNode> nodes = new ArrayList(32);
+	private final ArrayList<LocalVariable> localVariables = new ArrayList(4);
 	public void load(BinaryFile bin, short version){
 		switch(version){
 			case 0:{
@@ -30,6 +31,13 @@ public class WraithScriptLogic{
 					WSNode node = getNodeInstance(bin.getInt());
 					nodes.add(node);
 					node.load(bin, version);
+				}
+				int localVarCount = bin.getInt();
+				localVariables.ensureCapacity(localVarCount);
+				for(int i = 0; i<localVarCount; i++){
+					LocalVariable var = new LocalVariable(bin.getString());
+					var.setName(bin.getString());
+					localVariables.add(var);
 				}
 				break;
 			}
@@ -56,11 +64,16 @@ public class WraithScriptLogic{
 		}
 	}
 	public void save(BinaryFile bin){
-		bin.allocateBytes(4+nodes.size()*4);
+		bin.allocateBytes(8+nodes.size()*4);
 		bin.addInt(nodes.size());
 		for(WSNode node : nodes){
 			bin.addInt(node.getId());
 			node.save(bin);
+		}
+		bin.addInt(localVariables.size());
+		for(LocalVariable var : localVariables){
+			bin.addStringAllocated(var.getUUID());
+			bin.addStringAllocated(var.getName());
 		}
 	}
 	public ArrayList<WSNode> getNodes(){
@@ -70,5 +83,8 @@ public class WraithScriptLogic{
 		for(WSNode node : nodes){
 			node.run();
 		}
+	}
+	public ArrayList<LocalVariable> getLocalVariables(){
+		return localVariables;
 	}
 }

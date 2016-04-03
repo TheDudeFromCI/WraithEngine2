@@ -54,7 +54,7 @@ public class VariableListDialog extends JPanel{
 						item.addActionListener(new ActionListener(){
 							@Override
 							public void actionPerformed(ActionEvent e){
-								String name = JOptionPane.showInputDialog(null, "Variable Name:", "Insert Name", JOptionPane.OK_CANCEL_OPTION);
+								String name = JOptionPane.showInputDialog(null, "Variable Name:", "Insert Name", JOptionPane.PLAIN_MESSAGE);
 								if(name==null){
 									return;
 								}

@@ -7,6 +7,7 @@
  */
 package wraith.lib.code.ws_nodes;
 
+import build.games.wraithaven.code.NodeLineLogic;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.Indenter;
@@ -27,7 +28,7 @@ public class BeginFunction implements WSNode, Indenter{
 		return ID;
 	}
 	@Override
-	public MenuComponentDialog getCreationDialog(){
+	public MenuComponentDialog getCreationDialog(NodeLineLogic logic){
 		return null;
 	}
 	@Override

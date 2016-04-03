@@ -83,6 +83,8 @@ public class WraithScriptLogic{
 				return new Compare(script);
 			case 8:
 				return new CallFunction(script);
+			case 9:
+				return new IfStatement(script);
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

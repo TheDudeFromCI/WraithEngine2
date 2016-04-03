@@ -90,4 +90,8 @@ public class BeginFunction implements WSNode, Indenter{
 	public String toString(){
 		return name==null?uuid:name;
 	}
+	@Override
+	public boolean shouldIndent(){
+		return true;
+	}
 }

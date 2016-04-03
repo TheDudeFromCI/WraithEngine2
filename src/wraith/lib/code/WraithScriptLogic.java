@@ -51,14 +51,14 @@ public class WraithScriptLogic{
 		int i, a;
 		i = 0;
 		for(a = 0; a<nodes.size(); a++){
-			if(nodes.get(a) instanceof Unindenter){
+			if(nodes.get(a) instanceof Unindenter&&((Unindenter)nodes.get(a)).shouldUnindent()){
 				i--;
 				if(i<0){
 					i = 0; // No negative indents.
 				}
 			}
 			indents[a] = i;
-			if(nodes.get(a) instanceof Indenter){
+			if(nodes.get(a) instanceof Indenter&&((Indenter)nodes.get(a)).shouldIndent()){
 				i++;
 			}
 		}
@@ -85,6 +85,8 @@ public class WraithScriptLogic{
 				return new CallFunction(script);
 			case 9:
 				return new IfStatement(script);
+			case 10:
+				return new Else(script);
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

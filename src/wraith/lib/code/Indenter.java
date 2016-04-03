@@ -10,4 +10,6 @@ package wraith.lib.code;
 /**
  * @author thedudefromci
  */
-public interface Indenter{}
+public interface Indenter{
+	public boolean shouldIndent();
+}

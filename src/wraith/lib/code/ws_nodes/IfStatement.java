@@ -39,6 +39,7 @@ public class IfStatement implements WSNode, Indenter{
 	private Object inRaw2;
 	private int compareType;
 	private int line;
+	private boolean didRun;
 	public IfStatement(WraithScript script){
 		this.script = script;
 	}
@@ -144,9 +145,13 @@ public class IfStatement implements WSNode, Indenter{
 				run = false;
 				break;
 		}
+		didRun = run;
 		if(run){
 			script.getLogic().run(line);
 		}
+	}
+	public boolean didRun(){
+		return didRun;
 	}
 	@Override
 	public String getHtml(int in){
@@ -194,5 +199,9 @@ public class IfStatement implements WSNode, Indenter{
 			i++;
 		}
 		line = -1;
+	}
+	@Override
+	public boolean shouldIndent(){
+		return true;
 	}
 }

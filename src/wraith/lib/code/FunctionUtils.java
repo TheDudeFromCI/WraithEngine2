@@ -28,11 +28,19 @@ public class FunctionUtils{
 		sb.append("</html>");
 		return sb.toString();
 	}
-	public static String generateHtml(String original, String color){
+	public static String generateHtml(String original, String color, int in){
+		String indent;
+		{
+			StringBuilder sb = new StringBuilder(in);
+			for(int i = 0; i<in; i++){
+				sb.append(' ');
+			}
+			indent = sb.toString();
+		}
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("<html>");
 		sb.append("<pre>");
-		sb.append(coloredString(original, color, false));
+		sb.append(coloredString(indent+original, color, false));
 		sb.append("</pre>");
 		sb.append("</html>");
 		return sb.toString();

@@ -10,4 +10,6 @@ package wraith.lib.code;
 /**
  * @author thedudefromci
  */
-public interface Unindenter{}
+public interface Unindenter{
+	public boolean shouldUnindent();
+}

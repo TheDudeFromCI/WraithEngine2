@@ -100,6 +100,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Call Function", CallFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/If Statement", IfStatement.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Else", Else.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
@@ -249,14 +250,14 @@ public class NodeLineLogic extends JList{
 		int i = 0;
 		int a = 0;
 		for(WSNode node : nodes){
-			if(node instanceof Unindenter){
+			if(node instanceof Unindenter&&((Unindenter)node).shouldUnindent()){
 				i -= INDENT_SIZE;
 				if(i<0){
 					i = 0; // No negative indents.
 				}
 			}
 			indents[a++] = i;
-			if(node instanceof Indenter){
+			if(node instanceof Indenter&&((Indenter)node).shouldIndent()){
 				i += INDENT_SIZE;
 			}
 		}

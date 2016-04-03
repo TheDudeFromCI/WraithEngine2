@@ -58,10 +58,14 @@ public class End implements WSNode, Unindenter{
 			}
 		}
 		if(dead){
-			return FunctionUtils.generateHtml("End", "gray");
+			return FunctionUtils.generateHtml("End", "gray", 0);
 		}
 		return FunctionUtils.generateHtml("End", in);
 	}
 	@Override
 	public void initalizeRuntime(){}
+	@Override
+	public boolean shouldUnindent(){
+		return true;
+	}
 }

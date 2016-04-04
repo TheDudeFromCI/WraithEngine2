@@ -7,12 +7,14 @@
  */
 package build.games.wraithaven.code;
 
-import wraith.lib.code.WraithScript;
 import build.games.wraithaven.util.VerticalFlowLayout;
+import java.awt.BorderLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import wraith.lib.code.WraithScript;
 import wraith.lib.util.Algorithms;
 
 /**
@@ -21,16 +23,39 @@ import wraith.lib.util.Algorithms;
 public class NewScriptDialog extends JPanel{
 	private final JTextField text;
 	private final JComboBox language;
+	private final JTextField des;
 	public NewScriptDialog(){
-		setLayout(new VerticalFlowLayout(0, 5));
-		text = new JTextField();
-		text.setColumns(20);
-		language = new JComboBox();
-		language.setModel(new DefaultComboBoxModel(new String[]{
-			"WraithScript"
-		}));
-		add(text);
-		add(language);
+		setLayout(new VerticalFlowLayout(5, VerticalFlowLayout.FILL_SPACE));
+		{
+			// Name
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout(5, 0));
+			JLabel label = new JLabel("Name:");
+			panel.add(label, BorderLayout.WEST);
+			text = new JTextField();
+			text.setColumns(20);
+			panel.add(text, BorderLayout.CENTER);
+			add(panel);
+		}
+		{
+			// Description
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout(5, 0));
+			JLabel label = new JLabel("Description:");
+			panel.add(label, BorderLayout.WEST);
+			des = new JTextField();
+			des.setColumns(20);
+			panel.add(des, BorderLayout.CENTER);
+			add(panel);
+		}
+		{
+			// Language
+			language = new JComboBox();
+			language.setModel(new DefaultComboBoxModel(new String[]{
+				"WraithScript"
+			}));
+			add(language);
+		}
 	}
 	private LanguageLoader getLanguage(Snipet snipet){
 		String lan = (String)language.getSelectedItem();
@@ -45,6 +70,7 @@ public class NewScriptDialog extends JPanel{
 		Snipet s = new Snipet(Algorithms.randomUUID());
 		s.setLanguage(getLanguage(s));
 		s.setName(text.getText());
+		s.setDescription(des.getText());
 		s.save();
 		return s;
 	}

@@ -5,18 +5,14 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.gui;
+package build.games.wraithaven.code;
 
-import build.games.wraithaven.code.Snipet;
-import build.games.wraithaven.code.SnipetList;
+import build.games.wraithaven.gui.MenuComponent;
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -31,8 +27,12 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import wraith.lib.util.Algorithms;
+import wraith.lib.util.InverseBorderLayout;
 
 /**
  * @author thedudefromci
@@ -43,66 +43,7 @@ public class AttachScriptsDialog extends JPanel{
 	private final ArrayList<Snipet> allSnipets = new ArrayList(1);
 	private final ArrayList<Snipet> usedSnipets = new ArrayList(1);
 	public AttachScriptsDialog(MenuComponent component){
-		setLayout(new LayoutManager(){
-			@Override
-			public void addLayoutComponent(String name, Component comp){}
-			@Override
-			public void removeLayoutComponent(Component comp){}
-			@Override
-			public Dimension preferredLayoutSize(Container parent){
-				int compCount = parent.getComponentCount();
-				Component left = compCount>=1?parent.getComponent(0):null;
-				Component right = compCount>=2?parent.getComponent(1):null;
-				Component center = compCount>=3?parent.getComponent(2):null;
-				int width = 0;
-				int height = 0;
-				int sideWidth = 0;
-				Dimension pref;
-				if(left!=null){
-					pref = left.getPreferredSize();
-					sideWidth = Math.max(sideWidth, pref.width);
-					height = Math.max(height, pref.height);
-				}
-				if(center!=null){
-					pref = center.getPreferredSize();
-					width += pref.width;
-					height = Math.max(height, pref.height);
-				}
-				if(right!=null){
-					pref = right.getPreferredSize();
-					sideWidth = Math.max(sideWidth, pref.width);
-					height = Math.max(height, pref.height);
-				}
-				width += sideWidth*2;
-				return new Dimension(width, height);
-			}
-			@Override
-			public Dimension minimumLayoutSize(Container parent){
-				return new Dimension(0, 0);
-			}
-			@Override
-			public void layoutContainer(Container parent){
-				int width = parent.getWidth();
-				int height = parent.getHeight();
-				int extra = width;
-				int compCount = parent.getComponentCount();
-				Component left = compCount>=1?parent.getComponent(0):null;
-				Component right = compCount>=2?parent.getComponent(1):null;
-				Component center = compCount>=3?parent.getComponent(2):null;
-				if(center!=null&&center.isVisible()){
-					Dimension pref = center.getPreferredSize();
-					center.setBounds((width-(int)pref.getWidth())/2, 0, (int)pref.getWidth(), height);
-					extra -= (int)pref.getWidth();
-				}
-				extra /= 2;
-				if(left!=null&&left.isVisible()){
-					left.setBounds(0, 0, extra, height);
-				}
-				if(right!=null&&right.isVisible()){
-					right.setBounds(width-extra, 0, extra, height);
-				}
-			}
-		});
+		setLayout(new InverseBorderLayout());
 		SnipetList.load(allSnipets);
 		{
 			// Find used scripts.
@@ -256,6 +197,28 @@ public class AttachScriptsDialog extends JPanel{
 							usedSnipets.add(sel[i]+1, usedSnipets.remove(sel[i]));
 						}
 						updateLists();
+					}
+				});
+			}
+			{
+				// Bottom
+				JTextArea des = new JTextArea();
+				des.setEditable(false);
+				des.setLineWrap(true);
+				des.setWrapStyleWord(true);
+				JScrollPane scroll = new JScrollPane(des);
+				scroll.setPreferredSize(new Dimension(10, 50));
+				scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				add(scroll);
+				rightList.addListSelectionListener(new ListSelectionListener(){
+					@Override
+					public void valueChanged(ListSelectionEvent e){
+						int[] sel = rightList.getSelectedIndices();
+						if(sel.length!=1){
+							des.setText("Description:\n");
+							return;
+						}
+						des.setText("Description:\n"+usedSnipets.get(sel[0]).getDescription());
 					}
 				});
 			}

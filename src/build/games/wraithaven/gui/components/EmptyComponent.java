@@ -130,7 +130,7 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 			private final JTextField nameInput;
 			{
 				// Builder
-				setLayout(new VerticalFlowLayout(0, 5));
+				setLayout(new VerticalFlowLayout(5));
 				{
 					// Name
 					nameInput = new JTextField();

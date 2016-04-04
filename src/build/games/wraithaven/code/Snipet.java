@@ -7,8 +7,8 @@
  */
 package build.games.wraithaven.code;
 
-import wraith.lib.code.WraithScript;
 import java.io.File;
+import wraith.lib.code.WraithScript;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
@@ -18,7 +18,8 @@ import wraith.lib.util.BinaryFile;
 public class Snipet{
 	private static final short FILE_VERSION = 0;
 	private final String uuid;
-	private String name;
+	private String name = "";
+	private String description = "";
 	private LanguageLoader language;
 	public Snipet(String uuid){
 		this.uuid = uuid;
@@ -31,6 +32,12 @@ public class Snipet{
 	}
 	public void setName(String name){
 		this.name = name;
+	}
+	public String getDescription(){
+		return description;
+	}
+	public void setDescription(String description){
+		this.description = description;
 	}
 	@Override
 	public String toString(){
@@ -48,6 +55,7 @@ public class Snipet{
 		switch(version){
 			case 0:{
 				name = bin.getString();
+				description = bin.getString();
 				int languageId = bin.getInt();
 				switch(languageId){
 					case -1:
@@ -72,6 +80,7 @@ public class Snipet{
 		BinaryFile bin = new BinaryFile(2+4);
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
+		bin.addStringAllocated(description);
 		bin.addInt(language==null?-1:language.getId());
 		if(language!=null){
 			language.save(bin);

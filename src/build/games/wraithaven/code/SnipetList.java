@@ -23,6 +23,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import wraith.lib.util.Algorithms;
@@ -34,6 +36,7 @@ import wraith.lib.util.BinaryFile;
 public class SnipetList extends JPanel{
 	private static final short FILE_VERSION = 0;
 	private final ArrayList<Snipet> snipets = new ArrayList(16);
+	private final ArrayList<ChangeListener> listeners = new ArrayList(1);
 	private final JList list;
 	private final Renderer renderer;
 	private Snipet selected;
@@ -124,6 +127,9 @@ public class SnipetList extends JPanel{
 		}
 		selected = snipet;
 		renderer.loadSnipet(snipet);
+		for(ChangeListener listener : listeners){
+			listener.stateChanged(new ChangeEvent(this));
+		}
 	}
 	public static void load(ArrayList<Snipet> snipets){
 		File file = Algorithms.getFile("scripts.dat");
@@ -141,6 +147,7 @@ public class SnipetList extends JPanel{
 					for(int i = 0; i<count; i++){
 						Snipet s = new Snipet(bin.getString());
 						s.setName(bin.getString());
+						s.setDescription(bin.getString());
 						snipets.add(s);
 					}
 					break;
@@ -158,15 +165,25 @@ public class SnipetList extends JPanel{
 			snipets.clear();
 		}
 	}
-	private void save(){
+	public void save(){
 		BinaryFile bin = new BinaryFile(2+4);
 		bin.addShort(FILE_VERSION);
 		bin.addInt(snipets.size());
 		for(Snipet s : snipets){
 			bin.addStringAllocated(s.getUuid());
 			bin.addStringAllocated(s.getName());
+			bin.addStringAllocated(s.getDescription());
 		}
 		bin.compress(true);
 		bin.compile(Algorithms.getFile("scripts.dat"));
+	}
+	public void addChangeListener(ChangeListener listener){
+		listeners.add(listener);
+	}
+	public void removeChangeListener(ChangeListener listener){
+		listeners.remove(listener);
+	}
+	public Snipet getSelectedScript(){
+		return selected;
 	}
 }

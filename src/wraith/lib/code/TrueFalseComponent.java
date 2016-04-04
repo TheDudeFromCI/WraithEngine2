@@ -7,18 +7,28 @@
  */
 package wraith.lib.code;
 
-import build.games.wraithaven.gui.MenuComponentDialog;
-import wraith.lib.util.BinaryFile;
+import java.awt.FlowLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 /**
  * @author thedudefromci
  */
-public interface WSNode{
-	public void save(BinaryFile bin);
-	public void load(BinaryFile bin, short version);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
-	public void run();
-	public void initalizeRuntime();
-	public String getHtml(int indent);
+public class TrueFalseComponent extends JPanel{
+	private final JRadioButton t;
+	public TrueFalseComponent(){
+		setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		t = new JRadioButton("True");
+		add(t);
+		JRadioButton f = new JRadioButton("False");
+		f.setSelected(true);
+		add(f);
+		ButtonGroup group = new ButtonGroup();
+		group.add(t);
+		group.add(f);
+	}
+	public boolean getState(){
+		return t.isSelected();
+	}
 }

@@ -11,6 +11,7 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.WSNode;
 import wraith.lib.util.BinaryFile;
 
@@ -39,15 +40,11 @@ public class CommentLine implements WSNode{
 		this.comment = comment;
 	}
 	@Override
-	public String toString(){
-		return "# "+comment;
-	}
-	@Override
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
 			private final JTextField text;
 			{
-				setLayout(new VerticalFlowLayout(0, 5));
+				setLayout(new VerticalFlowLayout(5));
 				text = new JTextField();
 				text.setColumns(20);
 				text.setText(comment);
@@ -66,4 +63,10 @@ public class CommentLine implements WSNode{
 	}
 	@Override
 	public void run(){}
+	@Override
+	public String getHtml(int in){
+		return FunctionUtils.generateHtml("# "+comment, in);
+	}
+	@Override
+	public void initalizeRuntime(){}
 }

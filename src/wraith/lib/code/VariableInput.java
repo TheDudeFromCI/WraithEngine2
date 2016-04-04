@@ -13,6 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -26,9 +29,114 @@ import javax.swing.SpinnerNumberModel;
  * @author thedudefromci
  */
 public class VariableInput extends JPanel{
+	public static String toStorageState(Object val){
+		if(val instanceof String){
+			if(((String)val).startsWith("@")){ // Is Variable
+				return val.toString();
+			}else{
+				return "\""+val.toString()+"\"";
+			}
+		}else if(val instanceof Number){
+			return val.toString();
+		}else if(val instanceof Boolean){
+			return (boolean)val?"True":"False";
+		}else{
+			// Null, or no value.
+			return "Nothing";
+		}
+	}
+	public static Variable getVariable(String line, WraithScript script){
+		if(line.startsWith("@")){
+			line = line.substring(1);
+			for(LocalVariable var : script.getLogic().getLocalVariables()){
+				if(var.getName().equals(line)){
+					return var;
+				}
+			}
+		}
+		return null;
+	}
+	public static Object fromStorageState(String line, WraithScript script){
+		if(line.startsWith("@")){
+			return getVariable(line, script);
+		}
+		if(line.startsWith("\"")){ // Text
+			return line.substring(1, line.length()-1);
+		}
+		if(line.equals("True")){
+			return true;
+		}
+		if(line.equals("False")){
+			return false;
+		}
+		try{
+			return Integer.valueOf(line);
+		}catch(Exception exception){
+			try{
+				return Float.valueOf(line);
+			}catch(Exception exception1){}
+		}
+		return null;
+	}
+	public static boolean areValuesEqual(Object in1, Object in2){
+		if(in1==null||in2==null){
+			return in1==in2;
+		}
+		Object i1, i2;
+		if(in1 instanceof Variable){
+			i1 = ((Variable)in1).getValue();
+		}else{
+			i1 = in1;
+		}
+		if(in2 instanceof Variable){
+			i2 = ((Variable)in2).getValue();
+		}else{
+			i2 = in2;
+		}
+		if(i1 instanceof Number&&i2 instanceof Number){
+			return ((Number)i1).doubleValue()==((Number)i2).doubleValue();
+		}
+		if(i1 instanceof String&&i2 instanceof String){
+			return ((String)i1).equals((String)i2);
+		}
+		if(i1 instanceof Boolean&&i2 instanceof Boolean){
+			return (boolean)i1==(boolean)i2;
+		}
+		// Different types.
+		return false;
+	}
+	public static boolean isGreaterThan(Object in1, Object in2){
+		if(in1==null||in2==null){
+			return in1!=null;
+		}
+		Object i1, i2;
+		if(in1 instanceof Variable){
+			i1 = ((Variable)in1).getValue();
+		}else{
+			i1 = in1;
+		}
+		if(in2 instanceof Variable){
+			i2 = ((Variable)in2).getValue();
+		}else{
+			i2 = in2;
+		}
+		if(i1 instanceof Number&&i2 instanceof Number){
+			return ((Number)i1).doubleValue()>((Number)i2).doubleValue();
+		}
+		// Non numbers always return false.
+		return false;
+	}
+	private static final int INPUT_NULL = 0;
+	private static final int INPUT_TEXT = 1;
+	private static final int INPUT_NUMBER = 2;
+	private static final int INPUT_LOCAL_VAR = 3;
+	private static final int INPUT_BOOLEAN = 4;
 	private final MouseAdapter mouseAdapter;
+	private final Object[] localVariables;
 	private JComponent inputType;
-	public VariableInput(){
+	private int inputMode;
+	public VariableInput(ArrayList<LocalVariable> localVariables){
+		this.localVariables = localVariables.toArray();
 		mouseAdapter = new MouseAdapter(){
 			@Override
 			public void mouseClicked(MouseEvent e){
@@ -48,7 +156,7 @@ public class VariableInput extends JPanel{
 							}
 						});
 						menu.add(item);
-						if(inputType instanceof JLabel){
+						if(inputMode==INPUT_NULL){
 							item.setEnabled(false);
 						}
 					}
@@ -62,7 +170,7 @@ public class VariableInput extends JPanel{
 							}
 						});
 						menu.add(item);
-						if(inputType instanceof JTextField){
+						if(inputMode==INPUT_TEXT){
 							item.setEnabled(false);
 						}
 					}
@@ -76,7 +184,35 @@ public class VariableInput extends JPanel{
 							}
 						});
 						menu.add(item);
-						if(inputType instanceof JSpinner){
+						if(inputMode==INPUT_NUMBER){
+							item.setEnabled(false);
+						}
+					}
+					{
+						// Local Variable
+						JMenuItem item = new JMenuItem("Change to Local Variable");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								setAsLocalVariable();
+							}
+						});
+						menu.add(item);
+						if(inputMode==INPUT_LOCAL_VAR){
+							item.setEnabled(false);
+						}
+					}
+					{
+						// Boolean
+						JMenuItem item = new JMenuItem("Change to Boolean");
+						item.addActionListener(new ActionListener(){
+							@Override
+							public void actionPerformed(ActionEvent e){
+								setAsBoolean();
+							}
+						});
+						menu.add(item);
+						if(inputMode==INPUT_BOOLEAN){
 							item.setEnabled(false);
 						}
 					}
@@ -88,25 +224,38 @@ public class VariableInput extends JPanel{
 		setAsNull();
 	}
 	private void setAsNull(){
+		inputMode = INPUT_NULL;
 		inputType = new JLabel("Nothing");
 		updateInputType();
 	}
 	private void setAsTextField(){
+		inputMode = INPUT_TEXT;
 		inputType = new JTextField();
-		((JTextField)inputType).setColumns(20);
 		updateInputType();
 	}
 	private void setAsNumber(){
+		inputMode = INPUT_NUMBER;
 		inputType = new JSpinner();
 		((JSpinner)inputType).setModel(new SpinnerNumberModel(0, null, null, 1));
-		((JSpinner)inputType).setPreferredSize(new Dimension(75, 20));
 		updateInputType();
 		((JSpinner.DefaultEditor)((JSpinner)inputType).getEditor()).getTextField().addMouseListener(mouseAdapter);
 		((JSpinner)inputType).getComponent(0).addMouseListener(mouseAdapter);
 		((JSpinner)inputType).getComponent(1).addMouseListener(mouseAdapter);
 	}
+	private void setAsLocalVariable(){
+		inputMode = INPUT_LOCAL_VAR;
+		inputType = new JComboBox();
+		((JComboBox)inputType).setModel(new DefaultComboBoxModel(localVariables));
+		updateInputType();
+	}
+	private void setAsBoolean(){
+		inputMode = INPUT_BOOLEAN;
+		inputType = new TrueFalseComponent();
+		updateInputType();
+	}
 	private void updateInputType(){
 		inputType.addMouseListener(mouseAdapter);
+		inputType.setPreferredSize(new Dimension(240, 20));
 		removeAll();
 		add(inputType, BorderLayout.CENTER);
 		revalidate();
@@ -114,11 +263,17 @@ public class VariableInput extends JPanel{
 		inputType.requestFocusInWindow();
 	}
 	public Object getValue(){
-		if(inputType instanceof JTextField){
+		if(inputMode==INPUT_LOCAL_VAR){
+			return "@"+((JComboBox)inputType).getSelectedItem();
+		}
+		if(inputMode==INPUT_NUMBER){
+			return ((JSpinner)inputType).getValue();
+		}
+		if(inputMode==INPUT_TEXT){
 			return ((JTextField)inputType).getText();
 		}
-		if(inputType instanceof JSpinner){
-			return ((JSpinner)inputType).getValue();
+		if(inputMode==INPUT_BOOLEAN){
+			return ((TrueFalseComponent)inputType).getState();
 		}
 		return null;
 	}
@@ -140,6 +295,18 @@ public class VariableInput extends JPanel{
 				((JSpinner)inputType).setValue(a);
 				return;
 			}catch(Exception exception1){}
+		}
+		if(value.startsWith("@")){ // Is Local Variable?
+			setAsLocalVariable();
+			value = value.substring(1);
+			int i = 0;
+			for(Object var : localVariables){
+				if(((Variable)var).getName().equals(value)){
+					((JComboBox)inputType).setSelectedIndex(i);
+					return;
+				}
+				i++;
+			}
 		}
 		// It's null, then.
 		setAsNull();

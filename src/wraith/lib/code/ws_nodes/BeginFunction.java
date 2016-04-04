@@ -9,78 +9,89 @@ package wraith.lib.code.ws_nodes;
 
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
+import java.awt.BorderLayout;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import wraith.lib.code.FunctionUtils;
-import wraith.lib.code.Variable;
-import wraith.lib.code.VariableInput;
+import wraith.lib.code.Indenter;
 import wraith.lib.code.WSNode;
-import wraith.lib.code.WraithScript;
+import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class PrintToConsole implements WSNode{
-	private static final int ID = 2;
-	private final WraithScript script;
-	private String comment = "";
-	private Variable varValue;
-	public PrintToConsole(WraithScript script){
-		this.script = script;
-	}
+public class BeginFunction implements WSNode, Indenter{
+	private static final int ID = 4;
+	private String name;
+	private String uuid;
 	@Override
 	public void save(BinaryFile bin){
-		bin.addStringAllocated(comment);
+		bin.addStringAllocated(uuid);
+		bin.addStringAllocated(name);
 	}
 	@Override
 	public void load(BinaryFile bin, short version){
-		comment = bin.getString();
+		uuid = bin.getString();
+		name = bin.getString();
 	}
 	@Override
 	public int getId(){
 		return ID;
 	}
-	public String getComment(){
-		return comment;
-	}
-	public void setComment(String comment){
-		this.comment = comment;
-	}
 	@Override
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
-			private final VariableInput input;
+			private final JTextField name;
 			{
-				setLayout(new VerticalFlowLayout(5));
-				input = new VariableInput(script.getLogic().getLocalVariables());
-				input.setValue(comment);
-				add(input);
+				setLayout(new VerticalFlowLayout(5, VerticalFlowLayout.FILL_SPACE));
+				{
+					// Name
+					JPanel panel = new JPanel();
+					panel.setLayout(new BorderLayout());
+					JLabel label = new JLabel("Name: ");
+					panel.add(label, BorderLayout.WEST);
+					name = new JTextField();
+					panel.add(name, BorderLayout.CENTER);
+					add(panel);
+				}
 			}
 			@Override
 			public void build(Object component){
-				PrintToConsole c = (PrintToConsole)component;
-				c.comment = VariableInput.toStorageState(input.getValue());
+				BeginFunction func = (BeginFunction)component;
+				if(func.uuid==null){ // New Function
+					func.uuid = Algorithms.randomUUID();
+				}
+				func.name = name.getText();
 			}
 			@Override
 			public JComponent getDefaultFocus(){
-				return input;
+				return name;
 			}
 		};
 	}
 	@Override
-	public void run(){
-		if(varValue!=null){
-			System.out.println(varValue.getValue());
-			return;
-		}
-		System.out.println(comment);
-	}
+	public void run(){}
 	@Override
 	public String getHtml(int in){
-		return FunctionUtils.generateHtml("Print To Console("+comment+")", in);
+		return FunctionUtils.generateHtml("Function \""+name+"\"()", in);
 	}
 	@Override
-	public void initalizeRuntime(){
-		varValue = VariableInput.getVariable(comment, script);
+	public void initalizeRuntime(){}
+	public String getUUID(){
+		return uuid;
+	}
+	public String getName(){
+		return name;
+	}
+	@Override
+	public String toString(){
+		return name==null?uuid:name;
+	}
+	@Override
+	public boolean shouldIndent(){
+		return true;
 	}
 }

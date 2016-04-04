@@ -10,6 +10,7 @@ package wraith.lib.code.ws_nodes;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.Variable;
 import wraith.lib.code.VariableInput;
@@ -20,67 +21,91 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public class PrintToConsole implements WSNode{
-	private static final int ID = 2;
+public class AssignVariable implements WSNode{
+	private static final int ID = 6;
 	private final WraithScript script;
-	private String comment = "";
-	private Variable varValue;
-	public PrintToConsole(WraithScript script){
+	private String input = "";
+	private String output = "";
+	private Variable outVar;
+	private Object inRaw;
+	public AssignVariable(WraithScript script){
 		this.script = script;
 	}
 	@Override
 	public void save(BinaryFile bin){
-		bin.addStringAllocated(comment);
+		bin.addStringAllocated(input);
+		bin.addStringAllocated(output);
 	}
 	@Override
 	public void load(BinaryFile bin, short version){
-		comment = bin.getString();
+		input = bin.getString();
+		output = bin.getString();
 	}
 	@Override
 	public int getId(){
 		return ID;
 	}
-	public String getComment(){
-		return comment;
+	public String getInput(){
+		return input;
 	}
-	public void setComment(String comment){
-		this.comment = comment;
+	public void setInput(String input){
+		this.input = input;
+	}
+	public String getOuput(){
+		return output;
+	}
+	public void setOutput(String output){
+		this.output = output;
 	}
 	@Override
 	public MenuComponentDialog getCreationDialog(){
 		return new MenuComponentDialog(){
-			private final VariableInput input;
+			private final VariableInput in;
+			private final VariableInput out;
 			{
-				setLayout(new VerticalFlowLayout(5));
-				input = new VariableInput(script.getLogic().getLocalVariables());
-				input.setValue(comment);
-				add(input);
+				setLayout(new VerticalFlowLayout(5, VerticalFlowLayout.FILL_SPACE));
+				JLabel label1 = new JLabel("Set");
+				label1.setHorizontalAlignment(JLabel.CENTER);
+				add(label1);
+				out = new VariableInput(script.getLogic().getLocalVariables());
+				out.setValue(output);
+				add(out);
+				JLabel label2 = new JLabel("To");
+				label2.setHorizontalAlignment(JLabel.CENTER);
+				add(label2);
+				in = new VariableInput(script.getLogic().getLocalVariables());
+				in.setValue(input);
+				add(in);
 			}
 			@Override
 			public void build(Object component){
-				PrintToConsole c = (PrintToConsole)component;
-				c.comment = VariableInput.toStorageState(input.getValue());
+				AssignVariable c = (AssignVariable)component;
+				c.input = VariableInput.toStorageState(in.getValue());
+				c.output = VariableInput.toStorageState(out.getValue());
 			}
 			@Override
 			public JComponent getDefaultFocus(){
-				return input;
+				return out;
 			}
 		};
 	}
 	@Override
 	public void run(){
-		if(varValue!=null){
-			System.out.println(varValue.getValue());
-			return;
+		if(outVar!=null){
+			if(inRaw instanceof Variable){
+				outVar.setValue(((Variable)inRaw).getValue());
+			}else{
+				outVar.setValue(inRaw);
+			}
 		}
-		System.out.println(comment);
 	}
 	@Override
 	public String getHtml(int in){
-		return FunctionUtils.generateHtml("Print To Console("+comment+")", in);
+		return FunctionUtils.generateHtml("Set "+output+", To "+input, in);
 	}
 	@Override
 	public void initalizeRuntime(){
-		varValue = VariableInput.getVariable(comment, script);
+		inRaw = VariableInput.fromStorageState(input, script);
+		outVar = VariableInput.getVariable(output, script);
 	}
 }

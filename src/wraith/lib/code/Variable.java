@@ -7,18 +7,33 @@
  */
 package wraith.lib.code;
 
-import build.games.wraithaven.gui.MenuComponentDialog;
-import wraith.lib.util.BinaryFile;
-
 /**
  * @author thedudefromci
  */
-public interface WSNode{
-	public void save(BinaryFile bin);
-	public void load(BinaryFile bin, short version);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
-	public void run();
-	public void initalizeRuntime();
-	public String getHtml(int indent);
+public abstract class Variable{
+	private final String uuid;
+	private String name;
+	private Object value;
+	public Variable(String uuid){
+		this.uuid = uuid;
+	}
+	public String getName(){
+		return name;
+	}
+	public void setName(String name){
+		this.name = name;
+	}
+	public String getUUID(){
+		return uuid;
+	}
+	public Object getValue(){
+		return value;
+	}
+	public void setValue(Object value){
+		this.value = value;
+	}
+	@Override
+	public String toString(){
+		return name==null?uuid:name;
+	}
 }

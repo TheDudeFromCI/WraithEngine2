@@ -5,14 +5,13 @@
  * PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package build.games.wraithaven.code.languages;
+package build.games.wraithaven.code;
 
-import wraith.lib.code.WraithScriptLogic;
-import build.games.wraithaven.code.Snipet;
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.InputDialog;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,17 +28,23 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
+import wraith.lib.code.Indenter;
+import wraith.lib.code.LocalVariable;
+import wraith.lib.code.Unindenter;
+import wraith.lib.code.Variable;
 import wraith.lib.code.WSNode;
-import wraith.lib.code.ws_nodes.BlankLine;
-import wraith.lib.code.ws_nodes.CommentLine;
-import wraith.lib.code.ws_nodes.PrintToConsole;
+import wraith.lib.code.WraithScript;
+import wraith.lib.code.WraithScriptLogic;
+import wraith.lib.code.ws_nodes.*;
 
 /**
  * @author thedudefromci
  */
 public class NodeLineLogic extends JList{
+	private static final int INDENT_SIZE = 3;
 	private final WraithScriptLogic logic;
 	private final Snipet script;
+	private int[] indents;
 	public NodeLineLogic(Snipet script, WraithScriptLogic logic){
 		this.script = script;
 		this.logic = logic;
@@ -49,18 +54,19 @@ public class NodeLineLogic extends JList{
 			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus){
 				JLabel label = new JLabel();
 				if(value instanceof String){
-					label.setText("<html><font color=red>[]</font></html>");
-				}else if(value instanceof CommentLine){
-					label.setText("<html><font color=green>"+value.toString()+"</font></html>");
-				}else if(value instanceof BlankLine){
-					label.setText(" ");
+					StringBuilder sb = new StringBuilder(indents[index]);
+					for(int i = 0; i<indents[index]; i++){
+						sb.append(' ');
+					}
+					label.setText("<html><pre><font face=\"Courier\" size=\"3\" color=red>"+sb.toString()+"[]</font></pre></html>");
 				}else{
-					label.setText("<html><font color=red>[] </font><font color=black>"+value.toString()+"</font></html>");
+					label.setText(((WSNode)value).getHtml(indents[index]));
 				}
-				label.setOpaque(true);
 				if(isSelected){
 					label.setBackground(new Color(0, 230, 230));
 				}
+				label.setOpaque(true);
+				label.setPreferredSize(new Dimension(label.getPreferredSize().width, 15));
 				return label;
 			}
 		});
@@ -85,9 +91,17 @@ public class NodeLineLogic extends JList{
 					{
 						// New
 						JMenu menu2 = new JMenu("New");
-						attemptAddNode(menu2, "Comment Line", CommentLine.class, sel[0]);
-						attemptAddNode(menu2, "Blank Line", BlankLine.class, sel[0]);
-						attemptAddNode(menu2, "Print to Console", PrintToConsole.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Comment Line", CommentLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Blank Line", BlankLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Return", Return.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/End", End.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Call Function", CallFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/If Statement", IfStatement.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Else", Else.class, sel[0]);
+						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
 					{
@@ -123,6 +137,37 @@ public class NodeLineLogic extends JList{
 						});
 						menu.add(item);
 					}
+					{
+						// Edit Variables
+						JMenu menu2 = new JMenu("Edit Variables");
+						{
+							// Local
+							JMenuItem item = new JMenuItem("Local");
+							item.addActionListener(new ActionListener(){
+								@Override
+								public void actionPerformed(ActionEvent e){
+									VariableListDialog data = new VariableListDialog(getLocalVariables(), LocalVariable.class);
+									InputDialog dialog = new InputDialog();
+									dialog.setTitle("Edit Variables");
+									dialog.setOkButton(true);
+									dialog.setCancelButton(true);
+									dialog.setData(data);
+									dialog.show();
+									if(dialog.getResponse()!=InputDialog.OK){
+										return;
+									}
+									ArrayList<Variable> vars = data.getVariables();
+									getLocalVariables().clear();
+									for(Variable v : vars){
+										getLocalVariables().add((LocalVariable)v);
+									}
+									script.save();
+								}
+							});
+							menu2.add(item);
+						}
+						menu.add(menu2);
+					}
 				}
 				menu.show(NodeLineLogic.this, e.getX(), e.getY());
 			}
@@ -146,12 +191,31 @@ public class NodeLineLogic extends JList{
 		repaint();
 	}
 	private void attemptAddNode(JMenu menu, String name, Class<? extends WSNode> node, int insertIndex){
-		JMenuItem item = new JMenuItem(name);
+		String[] nameParts = name.split("/");
+		JMenu m = menu;
+		full:for(int i = 0; i<nameParts.length-1; i++){
+			for(Component comp : m.getMenuComponents()){
+				if(comp instanceof JMenu&&((JMenu)comp).getText().equals(nameParts[i])){
+					m = (JMenu)comp;
+					continue full;
+				}
+			}
+			// If we're here, then the sub menu we need doesn't exist.
+			JMenu m2 = new JMenu(nameParts[i]);
+			m.add(m2);
+			m = m2;
+		}
+		JMenuItem item = new JMenuItem(nameParts[nameParts.length-1]);
 		item.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
 				try{
-					WSNode com = node.getDeclaredConstructor().newInstance();
+					WSNode com;
+					try{
+						com = node.getDeclaredConstructor().newInstance();
+					}catch(Exception exception){
+						com = node.getDeclaredConstructor(WraithScript.class).newInstance(logic.getWraithScript());
+					}
 					MenuComponentDialog builder = com.getCreationDialog();
 					if(builder!=null){
 						InputDialog dialog = new InputDialog();
@@ -169,7 +233,7 @@ public class NodeLineLogic extends JList{
 					logic.getNodes().add(insertIndex, com);
 					updateModel();
 					script.save();
-					setSelectedIndex(insertIndex);
+					setSelectedIndex(insertIndex+1);
 				}catch(NoSuchMethodException|SecurityException|InstantiationException|IllegalAccessException|IllegalArgumentException
 					|InvocationTargetException ex){
 					// I'm sure this will never get called. But whatever. :P
@@ -177,13 +241,31 @@ public class NodeLineLogic extends JList{
 				}
 			}
 		});
-		menu.add(item);
+		m.add(item);
 	}
 	private void updateModel(){
 		ArrayList<WSNode> nodes = logic.getNodes();
 		Object[] lines = new Object[nodes.size()+1];
+		indents = new int[lines.length];
+		int i = 0;
+		int a = 0;
+		for(WSNode node : nodes){
+			if(node instanceof Unindenter&&((Unindenter)node).shouldUnindent()){
+				i -= INDENT_SIZE;
+				if(i<0){
+					i = 0; // No negative indents.
+				}
+			}
+			indents[a++] = i;
+			if(node instanceof Indenter&&((Indenter)node).shouldIndent()){
+				i += INDENT_SIZE;
+			}
+		}
 		nodes.toArray(lines);
 		lines[nodes.size()] = "";
 		setModel(new DefaultComboBoxModel(lines));
+	}
+	public ArrayList<LocalVariable> getLocalVariables(){
+		return logic.getLocalVariables();
 	}
 }

@@ -7,18 +7,11 @@
  */
 package wraith.lib.code;
 
-import build.games.wraithaven.gui.MenuComponentDialog;
-import wraith.lib.util.BinaryFile;
-
 /**
  * @author thedudefromci
  */
-public interface WSNode{
-	public void save(BinaryFile bin);
-	public void load(BinaryFile bin, short version);
-	public int getId();
-	public MenuComponentDialog getCreationDialog();
-	public void run();
-	public void initalizeRuntime();
-	public String getHtml(int indent);
+public class LocalVariable extends Variable{
+	public LocalVariable(String uuid){
+		super(uuid);
+	}
 }

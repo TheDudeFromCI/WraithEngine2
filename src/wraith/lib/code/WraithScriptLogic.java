@@ -8,9 +8,7 @@
 package wraith.lib.code;
 
 import java.util.ArrayList;
-import wraith.lib.code.ws_nodes.BlankLine;
-import wraith.lib.code.ws_nodes.CommentLine;
-import wraith.lib.code.ws_nodes.PrintToConsole;
+import wraith.lib.code.ws_nodes.*;
 import wraith.lib.util.BinaryFile;
 
 /**
@@ -18,6 +16,12 @@ import wraith.lib.util.BinaryFile;
  */
 public class WraithScriptLogic{
 	private final ArrayList<WSNode> nodes = new ArrayList(32);
+	private final ArrayList<LocalVariable> localVariables = new ArrayList(4);
+	private final WraithScript script;
+	private int[] indents;
+	public WraithScriptLogic(WraithScript script){
+		this.script = script;
+	}
 	public void load(BinaryFile bin, short version){
 		switch(version){
 			case 0:{
@@ -28,10 +32,35 @@ public class WraithScriptLogic{
 					nodes.add(node);
 					node.load(bin, version);
 				}
+				int localVarCount = bin.getInt();
+				localVariables.ensureCapacity(localVarCount);
+				for(int i = 0; i<localVarCount; i++){
+					LocalVariable var = new LocalVariable(bin.getString());
+					var.setName(bin.getString());
+					localVariables.add(var);
+				}
 				break;
 			}
 			default:
 				throw new RuntimeException("Unknown file version! '"+version+"'");
+		}
+		// Load indents.
+		// As indents are only used by the runner, we know the node list won't be edited.
+		// Therefore, the indents will not change. So we can load these here.
+		indents = new int[nodes.size()];
+		int i, a;
+		i = 0;
+		for(a = 0; a<nodes.size(); a++){
+			if(nodes.get(a) instanceof Unindenter&&((Unindenter)nodes.get(a)).shouldUnindent()){
+				i--;
+				if(i<0){
+					i = 0; // No negative indents.
+				}
+			}
+			indents[a] = i;
+			if(nodes.get(a) instanceof Indenter&&((Indenter)nodes.get(a)).shouldIndent()){
+				i++;
+			}
 		}
 	}
 	private WSNode getNodeInstance(int id){
@@ -41,25 +70,60 @@ public class WraithScriptLogic{
 			case 1:
 				return new BlankLine();
 			case 2:
-				return new PrintToConsole();
+				return new PrintToConsole(script);
+			case 3:
+				return new Return();
+			case 4:
+				return new BeginFunction();
+			case 5:
+				return new End(script);
+			case 6:
+				return new AssignVariable(script);
+			case 7:
+				return new Compare(script);
+			case 8:
+				return new CallFunction(script);
+			case 9:
+				return new IfStatement(script);
+			case 10:
+				return new Else(script);
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}
 	}
 	public void save(BinaryFile bin){
-		bin.allocateBytes(4+nodes.size()*4);
+		bin.allocateBytes(8+nodes.size()*4);
 		bin.addInt(nodes.size());
 		for(WSNode node : nodes){
 			bin.addInt(node.getId());
 			node.save(bin);
+		}
+		bin.addInt(localVariables.size());
+		for(LocalVariable var : localVariables){
+			bin.addStringAllocated(var.getUUID());
+			bin.addStringAllocated(var.getName());
 		}
 	}
 	public ArrayList<WSNode> getNodes(){
 		return nodes;
 	}
 	public void run(){
-		for(WSNode node : nodes){
-			node.run();
+		run(0);
+	}
+	public void run(int line){
+		int indent = indents[line];
+		for(; line<nodes.size(); line++){
+			if(indents[line]==indent){
+				nodes.get(line).run();
+			}else if(indents[line]<indent){
+				return;
+			}
 		}
+	}
+	public ArrayList<LocalVariable> getLocalVariables(){
+		return localVariables;
+	}
+	public WraithScript getWraithScript(){
+		return script;
 	}
 }

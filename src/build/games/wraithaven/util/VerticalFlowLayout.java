@@ -16,34 +16,56 @@ import java.awt.LayoutManager;
  * @author TheDudeFromCI
  */
 public class VerticalFlowLayout implements LayoutManager{
-	private int hgap = 0;
-	private int vgap = 0;
-	public VerticalFlowLayout(){}
-	public VerticalFlowLayout(int hgap, int vgap){
-		this.hgap = hgap;
-		this.vgap = vgap;
+	public static final int LEFT_ALIGN = 0;
+	public static final int RIGHT_ALIGN = 1;
+	public static final int CENTER_ALIGN = 2;
+	public static final int FILL_SPACE = 3;
+	private int vgap;
+	private int align;
+	public VerticalFlowLayout(){
+		this.vgap = 0;
+		this.align = LEFT_ALIGN;
 	}
-	public void setHGap(int hgap){
-		this.hgap = hgap;
+	public VerticalFlowLayout(int vgap){
+		this.vgap = vgap;
+		this.align = LEFT_ALIGN;
+	}
+	public VerticalFlowLayout(int vgap, int align){
+		this.vgap = vgap;
+		this.align = align;
 	}
 	public void setVGap(int vgap){
 		this.vgap = vgap;
 	}
+	public void setAlignment(int align){
+		this.align = align;
+	}
 	@Override
 	public void layoutContainer(Container parent){
-		int x = 0;
 		int y = 0;
-		int columnWidth = 0;
+		int width = parent.getWidth();
 		Component[] components = parent.getComponents();
 		for(Component c : components){
 			if(c.isVisible()){
 				Dimension d = c.getPreferredSize();
-				columnWidth = Math.max(columnWidth, d.width);
-				if(y+d.height>parent.getHeight()){
-					x += columnWidth+this.hgap;
-					y = 0;
+				switch(align){
+					case LEFT_ALIGN:
+						c.setBounds(0, y, d.width, d.height);
+						break;
+					case RIGHT_ALIGN:
+						c.setBounds(width-d.width, y, d.width, d.height);
+						break;
+					case CENTER_ALIGN:
+						c.setBounds((width-d.width)/2, y, d.width, d.height);
+						break;
+					case FILL_SPACE:
+						c.setBounds(0, y, width, d.height);
+						break;
+					default:
+						// Resort to the default left alignment.
+						c.setBounds(0, y, d.width, d.height);
+						break;
 				}
-				c.setBounds(x, y, d.width, d.height);
 				y += d.height+this.vgap;
 			}
 		}

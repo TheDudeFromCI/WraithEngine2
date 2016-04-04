@@ -8,14 +8,22 @@
 package wraith.lib.code.ws_nodes;
 
 import build.games.wraithaven.gui.MenuComponentDialog;
+import wraith.lib.code.FunctionUtils;
+import wraith.lib.code.Indenter;
+import wraith.lib.code.Unindenter;
 import wraith.lib.code.WSNode;
+import wraith.lib.code.WraithScript;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class BlankLine implements WSNode{
-	private static final int ID = 1;
+public class End implements WSNode, Unindenter{
+	private static final int ID = 5;
+	private final WraithScript script;
+	public End(WraithScript script){
+		this.script = script;
+	}
 	@Override
 	public void save(BinaryFile bin){}
 	@Override
@@ -31,9 +39,33 @@ public class BlankLine implements WSNode{
 	@Override
 	public void run(){}
 	@Override
-	public String getHtml(int indent){
-		return "<html><pre><font face=\"Courier\" size=\"3\"> </font></pre></html>";
+	public String getHtml(int in){
+		boolean dead = false;
+		int i = 0;
+		for(WSNode node : script.getLogic().getNodes()){
+			if(node instanceof Unindenter){
+				i--;
+				if(node==this){
+					dead = i<0;
+					break;
+				}
+				if(i<0){
+					i = 0; // No negative indents.
+				}
+			}
+			if(node instanceof Indenter){
+				i++;
+			}
+		}
+		if(dead){
+			return FunctionUtils.generateHtml("End", "gray", 0);
+		}
+		return FunctionUtils.generateHtml("End", in);
 	}
 	@Override
 	public void initalizeRuntime(){}
+	@Override
+	public boolean shouldUnindent(){
+		return true;
+	}
 }

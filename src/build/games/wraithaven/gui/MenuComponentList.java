@@ -7,6 +7,7 @@
  */
 package build.games.wraithaven.gui;
 
+import build.games.wraithaven.code.AttachScriptsDialog;
 import build.games.wraithaven.gui.components.EmptyComponent;
 import build.games.wraithaven.gui.components.ImageComponent;
 import build.games.wraithaven.gui.components.MigLayout;
@@ -441,7 +442,7 @@ public class MenuComponentList extends JPanel{
 		InputDialog dialog = new InputDialog();
 		MenuComponentDialog builder = child.getCreationDialog();
 		JPanel dialogComponent = new JPanel();
-		dialogComponent.setLayout(new VerticalFlowLayout(0, 5));
+		dialogComponent.setLayout(new VerticalFlowLayout(5));
 		dialogComponent.add(builder);
 		JComboBox comboBox;
 		{

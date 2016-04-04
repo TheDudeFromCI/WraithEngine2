@@ -15,4 +15,5 @@ import wraith.lib.util.BinaryFile;
 public interface CodeLanguage{
 	public void load(BinaryFile bin, short version);
 	public void run();
+	public void initalizeRuntime();
 }

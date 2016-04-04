@@ -181,7 +181,7 @@ public class ImageComponent implements MenuComponent{
 			private BufferedImage image;
 			{
 				// Builder
-				setLayout(new VerticalFlowLayout(0, 5));
+				setLayout(new VerticalFlowLayout(5));
 				{
 					// Name
 					nameInput = new JTextField();

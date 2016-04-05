@@ -8,6 +8,7 @@
 package build.games.wraithaven.code;
 
 import java.io.File;
+import wraith.lib.code.ScriptEventType;
 import wraith.lib.code.WraithScript;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
@@ -21,6 +22,7 @@ public class Snipet{
 	private String name = "";
 	private String description = "";
 	private LanguageLoader language;
+	private ScriptEventType eventType = ScriptEventType.DEFAULT;
 	public Snipet(String uuid){
 		this.uuid = uuid;
 	}
@@ -39,6 +41,12 @@ public class Snipet{
 	public void setDescription(String description){
 		this.description = description;
 	}
+	public void setEventType(ScriptEventType type){
+		eventType = type;
+	}
+	public ScriptEventType getEventType(){
+		return eventType;
+	}
 	@Override
 	public String toString(){
 		return name==null?"menu:"+uuid:name;
@@ -56,6 +64,7 @@ public class Snipet{
 			case 0:{
 				name = bin.getString();
 				description = bin.getString();
+				eventType = ScriptEventType.values()[bin.getInt()];
 				int languageId = bin.getInt();
 				switch(languageId){
 					case -1:
@@ -77,10 +86,11 @@ public class Snipet{
 		}
 	}
 	public void save(){
-		BinaryFile bin = new BinaryFile(2+4);
+		BinaryFile bin = new BinaryFile(2+4+4);
 		bin.addShort(FILE_VERSION);
 		bin.addStringAllocated(name);
 		bin.addStringAllocated(description);
+		bin.addInt(eventType.ordinal());
 		bin.addInt(language==null?-1:language.getId());
 		if(language!=null){
 			language.save(bin);

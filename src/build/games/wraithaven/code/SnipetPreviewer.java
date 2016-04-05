@@ -9,6 +9,9 @@ package build.games.wraithaven.code;
 
 import build.games.wraithaven.core.window.BuilderTab;
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JComboBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -19,6 +22,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import wraith.lib.code.ScriptEventType;
 
 /**
  * @author thedudefromci
@@ -35,25 +39,12 @@ public class SnipetPreviewer extends BuilderTab{
 	private void addComponents(){
 		setLayout(new BorderLayout());
 		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
+		panel.setLayout(new BorderLayout(0, 10));
 		panel.add(renderer, BorderLayout.CENTER);
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new BorderLayout());
 		JTextField description = new JTextField();
 		description.setEnabled(false);
-		list.addChangeListener(new ChangeListener(){
-			@Override
-			public void stateChanged(ChangeEvent e){
-				Snipet script = list.getSelectedScript();
-				boolean enabled = script!=null;
-				if(enabled!=description.isEnabled()){
-					description.setEnabled(enabled);
-				}
-				if(enabled){
-					description.setText(script.getDescription());
-				}else{
-					description.setText("");
-				}
-			}
-		});
 		description.addCaretListener(new CaretListener(){
 			@Override
 			public void caretUpdate(CaretEvent e){
@@ -68,7 +59,41 @@ public class SnipetPreviewer extends BuilderTab{
 				}
 			}
 		});
-		panel.add(description, BorderLayout.NORTH);
+		panel1.add(description, BorderLayout.CENTER);
+		JComboBox scriptEventType = new JComboBox(ScriptEventType.values());
+		scriptEventType.setEnabled(false);
+		scriptEventType.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				Snipet script = list.getSelectedScript();
+				if(script!=null){
+					if(scriptEventType.getSelectedItem()!=script.getEventType()){
+						script.setEventType((ScriptEventType)scriptEventType.getSelectedItem());
+						script.save();
+					}
+				}
+			}
+		});
+		list.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e){
+				Snipet script = list.getSelectedScript();
+				boolean enabled = script!=null;
+				if(enabled!=description.isEnabled()){
+					description.setEnabled(enabled);
+					scriptEventType.setEnabled(enabled);
+				}
+				if(enabled){
+					description.setText(script.getDescription());
+					scriptEventType.setSelectedItem(script.getEventType());
+				}else{
+					description.setText("");
+					scriptEventType.setSelectedIndex(0);
+				}
+			}
+		});
+		panel1.add(scriptEventType, BorderLayout.EAST);
+		panel.add(panel1, BorderLayout.NORTH);
 		JScrollPane scroll1 = new JScrollPane(list);
 		JScrollPane scroll2 = new JScrollPane(panel);
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, scroll1, scroll2);

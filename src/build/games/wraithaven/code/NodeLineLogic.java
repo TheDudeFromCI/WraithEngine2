@@ -29,7 +29,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import wraith.lib.code.Indenter;
-import wraith.lib.code.LocalVariable;
 import wraith.lib.code.Unindenter;
 import wraith.lib.code.Variable;
 import wraith.lib.code.WSNode;
@@ -146,7 +145,7 @@ public class NodeLineLogic extends JList{
 							item.addActionListener(new ActionListener(){
 								@Override
 								public void actionPerformed(ActionEvent e){
-									VariableListDialog data = new VariableListDialog(getLocalVariables(), LocalVariable.class);
+									VariableListDialog data = new VariableListDialog(getLocalVariables(), Variable.class);
 									InputDialog dialog = new InputDialog();
 									dialog.setTitle("Edit Variables");
 									dialog.setOkButton(true);
@@ -159,7 +158,7 @@ public class NodeLineLogic extends JList{
 									ArrayList<Variable> vars = data.getVariables();
 									getLocalVariables().clear();
 									for(Variable v : vars){
-										getLocalVariables().add((LocalVariable)v);
+										getLocalVariables().add(v);
 									}
 									script.save();
 								}
@@ -265,7 +264,7 @@ public class NodeLineLogic extends JList{
 		lines[nodes.size()] = "";
 		setModel(new DefaultComboBoxModel(lines));
 	}
-	public ArrayList<LocalVariable> getLocalVariables(){
+	public ArrayList<Variable> getLocalVariables(){
 		return logic.getLocalVariables();
 	}
 }

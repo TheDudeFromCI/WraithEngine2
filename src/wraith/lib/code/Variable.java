@@ -10,7 +10,7 @@ package wraith.lib.code;
 /**
  * @author thedudefromci
  */
-public abstract class Variable{
+public class Variable{
 	private final String uuid;
 	private String name;
 	private Object value;

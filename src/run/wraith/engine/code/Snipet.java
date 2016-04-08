@@ -28,6 +28,7 @@ public class Snipet{
 				case 0:
 					bin.getString(); // Name
 					bin.getString(); // Description
+					bin.getInt(); // Event Type
 					int lanId = bin.getInt();
 					switch(lanId){
 						case -1:{ // Empty Script. Do nothing.

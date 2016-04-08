@@ -48,7 +48,7 @@ public class VariableInput extends JPanel{
 	public static Variable getVariable(String line, WraithScript script){
 		if(line.startsWith("@")){
 			line = line.substring(1);
-			for(LocalVariable var : script.getLogic().getLocalVariables()){
+			for(Variable var : script.getLogic().getLocalVariables()){
 				if(var.getName().equals(line)){
 					return var;
 				}
@@ -135,7 +135,7 @@ public class VariableInput extends JPanel{
 	private final Object[] localVariables;
 	private JComponent inputType;
 	private int inputMode;
-	public VariableInput(ArrayList<LocalVariable> localVariables){
+	public VariableInput(ArrayList<Variable> localVariables){
 		this.localVariables = localVariables.toArray();
 		mouseAdapter = new MouseAdapter(){
 			@Override

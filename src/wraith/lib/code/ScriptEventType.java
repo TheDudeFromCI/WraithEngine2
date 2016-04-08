@@ -10,8 +10,7 @@ package wraith.lib.code;
 /**
  * @author thedudefromci
  */
-public class LocalVariable extends Variable{
-	public LocalVariable(String uuid){
-		super(uuid);
-	}
+public enum ScriptEventType{
+	DEFAULT,
+	ON_CLICK;
 }

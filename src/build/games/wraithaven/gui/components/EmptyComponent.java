@@ -15,7 +15,6 @@ import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.gui.MenuComponentFactory;
 import build.games.wraithaven.gui.MenuComponentHeirarchy;
 import build.games.wraithaven.util.VerticalFlowLayout;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import javax.swing.JComponent;
@@ -172,14 +171,7 @@ public class EmptyComponent implements MenuComponent, AutoResizableComponent{
 		return anchor;
 	}
 	@Override
-	public void draw(Graphics2D g, float x, float y, float w, float h){
-		x += w/2;
-		y += h/2;
-		g.setColor(Color.blue);
-		g.drawLine(Math.round(x-CROSSHAIR_SIZE), Math.round(y), Math.round(x+CROSSHAIR_SIZE), Math.round(y));
-		g.setColor(Color.red);
-		g.drawLine(Math.round(x), Math.round(y-CROSSHAIR_SIZE), Math.round(x), Math.round(y+CROSSHAIR_SIZE));
-	}
+	public void draw(Graphics2D g, float x, float y, float w, float h){}
 	@Override
 	public void resize(float parentWidth, float parentHeight){
 		if(children.isEmpty()){

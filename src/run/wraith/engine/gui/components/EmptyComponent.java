@@ -13,6 +13,7 @@ import run.wraith.engine.gui.Layout;
 import run.wraith.engine.gui.MenuComponent;
 import run.wraith.engine.gui.MenuPosLoc;
 import run.wraith.engine.opengl.renders.ModelInstance;
+import wraith.lib.code.ScriptEventType;
 import wraith.lib.gui.Anchor;
 import wraith.lib.util.BinaryFile;
 
@@ -88,7 +89,9 @@ public class EmptyComponent implements MenuComponent{
 	@Override
 	public void onClick(){
 		for(Snipet s : scripts){
-			s.run();
+			if(s.getType()==ScriptEventType.ON_CLICK){
+				s.run();
+			}
 		}
 	}
 }

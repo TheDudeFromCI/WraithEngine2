@@ -26,8 +26,8 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
-	private static final int ID = 9;
+public class DoWhile implements WSNode, Indenter, FunctionLineCaller{
+	private static final int ID = 14;
 	private static final int EQUALS = 0;
 	private static final int GREATER_THAN = 1;
 	private static final int LESS_THAN = 2;
@@ -41,9 +41,8 @@ public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 	private Object inRaw2;
 	private int compareType;
 	private int line;
-	private boolean didRun;
 	private int returnType;
-	public IfStatement(WraithScript script){
+	public DoWhile(WraithScript script){
 		this.script = script;
 	}
 	@Override
@@ -102,7 +101,7 @@ public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 			}
 			@Override
 			public void build(Object component){
-				IfStatement c = (IfStatement)component;
+				DoWhile c = (DoWhile)component;
 				c.input1 = VariableInput.toStorageState(in1.getValue());
 				c.input2 = VariableInput.toStorageState(in2.getValue());
 				c.compareType = compareType.getSelectedIndex();
@@ -118,43 +117,39 @@ public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 		if(line==-1){
 			return;
 		}
-		boolean run;
-		switch(compareType){
-			case EQUALS:{
-				run = VariableInput.areValuesEqual(inRaw1, inRaw2);
-				break;
-			}
-			case GREATER_THAN:{
-				run = VariableInput.isGreaterThan(inRaw1, inRaw2);
-				break;
-			}
-			case GREATER_THAN_OR_EQUAL:{
-				run = VariableInput.isGreaterThan(inRaw1, inRaw2)||VariableInput.areValuesEqual(inRaw1, inRaw2);
-				break;
-			}
-			case LESS_THAN:{
-				run = !VariableInput.isGreaterThan(inRaw1, inRaw2);
-				break;
-			}
-			case LESS_THAN_OR_EQUAL:{
-				run = !VariableInput.isGreaterThan(inRaw1, inRaw2)||VariableInput.areValuesEqual(inRaw1, inRaw2);
-				break;
-			}
-			case NOT_EQUAL:{
-				run = !VariableInput.areValuesEqual(inRaw1, inRaw2);
-				break;
-			}
-			default:
-				run = false;
-				break;
-		}
-		didRun = run;
-		if(run){
+		do{
 			returnType = script.getLogic().run(line, this);
+			if(returnType!=WraithScriptLogic.NORMAL_FUNCTION_END&&returnType!=WraithScriptLogic.CONTINUE_FUNCTION_END){
+				break;
+			}
+		}while(isTrue());
+		if(returnType==WraithScriptLogic.CONTINUE_FUNCTION_END||returnType==WraithScriptLogic.BREAK_FUNCTION_END){
+			returnType = WraithScriptLogic.NORMAL_FUNCTION_END;
 		}
 	}
-	public boolean didRun(){
-		return didRun;
+	private boolean isTrue(){
+		switch(compareType){
+			case EQUALS:{
+				return VariableInput.areValuesEqual(inRaw1, inRaw2);
+			}
+			case GREATER_THAN:{
+				return VariableInput.isGreaterThan(inRaw1, inRaw2);
+			}
+			case GREATER_THAN_OR_EQUAL:{
+				return VariableInput.isGreaterThan(inRaw1, inRaw2)||VariableInput.areValuesEqual(inRaw1, inRaw2);
+			}
+			case LESS_THAN:{
+				return !VariableInput.isGreaterThan(inRaw1, inRaw2);
+			}
+			case LESS_THAN_OR_EQUAL:{
+				return !VariableInput.isGreaterThan(inRaw1, inRaw2)||VariableInput.areValuesEqual(inRaw1, inRaw2);
+			}
+			case NOT_EQUAL:{
+				return !VariableInput.areValuesEqual(inRaw1, inRaw2);
+			}
+			default:
+				return false;
+		}
 	}
 	@Override
 	public String getHtml(int in){
@@ -187,7 +182,7 @@ public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 			default:
 				com = " ";
 		}
-		return FunctionUtils.generateHtml("If '"+input1+"'"+com+"'"+input2+"', then:", in);
+		return FunctionUtils.generateHtml("While '"+input1+"'"+com+"'"+input2+"', at least once do:", in);
 	}
 	@Override
 	public void initalizeRuntime(){

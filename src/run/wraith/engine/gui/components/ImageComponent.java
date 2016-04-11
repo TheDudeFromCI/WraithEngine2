@@ -18,6 +18,7 @@ import run.wraith.engine.gui.MenuComponent;
 import run.wraith.engine.gui.MenuPosLoc;
 import run.wraith.engine.opengl.renders.ModelInstance;
 import run.wraith.engine.opengl.renders.Texture;
+import wraith.lib.code.ScriptEventType;
 import wraith.lib.gui.Anchor;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
@@ -102,7 +103,9 @@ public class ImageComponent implements MenuComponent{
 	@Override
 	public void onClick(){
 		for(Snipet s : scripts){
-			s.run();
+			if(s.getType()==ScriptEventType.ON_CLICK){
+				s.run();
+			}
 		}
 	}
 	@Override

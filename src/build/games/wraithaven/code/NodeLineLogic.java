@@ -90,16 +90,20 @@ public class NodeLineLogic extends JList{
 					{
 						// New
 						JMenu menu2 = new JMenu("New");
-						attemptAddNode(menu2, "Syntax/Comment Line", CommentLine.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Blank Line", BlankLine.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Return", Return.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/End", End.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Call Function", CallFunction.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/If Statement", IfStatement.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Else", Else.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Helper/Comment Line", CommentLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Helper/Blank Line", BlankLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Return", Return.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Begin Function", BeginFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/End", End.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Call Function", CallFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/If Statement", IfStatement.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Else", Else.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/While", While.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/Do While", DoWhile.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/Break", Break.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/Continue", Continue.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Variable/Set", AssignVariable.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Variable/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}
@@ -127,6 +131,9 @@ public class NodeLineLogic extends JList{
 								}
 								ArrayList<WSNode> nodes = logic.getNodes();
 								for(int i = sel.length-1; i>=0; i--){
+									if(sel[i]>=nodes.size()){
+										continue;
+									}
 									nodes.remove(sel[i]);
 								}
 								updateModel();
@@ -230,6 +237,9 @@ public class NodeLineLogic extends JList{
 						builder.build(com);
 					}
 					logic.getNodes().add(insertIndex, com);
+					if(com instanceof Indenter){
+						logic.getNodes().add(insertIndex+1, new End(logic.getWraithScript()));
+					}
 					updateModel();
 					script.save();
 					setSelectedIndex(insertIndex+1);

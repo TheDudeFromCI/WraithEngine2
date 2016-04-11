@@ -95,7 +95,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Return", Return.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/End", End.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Assign", AssignVariable.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Set", AssignVariable.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Call Function", CallFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/If Statement", IfStatement.class, sel[0]);

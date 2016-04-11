@@ -8,6 +8,7 @@
 package run.wraith.engine.code;
 
 import java.io.File;
+import wraith.lib.code.ScriptEventType;
 import wraith.lib.code.WraithScript;
 import wraith.lib.util.Algorithms;
 import wraith.lib.util.BinaryFile;
@@ -17,7 +18,9 @@ import wraith.lib.util.BinaryFile;
  */
 public class Snipet{
 	private final CodeLanguage lan;
+	private final ScriptEventType type;
 	public Snipet(String uuid){
+		ScriptEventType tempType = null;
 		CodeLanguage tempLan = null;
 		try{
 			File file = Algorithms.getFile("Scripts", uuid+".dat");
@@ -28,7 +31,7 @@ public class Snipet{
 				case 0:
 					bin.getString(); // Name
 					bin.getString(); // Description
-					bin.getInt(); // Event Type
+					tempType = ScriptEventType.values()[bin.getInt()];
 					int lanId = bin.getInt();
 					switch(lanId){
 						case -1:{ // Empty Script. Do nothing.
@@ -55,10 +58,14 @@ public class Snipet{
 			System.exit(1);
 		}
 		lan = tempLan;
+		type = tempType;
 	}
 	public void run(){
 		if(lan!=null){
 			lan.run();
 		}
+	}
+	public ScriptEventType getType(){
+		return type;
 	}
 }

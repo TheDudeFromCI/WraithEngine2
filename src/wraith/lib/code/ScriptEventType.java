@@ -11,6 +11,15 @@ package wraith.lib.code;
  * @author thedudefromci
  */
 public enum ScriptEventType{
-	DEFAULT,
-	ON_CLICK;
+	DEFAULT("Custom"),
+	ON_CLICK("On Click"),
+	ON_KEY_STROKE("On Key Input");
+	private final String name;
+	private ScriptEventType(String name){
+		this.name = name;
+	}
+	@Override
+	public String toString(){
+		return name;
+	}
 }

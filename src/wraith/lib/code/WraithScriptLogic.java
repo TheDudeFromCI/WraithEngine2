@@ -90,6 +90,8 @@ public class WraithScriptLogic implements FunctionLineCaller{
 				return new IfStatement(script);
 			case 10:
 				return new Else(script);
+			case 11:
+				return new While(script);
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

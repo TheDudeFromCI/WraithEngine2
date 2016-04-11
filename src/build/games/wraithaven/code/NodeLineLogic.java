@@ -98,6 +98,7 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Code Flow/Call Function", CallFunction.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Code Flow/If Statement", IfStatement.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Code Flow/Else", Else.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/While", While.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Variable/Set", AssignVariable.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Variable/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
@@ -127,6 +128,9 @@ public class NodeLineLogic extends JList{
 								}
 								ArrayList<WSNode> nodes = logic.getNodes();
 								for(int i = sel.length-1; i>=0; i--){
+									if(sel[i]>=nodes.size()){
+										continue;
+									}
 									nodes.remove(sel[i]);
 								}
 								updateModel();

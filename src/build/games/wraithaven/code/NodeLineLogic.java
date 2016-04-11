@@ -90,16 +90,16 @@ public class NodeLineLogic extends JList{
 					{
 						// New
 						JMenu menu2 = new JMenu("New");
-						attemptAddNode(menu2, "Syntax/Comment Line", CommentLine.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Blank Line", BlankLine.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Return", Return.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Begin Function", BeginFunction.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/End", End.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Set", AssignVariable.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Compare", Compare.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Call Function", CallFunction.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/If Statement", IfStatement.class, sel[0]);
-						attemptAddNode(menu2, "Syntax/Else", Else.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Helper/Comment Line", CommentLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Helper/Blank Line", BlankLine.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Return", Return.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Begin Function", BeginFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/End", End.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Call Function", CallFunction.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/If Statement", IfStatement.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Else", Else.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Variable/Set", AssignVariable.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Variable/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);
 						menu.add(menu2);
 					}

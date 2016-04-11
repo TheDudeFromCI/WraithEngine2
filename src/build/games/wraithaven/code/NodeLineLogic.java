@@ -230,6 +230,9 @@ public class NodeLineLogic extends JList{
 						builder.build(com);
 					}
 					logic.getNodes().add(insertIndex, com);
+					if(com instanceof Indenter){
+						logic.getNodes().add(insertIndex+1, new End(logic.getWraithScript()));
+					}
 					updateModel();
 					script.save();
 					setSelectedIndex(insertIndex+1);

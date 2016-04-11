@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import wraith.lib.code.FunctionLineCaller;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScript;
@@ -24,11 +25,12 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public class CallFunction implements WSNode{
+public class CallFunction implements WSNode, FunctionLineCaller{
 	private static final int ID = 8;
 	private final WraithScript script;
 	private String function;
 	private int line;
+	private int returnType;
 	public CallFunction(WraithScript script){
 		this.script = script;
 	}
@@ -89,7 +91,7 @@ public class CallFunction implements WSNode{
 	@Override
 	public void run(){
 		if(line!=-1){
-			script.getLogic().run(line);
+			returnType = script.getLogic().run(line, this);
 		}
 	}
 	@Override
@@ -118,5 +120,13 @@ public class CallFunction implements WSNode{
 			i++;
 		}
 		line = -1;
+	}
+	@Override
+	public boolean shouldTerminate(int endType){
+		return false;
+	}
+	@Override
+	public int getReturnType(){
+		return returnType;
 	}
 }

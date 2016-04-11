@@ -13,18 +13,20 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import wraith.lib.code.FunctionLineCaller;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.Indenter;
 import wraith.lib.code.VariableInput;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScript;
+import wraith.lib.code.WraithScriptLogic;
 import wraith.lib.util.BinaryFile;
 import wraith.lib.util.InverseBorderLayout;
 
 /**
  * @author thedudefromci
  */
-public class IfStatement implements WSNode, Indenter{
+public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 	private static final int ID = 9;
 	private static final int EQUALS = 0;
 	private static final int GREATER_THAN = 1;
@@ -40,6 +42,7 @@ public class IfStatement implements WSNode, Indenter{
 	private int compareType;
 	private int line;
 	private boolean didRun;
+	private int returnType;
 	public IfStatement(WraithScript script){
 		this.script = script;
 	}
@@ -147,7 +150,7 @@ public class IfStatement implements WSNode, Indenter{
 		}
 		didRun = run;
 		if(run){
-			script.getLogic().run(line);
+			returnType = script.getLogic().run(line, this);
 		}
 	}
 	public boolean didRun(){
@@ -203,5 +206,13 @@ public class IfStatement implements WSNode, Indenter{
 	@Override
 	public boolean shouldIndent(){
 		return true;
+	}
+	@Override
+	public boolean shouldTerminate(int endType){
+		return endType!=WraithScriptLogic.NORMAL_FUNCTION_END;
+	}
+	@Override
+	public int getReturnType(){
+		return returnType;
 	}
 }

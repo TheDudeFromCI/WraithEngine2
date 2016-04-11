@@ -8,21 +8,24 @@
 package wraith.lib.code.ws_nodes;
 
 import build.games.wraithaven.gui.MenuComponentDialog;
+import wraith.lib.code.FunctionLineCaller;
 import wraith.lib.code.FunctionUtils;
 import wraith.lib.code.Indenter;
 import wraith.lib.code.Unindenter;
 import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScript;
+import wraith.lib.code.WraithScriptLogic;
 import wraith.lib.util.BinaryFile;
 
 /**
  * @author thedudefromci
  */
-public class Else implements WSNode, Indenter, Unindenter{
+public class Else implements WSNode, Indenter, Unindenter, FunctionLineCaller{
 	private static final int ID = 10;
 	private final WraithScript script;
 	private IfStatement parentStatement;
 	private int line;
+	private int returnType;
 	public Else(WraithScript script){
 		this.script = script;
 	}
@@ -41,7 +44,7 @@ public class Else implements WSNode, Indenter, Unindenter{
 	@Override
 	public void run(){
 		if(!parentStatement.didRun()){
-			script.getLogic().run(line);
+			returnType = script.getLogic().run(line, this);
 		}
 	}
 	@Override
@@ -121,5 +124,13 @@ public class Else implements WSNode, Indenter, Unindenter{
 	@Override
 	public boolean shouldUnindent(){
 		return true;
+	}
+	@Override
+	public boolean shouldTerminate(int endType){
+		return endType!=WraithScriptLogic.NORMAL_FUNCTION_END;
+	}
+	@Override
+	public int getReturnType(){
+		return returnType;
 	}
 }

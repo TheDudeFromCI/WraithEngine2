@@ -14,7 +14,10 @@ import wraith.lib.util.BinaryFile;
 /**
  * @author thedudefromci
  */
-public class WraithScriptLogic{
+public class WraithScriptLogic implements FunctionLineCaller{
+	public static final int NORMAL_FUNCTION_END = 0;
+	public static final int RETURN_FUNCTION_END = 1;
+	public static final int BREAK_FUNCTION_END = 2;
 	private final ArrayList<WSNode> nodes = new ArrayList(32);
 	private final ArrayList<Variable> localVariables = new ArrayList(4);
 	private final WraithScript script;
@@ -108,22 +111,52 @@ public class WraithScriptLogic{
 		return nodes;
 	}
 	public void run(){
-		run(0);
+		run(0, this);
 	}
-	public void run(int line){
+	/**
+	 * Run script at a specific line. Only runs it's current indention.
+	 *
+	 * @param line
+	 *            - The line to run the script from.
+	 * @param caller
+	 *            - The WSNode that is calling this line to run.
+	 * @return The conditions of the return, or function break. 0 = Normal function end. 1 = Return. 2 = Break.
+	 */
+	public int run(int line, FunctionLineCaller caller){
 		int indent = indents[line];
+		WSNode n;
 		for(; line<nodes.size(); line++){
 			if(indents[line]==indent){
-				nodes.get(line).run();
+				n = nodes.get(line);
+				n.run();
+				if(n instanceof FunctionLineCaller){
+					int returnType = ((FunctionLineCaller)n).getReturnType();
+					if(((FunctionLineCaller)n).shouldTerminate(returnType)){
+						return returnType;
+					}
+				}
+				if(nodes.get(line) instanceof Return){
+					// End this statement.
+					return RETURN_FUNCTION_END;
+				}
 			}else if(indents[line]<indent){
-				return;
+				return NORMAL_FUNCTION_END;
 			}
 		}
+		return NORMAL_FUNCTION_END;
 	}
 	public ArrayList<Variable> getLocalVariables(){
 		return localVariables;
 	}
 	public WraithScript getWraithScript(){
 		return script;
+	}
+	@Override
+	public boolean shouldTerminate(int endType){
+		return false;
+	}
+	@Override
+	public int getReturnType(){
+		return RETURN_FUNCTION_END;
 	}
 }

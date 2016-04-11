@@ -9,6 +9,7 @@ package wraith.lib.code.ws_nodes;
 
 import build.games.wraithaven.gui.MenuComponentDialog;
 import build.games.wraithaven.util.VerticalFlowLayout;
+import java.awt.GridLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -21,7 +22,6 @@ import wraith.lib.code.WSNode;
 import wraith.lib.code.WraithScript;
 import wraith.lib.code.WraithScriptLogic;
 import wraith.lib.util.BinaryFile;
-import wraith.lib.util.InverseBorderLayout;
 
 /**
  * @author thedudefromci
@@ -87,17 +87,17 @@ public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 				label2.setHorizontalAlignment(JLabel.CENTER);
 				add(label2);
 				JPanel panel = new JPanel();
-				panel.setLayout(new InverseBorderLayout(5));
+				panel.setLayout(new GridLayout(3, 1, 0, 0));
 				in1 = new VariableInput(script.getLogic().getLocalVariables());
 				in1.setValue(input1);
 				panel.add(in1);
+				compareType = new JComboBox(new String[]{
+					"is equal to", "is greater than", "is less than", "is greater than or equal to", "is less than or equal to", "is not equal to"
+				});
+				panel.add(compareType);
 				in2 = new VariableInput(script.getLogic().getLocalVariables());
 				in2.setValue(input2);
 				panel.add(in2);
-				compareType = new JComboBox(new String[]{
-					"==", ">", "<", ">=", "=<", "!="
-				});
-				panel.add(compareType);
 				add(panel);
 			}
 			@Override

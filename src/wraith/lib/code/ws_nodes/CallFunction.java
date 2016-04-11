@@ -114,6 +114,11 @@ public class CallFunction implements WSNode, FunctionLineCaller{
 			if(node instanceof BeginFunction){
 				if(((BeginFunction)node).getUUID().equals(function)){
 					line = i+1;
+					int indent = script.getLogic().getIndent(node);
+					if(script.getLogic().getIndent(line)!=indent+1){
+						// There is no code inside of this indent.
+						line = -1;
+					}
 					return;
 				}
 			}

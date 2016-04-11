@@ -43,17 +43,25 @@ public class Else implements WSNode, Indenter, Unindenter, FunctionLineCaller{
 	}
 	@Override
 	public void run(){
-		if(!parentStatement.didRun()){
+		if(parentStatement!=null&&!parentStatement.didRun()){
 			returnType = script.getLogic().run(line, this);
 		}
 	}
 	@Override
 	public void initalizeRuntime(){
 		parentStatement = getParent();
+		if(parentStatement==null){
+			return;
+		}
 		int i = 0;
+		int indent = script.getLogic().getIndent(this);
 		for(WSNode node : script.getLogic().getNodes()){
 			if(node==this){
 				line = i+1;
+				if(script.getLogic().getIndent(line)!=indent+1){
+					// There is no code inside of this indent.
+					line = -1;
+				}
 				return;
 			}
 			i++;

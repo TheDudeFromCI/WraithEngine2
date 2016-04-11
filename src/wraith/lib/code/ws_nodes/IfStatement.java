@@ -191,12 +191,17 @@ public class IfStatement implements WSNode, Indenter, FunctionLineCaller{
 	}
 	@Override
 	public void initalizeRuntime(){
+		int indent = script.getLogic().getIndent(this);
 		inRaw1 = VariableInput.fromStorageState(input1, script);
 		inRaw2 = VariableInput.fromStorageState(input2, script);
 		int i = 0;
 		for(WSNode node : script.getLogic().getNodes()){
 			if(node==this){
 				line = i+1;
+				if(script.getLogic().getIndent(line)!=indent+1){
+					// There is no code inside of this indent.
+					line = -1;
+				}
 				return;
 			}
 			i++;

@@ -159,4 +159,10 @@ public class WraithScriptLogic implements FunctionLineCaller{
 	public int getReturnType(){
 		return RETURN_FUNCTION_END;
 	}
+	public int getIndent(WSNode node){
+		return getIndent(nodes.indexOf(node));
+	}
+	public int getIndent(int line){
+		return indents[line];
+	}
 }

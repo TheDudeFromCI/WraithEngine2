@@ -99,6 +99,8 @@ public class NodeLineLogic extends JList{
 						attemptAddNode(menu2, "Syntax/Code Flow/If Statement", IfStatement.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Code Flow/Else", Else.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Code Flow/Loop/While", While.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/Break", Break.class, sel[0]);
+						attemptAddNode(menu2, "Syntax/Code Flow/Loop/Continue", Continue.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Variable/Set", AssignVariable.class, sel[0]);
 						attemptAddNode(menu2, "Syntax/Variable/Compare", Compare.class, sel[0]);
 						attemptAddNode(menu2, "Debug/Print to Console", PrintToConsole.class, sel[0]);

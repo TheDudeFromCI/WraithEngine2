@@ -18,6 +18,7 @@ public class WraithScriptLogic implements FunctionLineCaller{
 	public static final int NORMAL_FUNCTION_END = 0;
 	public static final int RETURN_FUNCTION_END = 1;
 	public static final int BREAK_FUNCTION_END = 2;
+	public static final int CONTINUE_FUNCTION_END = 3;
 	private final ArrayList<WSNode> nodes = new ArrayList(32);
 	private final ArrayList<Variable> localVariables = new ArrayList(4);
 	private final WraithScript script;
@@ -92,6 +93,10 @@ public class WraithScriptLogic implements FunctionLineCaller{
 				return new Else(script);
 			case 11:
 				return new While(script);
+			case 12:
+				return new Break();
+			case 13:
+				return new Continue();
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}
@@ -137,9 +142,14 @@ public class WraithScriptLogic implements FunctionLineCaller{
 						return returnType;
 					}
 				}
-				if(nodes.get(line) instanceof Return){
-					// End this statement.
+				if(n instanceof Return){
 					return RETURN_FUNCTION_END;
+				}
+				if(n instanceof Break){
+					return BREAK_FUNCTION_END;
+				}
+				if(n instanceof Continue){
+					return CONTINUE_FUNCTION_END;
 				}
 			}else if(indents[line]<indent){
 				return NORMAL_FUNCTION_END;

@@ -119,9 +119,12 @@ public class While implements WSNode, Indenter, FunctionLineCaller{
 		}
 		while(isTrue()){
 			returnType = script.getLogic().run(line, this);
-			if(returnType!=WraithScriptLogic.NORMAL_FUNCTION_END){
+			if(returnType!=WraithScriptLogic.NORMAL_FUNCTION_END&&returnType!=WraithScriptLogic.CONTINUE_FUNCTION_END){
 				break;
 			}
+		}
+		if(returnType==WraithScriptLogic.CONTINUE_FUNCTION_END||returnType==WraithScriptLogic.BREAK_FUNCTION_END){
+			returnType = WraithScriptLogic.NORMAL_FUNCTION_END;
 		}
 	}
 	private boolean isTrue(){

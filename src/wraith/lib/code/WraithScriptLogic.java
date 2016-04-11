@@ -97,6 +97,8 @@ public class WraithScriptLogic implements FunctionLineCaller{
 				return new Break();
 			case 13:
 				return new Continue();
+			case 14:
+				return new DoWhile(script);
 			default:
 				throw new RuntimeException("Unknown node id! '"+id+"'");
 		}

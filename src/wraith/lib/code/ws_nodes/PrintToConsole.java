@@ -71,9 +71,11 @@ public class PrintToConsole implements WSNode{
 	public void run(){
 		if(varValue!=null){
 			System.out.println(varValue.getValue());
-			return;
+		}else if(comment==null){
+			System.out.println();
+		}else{
+			System.out.println(comment);
 		}
-		System.out.println(comment);
 	}
 	@Override
 	public String getHtml(int in){
@@ -81,6 +83,13 @@ public class PrintToConsole implements WSNode{
 	}
 	@Override
 	public void initalizeRuntime(){
-		varValue = VariableInput.getVariable(comment, script);
+		Object store = VariableInput.fromStorageState(comment, script);
+		if(store instanceof Variable){
+			varValue = (Variable)store;
+		}else if(store==null){
+			comment = null;
+		}else{
+			comment = store.toString();
+		}
 	}
 }
